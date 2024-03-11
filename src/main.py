@@ -24,20 +24,17 @@ def main() -> None:
         )
         choices = chat_response.choices
         content = choices[0].message.content
+        assert isinstance(content, str)
         print("\n" + get_current_time())
         print("\nUSER: " + question + "\n")
         print(model.upper() + ": " + content + "\n")
         print("\nPulsa Enter para seguir, d para entrar en el modo de depuración")
         entrada = input("\n")
         if entrada == "d":
+            from .debug import show  # pyright: ignore [reportUnusedImport]
+
             print("Entrando en modo de depuracion")
             breakpoint()
-
-
-def show(chat_response):
-    for attr in dir(chat_response):
-        if not attr.startswith("_"):
-            print("\n", attr, getattr(chat_response, attr))
 
 
 if __name__ == "__main__":
