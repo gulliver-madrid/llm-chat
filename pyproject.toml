@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "mistral-chat"
+version = "0.1.0"
+description = "Interfaz de consola a la API de Mistral"
+authors = ["gulliver-madrid <49131885+gulliver-madrid@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+mistralai = "^0.1.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
