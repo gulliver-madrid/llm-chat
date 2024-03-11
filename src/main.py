@@ -11,34 +11,42 @@ modelos: Final[Sequence[str]] = ["tiny", "small", "medium", "large-2402"]
 
 
 def elegir_modelo() -> str:
-    # Mostrar opciones al usuario
-    print(
-        "[bright_cyan]Por favor, elige un modelo introduciendo el número correspondiente:"
-    )
-    for i, modelo in enumerate(modelos, start=1):
-        print(f"{i}. mistral-{modelo}")
-    print(
-        f"Presiona enter sin seleccionar un número para elegir el modelo [blue_violet]mistral-{modelos[0]}[/blue_violet] por defecto.\n"
-    )
+    while True:
+        # Mostrar opciones al usuario
+        print(
+            "[bright_cyan]Por favor, elige un modelo introduciendo el número correspondiente:"
+        )
+        for i, modelo in enumerate(modelos, start=1):
+            print(f"{i}. mixtral-{modelo}")
+        print(
+            f"Presiona enter sin seleccionar un número para elegir el modelo [blue_violet]mistral-{modelos[0]}[/blue_violet] por defecto.\n"
+        )
 
-    # Leer la eleccion del usuario
-    print("[bold]Introduce tu elección (1-{}): ".format(len(modelos)))
-    eleccion = input()
+        # Leer la eleccion del usuario
+        print("[bold]Introduce tu elección (1-{}): ".format(len(modelos)))
+        eleccion = input()
 
-    if eleccion == "":
-        eleccion = "1"
+        if eleccion == "":
+            eleccion = "1"
 
-    # Asegurarse de que la eleccion es valida
-    try:
-        eleccion_numerica = int(eleccion)
+        # Asegurarse de que la eleccion es valida
+        try:
+            eleccion_numerica = int(eleccion)
+        except ValueError:
+            print(
+                "[bright_red]Entrada no válida. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto.\n"
+            )
+            continue
+
         if 1 <= eleccion_numerica <= len(modelos):
             modelo_elegido = modelos[eleccion_numerica - 1]
+            break
         else:
-            print("[red]Número fuera de rango. Seleccionando el modelo por defecto.")
-            modelo_elegido = modelos[0]
-    except ValueError:
-        print("[red]Entrada no válida. Seleccionando el modelo por defecto.")
-        modelo_elegido = modelos[0]
+            print(
+                "[bright_red]Número fuera de rango. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto.\n"
+            )
+            continue
+
     print(f"\nModelo elegido: mistral-{modelo_elegido}\n")
     return modelo_elegido
 
