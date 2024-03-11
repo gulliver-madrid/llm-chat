@@ -9,12 +9,24 @@ from .ahora import get_current_time
 
 modelos: Final[Sequence[str]] = ["tiny", "small", "medium", "large-2402"]
 
+ERROR = "[bright_red]"
+CALL_TO_ACTION = "[bright_cyan]"
+HIGHLIGHT_ROLE = "[light_green]"
+NEUTRAL_MSG = "[dark_goldenrod]"
+
+
+def end(s: str) -> str:
+    assert s[0] == "["
+    assert s[-1] == "]"
+    return f"[/{s[1:-1]}]"
+
 
 def elegir_modelo() -> str:
     while True:
         # Mostrar opciones al usuario
         print(
-            "[bright_cyan]Por favor, elige un modelo introduciendo el número correspondiente:"
+            CALL_TO_ACTION
+            + "Por favor, elige un modelo introduciendo el número correspondiente:"
         )
         for i, modelo in enumerate(modelos, start=1):
             print(f"{i}. mixtral-{modelo}")
@@ -34,7 +46,8 @@ def elegir_modelo() -> str:
             eleccion_numerica = int(eleccion)
         except ValueError:
             print(
-                "[bright_red]Entrada no válida. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto.\n"
+                ERROR
+                + "Entrada no válida. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto.\n"
             )
             continue
 
@@ -43,7 +56,8 @@ def elegir_modelo() -> str:
             break
         else:
             print(
-                "[bright_red]Número fuera de rango. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto.\n"
+                ERROR
+                + "Número fuera de rango. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto.\n"
             )
             continue
 
@@ -58,7 +72,7 @@ def main() -> None:
     client = MistralClient(api_key=api_key)
 
     while True:
-        print("\n[bright_cyan]Introduce tu consulta:\n")
+        print(CALL_TO_ACTION + "\nIntroduce tu consulta:\n")
         question = input()
 
         if not question:
@@ -72,10 +86,13 @@ def main() -> None:
         content = choices[0].message.content
         assert isinstance(content, str)
         print("\n" + get_current_time())
-        print("\n[light_green]USER:[/light_green] " + question + "\n")
-        print("[light_green]" + model.upper() + ":[/light_green] " + content + "\n")
+        print(HIGHLIGHT_ROLE + "\nUSER: " + end(HIGHLIGHT_ROLE) + question + "\n")
         print(
-            "\n[dark_goldenrod]Pulsa Enter para seguir, d para entrar en el modo de depuración, q para salir"
+            HIGHLIGHT_ROLE + model.upper() + ": " + end(HIGHLIGHT_ROLE) + content + "\n"
+        )
+        print(
+            NEUTRAL_MSG
+            + "\nPulsa Enter para seguir, d para entrar en el modo de depuración, q para salir"
         )
         entrada = input("\n")
         if entrada == "q":
@@ -83,9 +100,10 @@ def main() -> None:
         elif entrada == "d":
             from .debug import show  # pyright: ignore [reportUnusedImport]
 
-            print("[dark_goldenrod]Entrando en modo de depuracion")
+            print(NEUTRAL_MSG + "Entrando en modo de depuracion")
             breakpoint()
-            print("[dark_goldenrod]Saliendo del modo de depuración\n")
+            print(NEUTRAL_MSG + "Saliendo del modo de depuración\n")
+
     print("Saliendo")
     exit()
 
