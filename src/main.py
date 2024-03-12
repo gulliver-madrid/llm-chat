@@ -21,8 +21,8 @@ modelos: Final[Sequence[str]] = ["tiny", "small", "medium", "large-2402"]
 def print_interaction(model: str, question: str, content: str) -> None:
     """Prints an interaction between user and model"""
     print("\n" + get_current_time())
-    print(highlight_role("\nUSER: ") + question + "\n")
-    print(highlight_role(model.upper() + ": ") + content + "\n")
+    print("\n" + highlight_role("USER: ") + question)
+    print("\n" + highlight_role(model.upper() + ": ") + content)
 
 
 def main() -> None:
