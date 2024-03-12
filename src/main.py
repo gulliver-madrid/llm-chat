@@ -37,9 +37,8 @@ def elegir_modelo() -> str:
         )
 
         # Leer la eleccion del usuario
-        print("[bold]Introduce tu elección (1-{}): ".format(len(modelos)))
-        print(CALL_TO_ACTION + "> ", end="")
-        eleccion = input()
+        num_opciones = len(modelos)
+        eleccion = get_input(f"[bold]Introduce tu elección (1-{num_opciones})")
 
         if eleccion == "":
             eleccion = "1"
@@ -69,6 +68,14 @@ def elegir_modelo() -> str:
     return modelo_elegido
 
 
+def get_input(text: str) -> str:
+    print(
+        CALL_TO_ACTION + f"\n{text}:\n> ",
+        end="",
+    )
+    return input()
+
+
 def main() -> None:
     api_key = os.environ["MISTRAL_API_KEY"]
     model = "mistral-" + elegir_modelo()
@@ -76,22 +83,16 @@ def main() -> None:
     client = MistralClient(api_key=api_key)
 
     while True:
-        print(
-            CALL_TO_ACTION
-            + "\nIntroduce tu consulta (o pulsa Enter para ver más opciones):\n> ",
-            end="",
+        question = get_input(
+            "Introduce tu consulta (o pulsa Enter para ver más opciones)"
         )
-        question = input()
 
         if not question:
             salir = False
             while True:
-                print(
-                    CALL_TO_ACTION
-                    + "\nPulsa Enter para continuar con otra consulta, d para entrar en el modo de depuración, q para salir: \n> ",
-                    end="",
-                )
-                entrada = input().lower()
+                entrada = get_input(
+                    "Pulsa Enter para continuar con otra consulta, d para entrar en el modo de depuración, q para salir"
+                ).lower()
                 print()
                 if not entrada:
                     break
