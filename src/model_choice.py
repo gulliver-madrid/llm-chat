@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Final, NewType, Sequence
 
 from rich import print
 
@@ -12,7 +12,10 @@ from src.io_helpers import (
     show_error_msg,
 )
 
+ModelName = NewType("ModelName", str)
+
 MODEL_PREFIX = "mistral"
+models: Final[Sequence[str]] = ["tiny", "small", "medium", "large-2402"]
 
 
 def parse_model_choice(modelos: Sequence[str], eleccion: str) -> str | None:
@@ -75,3 +78,8 @@ def select_model(modelos: Sequence[str]) -> str:
 
     print(f"\nModelo elegido: {MODEL_PREFIX}-{modelo_elegido}")
     return modelo_elegido
+
+
+def build_model_name(suffix: str) -> ModelName:
+    assert suffix in models
+    return ModelName(MODEL_PREFIX + "-" + suffix)

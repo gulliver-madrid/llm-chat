@@ -1,5 +1,4 @@
 import os
-from typing import Final, Sequence
 
 from rich import print
 
@@ -11,10 +10,7 @@ from src.io_helpers import (
     highlight_role,
 )
 from src.menu_manager import CHANGE_MODEL, SALIR, MenuManager
-from src.model_choice import MODEL_PREFIX, select_model
-
-
-modelos: Final[Sequence[str]] = ["tiny", "small", "medium", "large-2402"]
+from src.model_choice import build_model_name, models, select_model
 
 
 def print_interaction(model: str, question: str, content: str) -> None:
@@ -30,7 +26,7 @@ class Main:
         """Runs the text interface to Mistral models"""
         api_key = os.environ["MISTRAL_API_KEY"]
         client_wrapper = ClientWrapper(api_key)
-        model = MODEL_PREFIX + "-" + select_model(modelos)
+        model = build_model_name(select_model(models))
         chat_response = None
 
         while True:
@@ -46,7 +42,7 @@ class Main:
                 elif action.name == SALIR:
                     break
                 elif action.name == CHANGE_MODEL:
-                    model = MODEL_PREFIX + "-" + select_model(modelos)
+                    model = build_model_name(select_model(models))
                     continue
                 else:
                     raise RuntimeError(f"Acción no válida: {action}")
@@ -56,7 +52,7 @@ class Main:
             while (more := input()).lower() != "end":
                 question += "\n" + more
 
-            print("...procesando")
+            print("\n...procesando")
 
             content = client_wrapper.get_simple_response(model, question)
             print_interaction(model, question, content)
