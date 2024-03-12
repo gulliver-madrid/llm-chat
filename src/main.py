@@ -26,7 +26,7 @@ def end(s: str) -> str:
 def get_input(text: str) -> str:
     """Prompts the user to provide an input, in a styled way"""
     print(
-        CALL_TO_ACTION + f"\n{text}:\n> ",
+        CALL_TO_ACTION + f"\n{text}\n> ",
         end="",
     )
     return input()
@@ -58,7 +58,7 @@ def enter_inner_menu(response: ChatCompletionResponse | None) -> bool:
     salir = False
     while True:
         entrada = get_input(
-            "Pulsa Enter para continuar con otra consulta, d para entrar en el modo de depuración, q para salir"
+            "Pulsa Enter para continuar con otra consulta, d para entrar en el modo de depuración, q para salir."
         ).lower()
         print()
         if not entrada:
