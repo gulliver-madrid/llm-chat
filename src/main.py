@@ -37,6 +37,12 @@ def show_error_msg(text: str) -> None:
     time.sleep(1)
 
 
+def print_interaction(model: str, question: str, content: str) -> None:
+    print("\n" + get_current_time())
+    print(HIGHLIGHT_ROLE + "\nUSER: " + end(HIGHLIGHT_ROLE) + question + "\n")
+    print(HIGHLIGHT_ROLE + model.upper() + ": " + end(HIGHLIGHT_ROLE) + content + "\n")
+
+
 def parse_model_choice(modelos: Sequence[str], eleccion: str) -> str | None:
     # Asegurarse de que la eleccion es valida
     try:
@@ -125,6 +131,8 @@ def main() -> None:
                 break
             continue
 
+        assert question
+
         chat_response = client.chat(
             model=model,
             messages=[ChatMessage(role="user", content=question)],
@@ -132,11 +140,7 @@ def main() -> None:
         choices = chat_response.choices
         content = choices[0].message.content
         assert isinstance(content, str)
-        print("\n" + get_current_time())
-        print(HIGHLIGHT_ROLE + "\nUSER: " + end(HIGHLIGHT_ROLE) + question + "\n")
-        print(
-            HIGHLIGHT_ROLE + model.upper() + ": " + end(HIGHLIGHT_ROLE) + content + "\n"
-        )
+        print_interaction(model, question, content)
 
     print(NEUTRAL_MSG + "Saliendo")
     exit()
