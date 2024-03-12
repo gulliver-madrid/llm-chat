@@ -12,7 +12,7 @@ from src.io_helpers import (
     highlight_role,
 )
 from src.menu_manager import MenuManager
-from src.model_choice import select_model
+from src.model_choice import MODEL_PREFIX, select_model
 
 
 modelos: Final[Sequence[str]] = ["tiny", "small", "medium", "large-2402"]
@@ -28,7 +28,7 @@ def print_interaction(model: str, question: str, content: str) -> None:
 def main() -> None:
     """Runs the text interface to Mistral models"""
     api_key = os.environ["MISTRAL_API_KEY"]
-    model = "mistral-" + select_model(modelos)
+    model = MODEL_PREFIX + "-" + select_model(modelos)
     chat_response = None
 
     client = MistralClient(api_key=api_key)
