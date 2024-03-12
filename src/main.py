@@ -1,11 +1,10 @@
 import os
 from typing import Final, Sequence
 
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
 from rich import print
 
 from src.ahora import get_current_time
+from src.client_wrapper import ClientWrapper
 from src.io_helpers import (
     NEUTRAL_MSG,
     get_input,
@@ -30,10 +29,9 @@ class Main:
     def execute(self) -> None:
         """Runs the text interface to Mistral models"""
         api_key = os.environ["MISTRAL_API_KEY"]
+        client_wrapper = ClientWrapper(api_key)
         model = MODEL_PREFIX + "-" + select_model(modelos)
         chat_response = None
-
-        client = MistralClient(api_key=api_key)
 
         while True:
             # modo multilinea por defecto
@@ -60,13 +58,7 @@ class Main:
 
             print("...procesando")
 
-            chat_response = client.chat(
-                model=model,
-                messages=[ChatMessage(role="user", content=question)],
-            )
-            choices = chat_response.choices
-            content = choices[0].message.content
-            assert isinstance(content, str)
+            content = client_wrapper.get_simple_response(model, question)
             print_interaction(model, question, content)
 
 
