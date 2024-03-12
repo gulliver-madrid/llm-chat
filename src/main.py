@@ -3,7 +3,7 @@ import time
 from typing import Final, Sequence
 
 from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+from mistralai.models.chat_completion import ChatMessage, ChatCompletionResponse
 from rich import print
 
 from .ahora import get_current_time
@@ -41,6 +41,15 @@ def print_interaction(model: str, question: str, content: str) -> None:
     print("\n" + get_current_time())
     print(HIGHLIGHT_ROLE + "\nUSER: " + end(HIGHLIGHT_ROLE) + question + "\n")
     print(HIGHLIGHT_ROLE + model.upper() + ": " + end(HIGHLIGHT_ROLE) + content + "\n")
+
+
+def enter_debug_mode(response: ChatCompletionResponse | None) -> None:
+    from .debug import show  # pyright: ignore [reportUnusedImport]
+
+    print(NEUTRAL_MSG + "Entrando en modo de depuracion\n")
+    print(response)
+    breakpoint()
+    print(NEUTRAL_MSG + "\nSaliendo del modo de depuración\n")
 
 
 def parse_model_choice(modelos: Sequence[str], eleccion: str) -> str | None:
@@ -98,6 +107,7 @@ def main() -> None:
     """Runs the text interface to Mistral models"""
     api_key = os.environ["MISTRAL_API_KEY"]
     model = "mistral-" + elegir_modelo()
+    chat_response = None
 
     client = MistralClient(api_key=api_key)
 
@@ -119,11 +129,7 @@ def main() -> None:
                     salir = True
                     break
                 elif entrada in ["d", "debug"]:
-                    from .debug import show  # pyright: ignore [reportUnusedImport]
-
-                    print(NEUTRAL_MSG + "Entrando en modo de depuracion\n")
-                    breakpoint()
-                    print(NEUTRAL_MSG + "\nSaliendo del modo de depuración\n")
+                    enter_debug_mode(chat_response)
                     break
                 else:
                     show_error_msg("Entrada no válida")
