@@ -32,6 +32,11 @@ def get_input(text: str) -> str:
     return input()
 
 
+def show_error_msg(text: str) -> None:
+    print(ERROR + f"\n{text}\n")
+    time.sleep(1)
+
+
 def elegir_modelo() -> str:
     """Prompt the user to choose a model. Returns the model name without the 'mistral' preffix."""
     while True:
@@ -58,20 +63,17 @@ def elegir_modelo() -> str:
         try:
             eleccion_numerica = int(eleccion)
         except ValueError:
-            print(
-                ERROR
-                + "\nEntrada no válida. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto.\n"
+            show_error_msg(
+                "Entrada no válida. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto."
             )
-            time.sleep(1)
             continue
 
         if 1 <= eleccion_numerica <= len(modelos):
             modelo_elegido = modelos[eleccion_numerica - 1]
             break
         else:
-            print(
-                ERROR
-                + "Número fuera de rango. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto.\n"
+            show_error_msg(
+                "Número fuera de rango. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto."
             )
             continue
 
@@ -111,7 +113,7 @@ def main() -> None:
                     print(NEUTRAL_MSG + "\nSaliendo del modo de depuración\n")
                     break
                 else:
-                    print(NEUTRAL_MSG + "Entrada no válida")
+                    show_error_msg("Entrada no válida")
             if salir:
                 break
 
