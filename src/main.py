@@ -74,7 +74,8 @@ def main() -> None:
     while True:
         print(
             CALL_TO_ACTION
-            + "\nIntroduce tu consulta (o pulsa Enter para ver más opciones):\n"
+            + "\nIntroduce tu consulta (o pulsa Enter para ver más opciones):\n> ",
+            end="",
         )
         question = input()
 
@@ -82,10 +83,12 @@ def main() -> None:
             salir = False
             while True:
                 print(
-                    NEUTRAL_MSG
-                    + "\nPulsa Enter para seguir, d para entrar en el modo de depuración, q para salir"
+                    CALL_TO_ACTION
+                    + "\nPulsa Enter para seguir, d para entrar en el modo de depuración, q para salir: \n> ",
+                    end="",
                 )
-                entrada = input("\n").lower()
+                entrada = input().lower()
+                print()
                 if not entrada:
                     break
                 elif entrada in ["q", "quit", "exit"]:
@@ -94,12 +97,12 @@ def main() -> None:
                 elif entrada in ["d", "debug"]:
                     from .debug import show  # pyright: ignore [reportUnusedImport]
 
-                    print(NEUTRAL_MSG + "Entrando en modo de depuracion")
+                    print(NEUTRAL_MSG + "Entrando en modo de depuracion\n")
                     breakpoint()
                     print(NEUTRAL_MSG + "Saliendo del modo de depuración\n")
                     break
                 else:
-                    print("Entrada no válida")
+                    print(NEUTRAL_MSG + "Entrada no válida")
             if salir:
                 break
 
@@ -116,7 +119,7 @@ def main() -> None:
             HIGHLIGHT_ROLE + model.upper() + ": " + end(HIGHLIGHT_ROLE) + content + "\n"
         )
 
-    print("Saliendo")
+    print(NEUTRAL_MSG + "Saliendo")
     exit()
 
 
