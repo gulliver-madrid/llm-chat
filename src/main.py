@@ -1,4 +1,5 @@
 import os
+import time
 from typing import Final, Sequence
 
 from mistralai.client import MistralClient
@@ -31,11 +32,13 @@ def elegir_modelo() -> str:
         for i, modelo in enumerate(modelos, start=1):
             print(f"{i}. mixtral-{modelo}")
         print(
-            f"Presiona enter sin seleccionar un número para elegir el modelo [blue_violet]mistral-{modelos[0]}[/blue_violet] por defecto.\n"
+            NEUTRAL_MSG
+            + f"\nPresiona enter sin seleccionar un número para elegir el modelo [blue_violet]mistral-{modelos[0]}[/blue_violet] por defecto.\n"
         )
 
         # Leer la eleccion del usuario
         print("[bold]Introduce tu elección (1-{}): ".format(len(modelos)))
+        print(CALL_TO_ACTION + "> ", end="")
         eleccion = input()
 
         if eleccion == "":
@@ -47,8 +50,9 @@ def elegir_modelo() -> str:
         except ValueError:
             print(
                 ERROR
-                + "Entrada no válida. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto.\n"
+                + "\nEntrada no válida. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto.\n"
             )
+            time.sleep(1)
             continue
 
         if 1 <= eleccion_numerica <= len(modelos):
@@ -74,7 +78,8 @@ def main() -> None:
     while True:
         print(
             CALL_TO_ACTION
-            + "\nIntroduce tu consulta (o pulsa Enter para ver más opciones):\n"
+            + "\nIntroduce tu consulta (o pulsa Enter para ver más opciones):\n> ",
+            end="",
         )
         question = input()
 
@@ -82,10 +87,12 @@ def main() -> None:
             salir = False
             while True:
                 print(
-                    NEUTRAL_MSG
-                    + "\nPulsa Enter para seguir, d para entrar en el modo de depuración, q para salir"
+                    CALL_TO_ACTION
+                    + "\nPulsa Enter para continuar con otra consulta, d para entrar en el modo de depuración, q para salir: \n> ",
+                    end="",
                 )
-                entrada = input("\n").lower()
+                entrada = input().lower()
+                print()
                 if not entrada:
                     break
                 elif entrada in ["q", "quit", "exit"]:
@@ -94,12 +101,12 @@ def main() -> None:
                 elif entrada in ["d", "debug"]:
                     from .debug import show  # pyright: ignore [reportUnusedImport]
 
-                    print(NEUTRAL_MSG + "Entrando en modo de depuracion")
+                    print(NEUTRAL_MSG + "Entrando en modo de depuracion\n")
                     breakpoint()
-                    print(NEUTRAL_MSG + "Saliendo del modo de depuración\n")
+                    print(NEUTRAL_MSG + "\nSaliendo del modo de depuración\n")
                     break
                 else:
-                    print("Entrada no válida")
+                    print(NEUTRAL_MSG + "Entrada no válida")
             if salir:
                 break
 
@@ -116,7 +123,7 @@ def main() -> None:
             HIGHLIGHT_ROLE + model.upper() + ": " + end(HIGHLIGHT_ROLE) + content + "\n"
         )
 
-    print("Saliendo")
+    print(NEUTRAL_MSG + "Saliendo")
     exit()
 
 
