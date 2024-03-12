@@ -7,7 +7,7 @@ def main() -> None:
 
     print(f"Fecha y hora actuales: {ahora}")
 
-    formato = ahora.strftime("%Y-%m-%d %H:%M:%S")
+    formato = get_current_time()
 
     print(f"Fecha y hora con formato: {formato}")
 
