@@ -1,6 +1,6 @@
-import os
-
 from rich import print
+
+import os
 
 from src.ahora import get_current_time
 from src.client_wrapper import ClientWrapper
@@ -11,6 +11,7 @@ from src.io_helpers import (
 )
 from src.menu_manager import CHANGE_MODEL, SALIR, MenuManager
 from src.model_choice import build_model_name, models, select_model
+from src.placeholders import find_placeholders
 
 
 def print_interaction(model: str, question: str, content: str) -> None:
@@ -51,6 +52,15 @@ class Main:
 
             while (more := input()).lower() != "end":
                 question += "\n" + more
+
+            occurrences = find_placeholders(question)
+            if occurrences:
+                set_occurrences = set(occurrences)
+                for placeholder in set_occurrences:
+                    subs = get_input("Por favor indica el valor de " + placeholder)
+                    while placeholder in question:
+                        question = question.replace(placeholder, subs)
+                print("Placeholders sustituidos exitosamente")
 
             print("\n...procesando")
 
