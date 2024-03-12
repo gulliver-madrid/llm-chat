@@ -33,11 +33,13 @@ def get_input(text: str) -> str:
 
 
 def show_error_msg(text: str) -> None:
+    """Displays an error message with the given text and make a short pause before returning"""
     print(ERROR + f"\n{text}")
     time.sleep(1)
 
 
 def print_interaction(model: str, question: str, content: str) -> None:
+    """Prints an interaction between user and model"""
     print("\n" + get_current_time())
     print(HIGHLIGHT_ROLE + "\nUSER: " + end(HIGHLIGHT_ROLE) + question + "\n")
     print(HIGHLIGHT_ROLE + model.upper() + ": " + end(HIGHLIGHT_ROLE) + content + "\n")
