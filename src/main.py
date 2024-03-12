@@ -134,8 +134,9 @@ def main() -> None:
     client = MistralClient(api_key=api_key)
 
     while True:
+        # modo multilinea por defecto
         question = get_input(
-            "Introduce tu consulta (o pulsa Enter para ver más opciones)"
+            "Introduce tu consulta (o pulsa Enter para ver más opciones). Introduce `end` como único contenido de una línea cuando hayas terminado."
         )
 
         if not question:
@@ -146,11 +147,10 @@ def main() -> None:
 
         assert question
 
-        if question.startswith("+"):
-            # modo multilinea
-            question.removeprefix("+")
-            while more := input():
-                question += "\n" + more
+        while (more := input()).lower() != "end":
+            question += "\n" + more
+
+        print("...procesando")
 
         chat_response = client.chat(
             model=model,
