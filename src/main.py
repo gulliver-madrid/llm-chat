@@ -72,11 +72,36 @@ def main() -> None:
     client = MistralClient(api_key=api_key)
 
     while True:
-        print(CALL_TO_ACTION + "\nIntroduce tu consulta:\n")
+        print(
+            CALL_TO_ACTION
+            + "\nIntroduce tu consulta (o pulsa Enter para ver más opciones):\n"
+        )
         question = input()
 
         if not question:
-            break
+            salir = False
+            while True:
+                print(
+                    NEUTRAL_MSG
+                    + "\nPulsa Enter para seguir, d para entrar en el modo de depuración, q para salir"
+                )
+                entrada = input("\n").lower()
+                if not entrada:
+                    break
+                elif entrada in ["q", "quit", "exit"]:
+                    salir = True
+                    break
+                elif entrada in ["d", "debug"]:
+                    from .debug import show  # pyright: ignore [reportUnusedImport]
+
+                    print(NEUTRAL_MSG + "Entrando en modo de depuracion")
+                    breakpoint()
+                    print(NEUTRAL_MSG + "Saliendo del modo de depuración\n")
+                    break
+                else:
+                    print("Entrada no válida")
+            if salir:
+                break
 
         chat_response = client.chat(
             model=model,
@@ -90,19 +115,6 @@ def main() -> None:
         print(
             HIGHLIGHT_ROLE + model.upper() + ": " + end(HIGHLIGHT_ROLE) + content + "\n"
         )
-        print(
-            NEUTRAL_MSG
-            + "\nPulsa Enter para seguir, d para entrar en el modo de depuración, q para salir"
-        )
-        entrada = input("\n")
-        if entrada == "q":
-            break
-        elif entrada == "d":
-            from .debug import show  # pyright: ignore [reportUnusedImport]
-
-            print(NEUTRAL_MSG + "Entrando en modo de depuracion")
-            breakpoint()
-            print(NEUTRAL_MSG + "Saliendo del modo de depuración\n")
 
     print("Saliendo")
     exit()
