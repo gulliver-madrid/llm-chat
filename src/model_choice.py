@@ -38,7 +38,8 @@ def parse_model_choice(modelos: Sequence[str], eleccion: str) -> str | None:
 def select_model(modelos: Sequence[str]) -> str:
     """Prompt the user to choose a model. Returns the model name without the 'mistral' preffix."""
     default_model = modelos[0]
-    while True:
+    modelo_elegido = None
+    while not modelo_elegido:
         # Mostrar opciones al usuario
         print(
             apply_tag(
@@ -68,12 +69,9 @@ def select_model(modelos: Sequence[str]) -> str:
             apply_tag(f"Introduce tu elección (1-{num_opciones})", BOLD_STYLE)
         )
 
-        if not eleccion:
-            modelo_elegido = default_model
-        else:
-            modelo_elegido = parse_model_choice(modelos, eleccion)
-        if modelo_elegido:
-            break
+        modelo_elegido = (
+            parse_model_choice(modelos, eleccion) if eleccion else default_model
+        )
 
     print(f"\nModelo elegido: {MODEL_PREFIX}-{modelo_elegido}")
     return modelo_elegido
