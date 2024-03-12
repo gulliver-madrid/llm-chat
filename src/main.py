@@ -33,7 +33,7 @@ def get_input(text: str) -> str:
 
 
 def show_error_msg(text: str) -> None:
-    print(ERROR + f"\n{text}\n")
+    print(ERROR + f"\n{text}")
     time.sleep(1)
 
 
@@ -43,13 +43,13 @@ def elegir_modelo() -> str:
         # Mostrar opciones al usuario
         print(
             CALL_TO_ACTION
-            + "Por favor, elige un modelo introduciendo el número correspondiente:"
+            + "\nPor favor, elige un modelo introduciendo el número correspondiente:"
         )
         for i, modelo in enumerate(modelos, start=1):
             print(f"{i}. mixtral-{modelo}")
         print(
             NEUTRAL_MSG
-            + f"\nPresiona enter sin seleccionar un número para elegir el modelo [blue_violet]mistral-{modelos[0]}[/blue_violet] por defecto.\n"
+            + f"\nPresiona enter sin seleccionar un número para elegir el modelo [blue_violet]mistral-{modelos[0]}[/blue_violet] por defecto."
         )
 
         # Leer la eleccion del usuario
@@ -77,7 +77,7 @@ def elegir_modelo() -> str:
             )
             continue
 
-    print(f"\nModelo elegido: mistral-{modelo_elegido}\n")
+    print(f"\nModelo elegido: mistral-{modelo_elegido}")
     return modelo_elegido
 
 
