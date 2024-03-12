@@ -52,6 +52,26 @@ def enter_debug_mode(response: ChatCompletionResponse | None) -> None:
     print(NEUTRAL_MSG + "\nSaliendo del modo de depuración\n")
 
 
+def enter_inner_menu(response: ChatCompletionResponse | None) -> bool:
+    salir = False
+    while True:
+        entrada = get_input(
+            "Pulsa Enter para continuar con otra consulta, d para entrar en el modo de depuración, q para salir"
+        ).lower()
+        print()
+        if not entrada:
+            break
+        elif entrada in ["q", "quit", "exit"]:
+            salir = True
+            break
+        elif entrada in ["d", "debug"]:
+            enter_debug_mode(response)
+            break
+        else:
+            show_error_msg("Entrada no válida")
+    return salir
+
+
 def parse_model_choice(modelos: Sequence[str], eleccion: str) -> str | None:
     # Asegurarse de que la eleccion es valida
     try:
@@ -117,22 +137,7 @@ def main() -> None:
         )
 
         if not question:
-            salir = False
-            while True:
-                entrada = get_input(
-                    "Pulsa Enter para continuar con otra consulta, d para entrar en el modo de depuración, q para salir"
-                ).lower()
-                print()
-                if not entrada:
-                    break
-                elif entrada in ["q", "quit", "exit"]:
-                    salir = True
-                    break
-                elif entrada in ["d", "debug"]:
-                    enter_debug_mode(chat_response)
-                    break
-                else:
-                    show_error_msg("Entrada no válida")
+            salir = enter_inner_menu(chat_response)
             if salir:
                 break
             continue
