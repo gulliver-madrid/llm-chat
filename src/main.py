@@ -17,12 +17,14 @@ NEUTRAL_MSG = "[dark_goldenrod]"
 
 
 def end(s: str) -> str:
+    """Create a end tag"""
     assert s[0] == "["
     assert s[-1] == "]"
     return f"[/{s[1:-1]}]"
 
 
 def elegir_modelo() -> str:
+    """Prompt the user to choose a model. Returns the model name without the 'mistral' preffix."""
     while True:
         # Mostrar opciones al usuario
         print(
@@ -69,6 +71,7 @@ def elegir_modelo() -> str:
 
 
 def get_input(text: str) -> str:
+    """Prompts the user to provide an input, in a styled way"""
     print(
         CALL_TO_ACTION + f"\n{text}:\n> ",
         end="",
@@ -77,6 +80,7 @@ def get_input(text: str) -> str:
 
 
 def main() -> None:
+    """Runs the text interface to Mistral models"""
     api_key = os.environ["MISTRAL_API_KEY"]
     model = "mistral-" + elegir_modelo()
 
