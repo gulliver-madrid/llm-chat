@@ -23,6 +23,15 @@ def end(s: str) -> str:
     return f"[/{s[1:-1]}]"
 
 
+def get_input(text: str) -> str:
+    """Prompts the user to provide an input, in a styled way"""
+    print(
+        CALL_TO_ACTION + f"\n{text}:\n> ",
+        end="",
+    )
+    return input()
+
+
 def elegir_modelo() -> str:
     """Prompt the user to choose a model. Returns the model name without the 'mistral' preffix."""
     while True:
@@ -68,15 +77,6 @@ def elegir_modelo() -> str:
 
     print(f"\nModelo elegido: mistral-{modelo_elegido}\n")
     return modelo_elegido
-
-
-def get_input(text: str) -> str:
-    """Prompts the user to provide an input, in a styled way"""
-    print(
-        CALL_TO_ACTION + f"\n{text}:\n> ",
-        end="",
-    )
-    return input()
 
 
 def main() -> None:
