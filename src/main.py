@@ -144,6 +144,12 @@ def main() -> None:
 
         assert question
 
+        if question.startswith("+"):
+            # modo multilinea
+            question.removeprefix("+")
+            while more := input():
+                question += "\n" + more
+
         chat_response = client.chat(
             model=model,
             messages=[ChatMessage(role="user", content=question)],
