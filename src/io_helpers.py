@@ -28,3 +28,7 @@ def show_error_msg(text: str) -> None:
     """Displays an error message with the given text and make a short pause before returning"""
     print(ERROR + f"\n{text}")
     time.sleep(1)
+
+
+def highlight_role(role_string: str) -> str:
+    return HIGHLIGHT_ROLE + role_string + end(HIGHLIGHT_ROLE)
