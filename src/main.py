@@ -37,8 +37,29 @@ def show_error_msg(text: str) -> None:
     time.sleep(1)
 
 
+def parse_model_choice(modelos: Sequence[str], eleccion: str) -> str | None:
+    # Asegurarse de que la eleccion es valida
+    try:
+        eleccion_numerica = int(eleccion)
+    except ValueError:
+        show_error_msg(
+            "Entrada no válida. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto."
+        )
+        return None
+
+    if 1 <= eleccion_numerica <= len(modelos):
+        modelo_elegido = modelos[eleccion_numerica - 1]
+        return modelo_elegido
+    else:
+        show_error_msg(
+            "Número fuera de rango. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto."
+        )
+        return None
+
+
 def elegir_modelo() -> str:
     """Prompt the user to choose a model. Returns the model name without the 'mistral' preffix."""
+    default_model = modelos[0]
     while True:
         # Mostrar opciones al usuario
         print(
@@ -49,33 +70,19 @@ def elegir_modelo() -> str:
             print(f"{i}. mixtral-{modelo}")
         print(
             NEUTRAL_MSG
-            + f"\nPresiona enter sin seleccionar un número para elegir el modelo [blue_violet]mistral-{modelos[0]}[/blue_violet] por defecto."
+            + f"\nPresiona enter sin seleccionar un número para elegir el modelo [blue_violet]mistral-{default_model}[/blue_violet] por defecto."
         )
 
         # Leer la eleccion del usuario
         num_opciones = len(modelos)
         eleccion = get_input(f"[bold]Introduce tu elección (1-{num_opciones})")
 
-        if eleccion == "":
-            eleccion = "1"
-
-        # Asegurarse de que la eleccion es valida
-        try:
-            eleccion_numerica = int(eleccion)
-        except ValueError:
-            show_error_msg(
-                "Entrada no válida. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto."
-            )
-            continue
-
-        if 1 <= eleccion_numerica <= len(modelos):
-            modelo_elegido = modelos[eleccion_numerica - 1]
-            break
+        if not eleccion:
+            modelo_elegido = default_model
         else:
-            show_error_msg(
-                "Número fuera de rango. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto."
-            )
-            continue
+            modelo_elegido = parse_model_choice(modelos, eleccion)
+        if modelo_elegido:
+            break
 
     print(f"\nModelo elegido: mistral-{modelo_elegido}")
     return modelo_elegido
