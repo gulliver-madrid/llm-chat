@@ -6,6 +6,7 @@ from rich import print
 from src.io_helpers import NEUTRAL_MSG, get_input, show_error_msg
 
 SALIR = "SALIR"
+CHANGE_MODEL = "CHANGE_MODEL"
 
 
 @dataclass
@@ -28,13 +29,16 @@ class MenuManager:
 
         while True:
             entrada = get_input(
-                "Pulsa Enter para continuar con otra consulta, d para entrar en el modo de depuración, q para salir."
+                "Pulsa Enter para continuar con otra consulta. Introduce 'd' para entrar en el modo de depuración, 'q' para salir y 'change' para cambiar de modelo."
             ).lower()
             print()
             if not entrada:
                 break
             elif entrada in ["q", "quit", "exit"]:
                 return Action(SALIR)
+
+            elif entrada in ["change"]:
+                return Action(CHANGE_MODEL)
 
             elif entrada in ["d", "debug"]:
                 MenuManager.enter_debug_mode(response)

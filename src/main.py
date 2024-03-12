@@ -11,7 +11,7 @@ from src.io_helpers import (
     get_input,
     highlight_role,
 )
-from src.menu_manager import SALIR, MenuManager
+from src.menu_manager import CHANGE_MODEL, SALIR, MenuManager
 from src.model_choice import MODEL_PREFIX, select_model
 
 
@@ -45,9 +45,13 @@ class Main:
                 action = MenuManager.enter_inner_menu(chat_response)
                 if not action:
                     continue
-                if action.name == SALIR:
+                elif action.name == SALIR:
                     break
-                raise RuntimeError(f"Acción no válida: {action}")
+                elif action.name == CHANGE_MODEL:
+                    model = MODEL_PREFIX + "-" + select_model(modelos)
+                    continue
+                else:
+                    raise RuntimeError(f"Acción no válida: {action}")
 
             assert question
 
