@@ -116,6 +116,7 @@ def main() -> None:
                     show_error_msg("Entrada no válida")
             if salir:
                 break
+            continue
 
         chat_response = client.chat(
             model=model,
