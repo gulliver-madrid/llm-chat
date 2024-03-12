@@ -7,6 +7,10 @@ CALL_TO_ACTION = "[bright_cyan]"
 HIGHLIGHT_ROLE = "[light_green]"
 NEUTRAL_MSG = "[dark_goldenrod]"
 
+BLUE_VIOLET_COLOR = "[blue_violet]"
+
+BOLD_STYLE = "[bold]"
+
 
 def end(s: str) -> str:
     """Create a end tag"""
@@ -28,6 +32,12 @@ def show_error_msg(text: str) -> None:
     """Displays an error message with the given text and make a short pause before returning"""
     print(ERROR + f"\n{text}")
     time.sleep(1)
+
+
+def apply_tag(s: str, tag: str) -> str:
+    assert tag.startswith("[")
+    assert tag.endswith("]")
+    return tag + s + end(tag)
 
 
 def highlight_role(role_string: str) -> str:
