@@ -61,8 +61,7 @@ Or, if installed using pip:
 python src/main.py
 ```
 
-The script will prompt you to choose a model from the available options or use the default one. After selecting a model, you can input a question
-or multiple questions in a conversational manner. When you're done, type "end" as the final input.
+The script allows you to interact with it in a conversational manner by inputting questions. After launching the script, it will prompt you to choose from the available models or to proceed with the default model. Once a model is selected, you can begin typing your question. If your query spans multiple lines, simply continue typing until you've finished formulating your question. To indicate that you have finished entering your question, type "end" on a new line. The model will then process your input and provide a response. After receiving a response, you are free to initiate a new query by following the same process.
 
 To exit the program, just leave in blank the question, and write `exit` in the next menu.
 
