@@ -3,23 +3,15 @@ from rich import print
 
 import os
 
-from src.ahora import get_current_time
 from src.client_wrapper import ClientWrapper
 from src.io_helpers import (
     NEUTRAL_MSG,
     get_input,
-    highlight_role,
 )
 from src.menu_manager import CHANGE_MODEL, SALIR, MenuManager
 from src.model_choice import build_model_name, models, select_model
 from src.placeholders import find_placeholders
-
-
-def print_interaction(model: str, question: str, content: str) -> None:
-    """Prints an interaction between user and model"""
-    print("\n" + get_current_time())
-    print("\n" + highlight_role("USER: ") + question)
-    print("\n" + highlight_role(model.upper() + ": ") + content)
+from src.views import print_interaction
 
 
 class Main:
