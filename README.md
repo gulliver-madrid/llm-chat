@@ -65,11 +65,34 @@ The script allows you to interact with it in a conversational manner by inputtin
 
 To indicate that you have finished entering your question, type `end` on a new line. The model will then process your input and provide a response. After receiving a response, you are free to initiate a new query by following the same process.
 
-If your query includes *placeholders* (e.g., `$0concept`), you can introduce a line using the format `/for value1,value2,value3`, allowing the script to replace these placeholders with the indicated values before processing the query. This enables you to efficiently conduct multiple related queries in a single execution.
+### Placeholders
+
+If your query includes placeholders (e.g., `$0concept`), simply type your query with these placeholders. After submitting your query, you will be prompted to replace each placeholder one by one. This simple substitution method is the most straightforward way to use placeholders for personalized queries.
+
+For more advanced usage, if your query includes placeholders and you wish to conduct multiple related queries in a single execution, you can use the `/for` command with the format `/for value1,value2,value3`. This allows the script to replace the placeholders with the indicated values before processing the queries. This feature is especially useful for efficiently conducting a series of related queries without the need to restart the process for each new input, thus enhancing the user experience and efficiency when interacting with the system.
+
+Placeholder syntax is designed to be both intuitive and flexible, allowing for dynamic query customization. Placeholders must begin with `$0` followed by one or more alphabetical characters (including underscore _). Optionally, these can be followed by one or more digits. This structure ensures that placeholders are easily identifiable within the query and can be uniquely replaced based on user input or predefined commands. For example, a placeholder might look like `$0concept`, `$0variable_name`, or `$0question1`, where each placeholder is prepared to be substituted with a specific value that the user will provide later. This syntax is essential for distinguishing placeholders from regular text and ensuring that the script accurately identifies and processes them during the query substitution phase.
+
+### Exiting the program
 
 To exit the program, simply leave the question blank and write `exit` in the next menu.
 
-### Example of a query with placeholder substitution:
+### Example of a simple placeholder substitution:
+
+```
+Please enter your query (or press Enter to see more options). Type
+'end' as the sole content of a line when you have finished.
+> What is $0concept? Define it briefly.
+end
+
+Please indicate the value of $0concept
+> the enlightenment
+Placeholder substituted successfully
+
+...processing query
+```
+
+### Example of an advanced query with the `/for` command:
 
 ```
 Please enter your query (or press Enter to see more options). Type
@@ -83,8 +106,6 @@ Placeholders substituted successfully
 
 ...processing query
 ```
-
-This functionality is particularly useful for performing multiple related queries without the need to restart the process for each new input, thus enhancing the user experience and efficiency when interacting with the system.
 
 
 ### Features
