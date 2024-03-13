@@ -56,9 +56,12 @@ class Main:
             occurrences = find_placeholders(question)
 
             if occurrences:
+                substitutions: dict[str, str] = {}
                 set_occurrences = set(occurrences)
                 for placeholder in set_occurrences:
                     subs = get_input("Por favor indica el valor de " + placeholder)
+                    substitutions[placeholder] = subs
+                for placeholder, subs in substitutions.items():
                     question = question.replace(placeholder, subs)
 
                 print("Placeholders sustituidos exitosamente")
