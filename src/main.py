@@ -1,25 +1,17 @@
-from typing import Sequence
+from typing import Mapping, Sequence
 from rich import print
 
 import os
 
-from src.ahora import get_current_time
 from src.client_wrapper import ClientWrapper
 from src.io_helpers import (
     NEUTRAL_MSG,
     get_input,
-    highlight_role,
 )
 from src.menu_manager import CHANGE_MODEL, SALIR, MenuManager
 from src.model_choice import build_model_name, models, select_model
-from src.placeholders import find_placeholders
-
-
-def print_interaction(model: str, question: str, content: str) -> None:
-    """Prints an interaction between user and model"""
-    print("\n" + get_current_time())
-    print("\n" + highlight_role("USER: ") + question)
-    print("\n" + highlight_role(model.upper() + ": ") + content)
+from src.placeholders import find_placeholders, replace_placeholders
+from src.views import print_interaction
 
 
 class Main:
@@ -33,11 +25,11 @@ class Main:
 
         while True:
             # modo multilinea por defecto
-            question = get_input(
+            raw_question = get_input(
                 "Introduce tu consulta (o pulsa Enter para ver más opciones). Introduce `end` como único contenido de una línea cuando hayas terminado."
             )
 
-            if not question:
+            if not raw_question:
                 action = MenuManager.enter_inner_menu(chat_response)
                 if not action:
                     continue
@@ -49,24 +41,16 @@ class Main:
                 else:
                     raise RuntimeError(f"Acción no válida: {action}")
 
-            assert question
+            assert raw_question
 
             while (more := input()).lower() != "end":
-                question += "\n" + more
+                raw_question += "\n" + more
 
-            occurrences = find_placeholders(question)
+            occurrences = find_placeholders(raw_question)
 
             if occurrences:
-                substitutions: dict[str, str] = {}
-                set_occurrences = set(occurrences)
-                for placeholder in set_occurrences:
-                    subs = get_input("Por favor indica el valor de " + placeholder)
-                    substitutions[placeholder] = subs
-                for_placeholders = [
-                    placeholder
-                    for placeholder, subs in substitutions.items()
-                    if subs.startswith("/for")
-                ]
+                user_substitutions = get_raw_substitutions_from_user(occurrences)
+                for_placeholders = get_placeholders_with_for(user_substitutions)
                 if len(for_placeholders) > 1:
                     print(
                         "El uso de varios '/for' con los placeholders no está soportado"
@@ -74,15 +58,16 @@ class Main:
                     continue
                 elif len(for_placeholders) == 1:
                     questions = replace_placeholders(
-                        question, substitutions, for_placeholders
+                        raw_question, user_substitutions, for_placeholders
                     )
                 else:
-                    for placeholder, subs in substitutions.items():
-                        question = question.replace(placeholder, subs)
-                    questions = [question]
+                    for placeholder, replacement in user_substitutions.items():
+                        raw_question = raw_question.replace(placeholder, replacement)
+                    questions = [raw_question]
                 print("Placeholders sustituidos exitosamente")
             else:
-                questions = [question]
+                questions = [raw_question]
+            del raw_question
 
             for i, question in enumerate(questions):
                 print("\n...procesando consulta número", i + 1)
@@ -91,24 +76,24 @@ class Main:
                 print_interaction(model, question, content)
 
 
-def replace_placeholders(
-    question: str, substitutions: dict[str, str], for_placeholders: Sequence[str]
-) -> list[str]:
-    placeholder_with_for = for_placeholders[0]
-    subs_in_for_str = substitutions[placeholder_with_for]
-    subs_in_for_str = subs_in_for_str.removeprefix("/for")
-    subs_in_for = subs_in_for_str.split(",")
-    questions: list[str] = []
-    for sub in subs_in_for:
-        questions.append(question.replace(placeholder_with_for, sub))
-    del substitutions[placeholder_with_for]
-    new_questions: list[str] = []
-    for question in questions:
-        for placeholder, subs in substitutions.items():
-            question = question.replace(placeholder, subs)
-        new_questions.append(question)
-    questions = new_questions
-    return questions
+def get_placeholders_with_for(substitutions: Mapping[str, str]) -> list[str]:
+    return [
+        placeholder
+        for placeholder, subs in substitutions.items()
+        if subs.startswith("/for")
+    ]
+
+
+def get_raw_substitutions_from_user(occurrences: Sequence[str]) -> dict[str, str]:
+    substitutions: dict[str, str] = {}
+    unique_ocurrences: list[str] = []
+    for occurrence in occurrences:
+        if occurrence not in unique_ocurrences:
+            unique_ocurrences.append(occurrence)
+    for placeholder in unique_ocurrences:
+        subs = get_input("Por favor indica el valor de " + placeholder)
+        substitutions[placeholder] = subs
+    return substitutions
 
 
 def main() -> None:
