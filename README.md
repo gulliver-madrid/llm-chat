@@ -71,6 +71,9 @@ If your query includes placeholders (e.g., `$0concept`), simply type your query 
 
 For more advanced usage, if your query includes placeholders and you wish to conduct multiple related queries in a single execution, you can use the `/for` command with the format `/for value1,value2,value3`. This allows the script to replace the placeholders with the indicated values before processing the queries. This feature is especially useful for efficiently conducting a series of related queries without the need to restart the process for each new input, thus enhancing the user experience and efficiency when interacting with the system.
 
+Placeholder syntax is designed to be both intuitive and flexible, allowing for dynamic query customization. Placeholders must begin with `$0` followed by one or more alphabetical characters (including underscore _). Optionally, these can be followed by one or more digits. This structure ensures that placeholders are easily identifiable within the query and can be uniquely replaced based on user input or predefined commands. For example, a placeholder might look like `$0concept`, `$0variable_name`, or `$0question1`, where each placeholder is prepared to be substituted with a specific value that the user will provide later. This syntax is essential for distinguishing placeholders from regular text and ensuring that the script accurately identifies and processes them during the query substitution phase.
+
+### Exiting the program
 
 To exit the program, simply leave the question blank and write `exit` in the next menu.
 
