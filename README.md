@@ -61,9 +61,31 @@ Or, if installed using pip:
 python src/main.py
 ```
 
-The script allows you to interact with it in a conversational manner by inputting questions. After launching the script, it will prompt you to choose from the available models or to proceed with the default model. Once a model is selected, you can begin typing your question. If your query spans multiple lines, simply continue typing until you've finished formulating your question. To indicate that you have finished entering your question, type "end" on a new line. The model will then process your input and provide a response. After receiving a response, you are free to initiate a new query by following the same process.
+The script allows you to interact with it in a conversational manner by inputting questions. After launching the script, it will prompt you to choose from the available models or to proceed with the default model. Once a model is selected, you can begin typing your question. If your query spans multiple lines, simply continue typing until you've finished formulating your question.
 
-To exit the program, just leave in blank the question, and write `exit` in the next menu.
+To indicate that you have finished entering your question, type `end` on a new line. The model will then process your input and provide a response. After receiving a response, you are free to initiate a new query by following the same process.
+
+If your query includes *placeholders* (e.g., `$0concept`), you can introduce a line using the format `/for value1,value2,value3`, allowing the script to replace these placeholders with the indicated values before processing the query. This enables you to efficiently conduct multiple related queries in a single execution.
+
+To exit the program, simply leave the question blank and write `exit` in the next menu.
+
+### Example of a query with placeholder substitution:
+
+```
+Please enter your query (or press Enter to see more options). Type
+'end' as the sole content of a line when you have finished.
+> What is $0concept? Define it briefly.
+end
+
+Please indicate the value of $0concept
+> /for the enlightenment,the baroque,the renaissance
+Placeholders substituted successfully
+
+...processing query
+```
+
+This functionality is particularly useful for performing multiple related queries without the need to restart the process for each new input, thus enhancing the user experience and efficiency when interacting with the system.
+
 
 ### Features
 
