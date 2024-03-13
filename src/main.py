@@ -54,12 +54,13 @@ class Main:
                 question += "\n" + more
 
             occurrences = find_placeholders(question)
+
             if occurrences:
                 set_occurrences = set(occurrences)
                 for placeholder in set_occurrences:
                     subs = get_input("Por favor indica el valor de " + placeholder)
-                    while placeholder in question:
-                        question = question.replace(placeholder, subs)
+                    question = question.replace(placeholder, subs)
+
                 print("Placeholders sustituidos exitosamente")
 
             print("\n...procesando")
