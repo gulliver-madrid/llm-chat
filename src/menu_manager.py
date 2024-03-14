@@ -5,8 +5,11 @@ from rich import print
 
 from src.io_helpers import NEUTRAL_MSG, get_input, show_error_msg
 
-SALIR = "SALIR"
-CHANGE_MODEL = "CHANGE_MODEL"
+
+class ActionName:
+    SALIR = "SALIR"
+    CHANGE_MODEL = "CHANGE_MODEL"
+    NEW_QUERY = "NEW_QUERY"
 
 
 @dataclass
@@ -25,7 +28,7 @@ class MenuManager:
         print(NEUTRAL_MSG + "\nSaliendo del modo de depuración\n")
 
     @staticmethod
-    def enter_inner_menu(response: ChatCompletionResponse | None) -> Action | None:
+    def enter_inner_menu(response: ChatCompletionResponse | None) -> Action:
 
         while True:
             entrada = get_input(
@@ -35,14 +38,14 @@ class MenuManager:
             if not entrada:
                 break
             elif entrada in ["q", "quit", "exit"]:
-                return Action(SALIR)
+                return Action(ActionName.SALIR)
 
             elif entrada in ["change"]:
-                return Action(CHANGE_MODEL)
+                return Action(ActionName.CHANGE_MODEL)
 
             elif entrada in ["d", "debug"]:
                 MenuManager.enter_debug_mode(response)
                 break
             else:
                 show_error_msg("Entrada no válida")
-        return None
+        return Action(ActionName.NEW_QUERY)
