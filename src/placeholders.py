@@ -1,5 +1,5 @@
 import re
-from typing import NewType, Sequence
+from typing import Mapping, NewType, Sequence
 
 Placeholder = NewType("Placeholder", str)
 
@@ -34,3 +34,13 @@ def replace_placeholders_including_for(
         new_questions.append(question)
     questions = new_questions
     return questions
+
+
+def get_placeholders_with_for(
+    substitutions: Mapping[Placeholder, str]
+) -> list[Placeholder]:
+    return [
+        placeholder
+        for placeholder, subs in substitutions.items()
+        if subs.startswith(FOR_COMMAND_PREFFIX)
+    ]
