@@ -11,10 +11,11 @@ from src.io_helpers import (
     get_input,
     show_error_msg,
 )
-from src.model_choice import MODEL_PREFIX, parse_model_choice
+from src.models.model_choice import MODEL_PREFIX, parse_model_choice
+
 
 class SelectModelController:
-    def select_model(self,modelos: Sequence[str]) -> str:
+    def select_model(self, modelos: Sequence[str]) -> str:
         """Prompt the user to choose a model. Returns the model name without the 'mistral' preffix."""
         default_model = modelos[0]
         modelo_elegido = None
