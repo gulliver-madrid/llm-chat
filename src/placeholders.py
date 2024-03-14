@@ -21,7 +21,7 @@ def find_placeholders(s: str) -> list[Placeholder]:
 
 def replace_placeholders_with_one_for(
     question: str,
-    substitutions: dict[Placeholder, str],
+    substitutions: Mapping[Placeholder, str],
     placeholder_with_for: Placeholder,
 ) -> list[str]:
     replacements_in_for_str = substitutions[placeholder_with_for]
@@ -34,7 +34,11 @@ def replace_placeholders_with_one_for(
     questions: list[str] = []
     for replacement in replacements_in_for:
         questions.append(question.replace(placeholder_with_for, replacement))
-    del substitutions[placeholder_with_for]
+    substitutions = {
+        placeholder: value
+        for placeholder, value in substitutions.items()
+        if placeholder != placeholder_with_for
+    }
     new_questions: list[str] = []
     for question in questions:
         new_questions.append(
