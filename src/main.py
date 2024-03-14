@@ -8,7 +8,7 @@ from src.io_helpers import (
     NEUTRAL_MSG,
     get_input,
 )
-from src.menu_manager import CHANGE_MODEL, SALIR, MenuManager
+from src.menu_manager import ActionName, MenuManager
 from src.model_choice import build_model_name, models, select_model
 from src.placeholders import (
     FOR_COMMAND_PREFFIX,
@@ -35,15 +35,16 @@ class Main:
 
             if not raw_question:
                 action = MenuManager.enter_inner_menu(chat_response)
-                if not action:
-                    continue
-                elif action.name == SALIR:
-                    break
-                elif action.name == CHANGE_MODEL:
-                    model = build_model_name(select_model(models))
-                    continue
-                else:
-                    raise RuntimeError(f"Acción no válida: {action}")
+                match action.name:
+                    case ActionName.NEW_QUERY:
+                        continue
+                    case ActionName.SALIR:
+                        break
+                    case ActionName.CHANGE_MODEL:
+                        model = build_model_name(select_model(models))
+                        continue
+                    case _:
+                        raise RuntimeError(f"Acción no válida: {action}")
 
             assert raw_question
 
