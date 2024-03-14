@@ -25,11 +25,11 @@ class Main:
 
         while True:
             # modo multilinea por defecto
-            question = get_input(
+            raw_question = get_input(
                 "Introduce tu consulta (o pulsa Enter para ver más opciones). Introduce `end` como único contenido de una línea cuando hayas terminado."
             )
 
-            if not question:
+            if not raw_question:
                 action = MenuManager.enter_inner_menu(chat_response)
                 if not action:
                     continue
@@ -41,12 +41,12 @@ class Main:
                 else:
                     raise RuntimeError(f"Acción no válida: {action}")
 
-            assert question
+            assert raw_question
 
             while (more := input()).lower() != "end":
-                question += "\n" + more
+                raw_question += "\n" + more
 
-            occurrences = find_placeholders(question)
+            occurrences = find_placeholders(raw_question)
 
             if occurrences:
                 substitutions = get_raw_substitutions_from_user(occurrences)
@@ -58,15 +58,16 @@ class Main:
                     continue
                 elif len(for_placeholders) == 1:
                     questions = replace_placeholders(
-                        question, substitutions, for_placeholders
+                        raw_question, substitutions, for_placeholders
                     )
                 else:
                     for placeholder, subs in substitutions.items():
-                        question = question.replace(placeholder, subs)
-                    questions = [question]
+                        raw_question = raw_question.replace(placeholder, subs)
+                    questions = [raw_question]
                 print("Placeholders sustituidos exitosamente")
             else:
-                questions = [question]
+                questions = [raw_question]
+            del raw_question
 
             for i, question in enumerate(questions):
                 print("\n...procesando consulta número", i + 1)
