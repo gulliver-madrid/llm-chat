@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Mapping, Sequence
 from rich import print
 
 import os
@@ -50,11 +50,7 @@ class Main:
 
             if occurrences:
                 substitutions = get_raw_substitutions(occurrences)
-                for_placeholders = [
-                    placeholder
-                    for placeholder, subs in substitutions.items()
-                    if subs.startswith("/for")
-                ]
+                for_placeholders = get_placeholders_with_for(substitutions)
                 if len(for_placeholders) > 1:
                     print(
                         "El uso de varios '/for' con los placeholders no está soportado"
@@ -79,7 +75,16 @@ class Main:
                 print_interaction(model, question, content)
 
 
-def get_raw_substitutions(occurrences: Sequence[str]):
+def get_placeholders_with_for(substitutions: Mapping[str, str]) -> list[str]:
+    for_placeholders: list[str] = [
+        placeholder
+        for placeholder, subs in substitutions.items()
+        if subs.startswith("/for")
+    ]
+    return for_placeholders
+
+
+def get_raw_substitutions(occurrences: Sequence[str]) -> dict[str, str]:
     substitutions: dict[str, str] = {}
     unique_ocurrences: list[str] = []
     for occurrence in occurrences:
