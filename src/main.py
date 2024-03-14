@@ -50,20 +50,9 @@ class Main:
 
             if occurrences:
                 user_substitutions = get_raw_substitutions_from_user(occurrences)
-                for_placeholders = get_placeholders_with_for(user_substitutions)
-                if len(for_placeholders) > 1:
-                    print(
-                        "El uso de varios '/for' con los placeholders no está soportado"
-                    )
+                questions = get_questions(raw_question, user_substitutions)
+                if questions is None:
                     continue
-                elif len(for_placeholders) == 1:
-                    questions = replace_placeholders(
-                        raw_question, user_substitutions, for_placeholders
-                    )
-                else:
-                    for placeholder, replacement in user_substitutions.items():
-                        raw_question = raw_question.replace(placeholder, replacement)
-                    questions = [raw_question]
                 print("Placeholders sustituidos exitosamente")
             else:
                 questions = [raw_question]
@@ -74,6 +63,25 @@ class Main:
 
                 content = client_wrapper.get_simple_response(model, question)
                 print_interaction(model, question, content)
+
+
+def get_questions(raw_question: str, substitutions: dict[str, str]) -> list[str] | None:
+    """
+    Return the result of replacing placeholders with their corresponding values, and also applying possible use of 'for' command.
+    """
+    for_placeholders = get_placeholders_with_for(substitutions)
+    questions = None
+    if len(for_placeholders) > 1:
+        print("El uso de varios '/for' con los placeholders no está soportado")
+    elif len(for_placeholders) == 1:
+        questions = replace_placeholders(raw_question, substitutions, for_placeholders)
+    else:
+        question_in_process = raw_question
+        del raw_question
+        for placeholder, replacement in substitutions.items():
+            question_in_process = question_in_process.replace(placeholder, replacement)
+        questions = [question_in_process]
+    return questions
 
 
 def get_placeholders_with_for(substitutions: Mapping[str, str]) -> list[str]:
