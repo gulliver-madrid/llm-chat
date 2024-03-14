@@ -7,14 +7,17 @@ def find_placeholders(s: str) -> list[str]:
 
 
 def replace_placeholders(
-    question: str, substitutions: dict[str, str], for_placeholders: Sequence[str]
+    question: str, substitutions: dict[str, str], placeholders_with_for: Sequence[str]
 ) -> list[str]:
-    placeholder_with_for = for_placeholders[0]
-    subs_in_for_str = substitutions[placeholder_with_for]
-    subs_in_for_str = subs_in_for_str.removeprefix("/for")
-    subs_in_for = subs_in_for_str.split(",")
+    for_command_preffix = "/for"
+    placeholder_with_for = placeholders_with_for[0]
+    replacements_in_for_str = substitutions[placeholder_with_for]
+    assert replacements_in_for_str.startswith(for_command_preffix)
+    replacements_in_for_str = replacements_in_for_str.removeprefix(for_command_preffix)
+
+    replacements_in_for = replacements_in_for_str.split(",")
     questions: list[str] = []
-    for sub in subs_in_for:
+    for sub in replacements_in_for:
         questions.append(question.replace(placeholder_with_for, sub))
     del substitutions[placeholder_with_for]
     new_questions: list[str] = []
