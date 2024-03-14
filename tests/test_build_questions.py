@@ -1,7 +1,7 @@
 from typing import cast
 import unittest
 from src.main import build_questions
-from src.placeholders import Placeholder
+from src.models.placeholders import Placeholder
 
 
 def as_substitutions(d: dict[str, str]) -> dict[Placeholder, str]:

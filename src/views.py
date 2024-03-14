@@ -1,6 +1,6 @@
 from rich import print
 
-from src.ahora import get_current_time
+from src.infrastructure.ahora import get_current_time
 from src.io_helpers import highlight_role
 
 
