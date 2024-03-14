@@ -49,8 +49,8 @@ class Main:
             occurrences = find_placeholders(raw_question)
 
             if occurrences:
-                substitutions = get_raw_substitutions_from_user(occurrences)
-                for_placeholders = get_placeholders_with_for(substitutions)
+                user_substitutions = get_raw_substitutions_from_user(occurrences)
+                for_placeholders = get_placeholders_with_for(user_substitutions)
                 if len(for_placeholders) > 1:
                     print(
                         "El uso de varios '/for' con los placeholders no está soportado"
@@ -58,11 +58,11 @@ class Main:
                     continue
                 elif len(for_placeholders) == 1:
                     questions = replace_placeholders(
-                        raw_question, substitutions, for_placeholders
+                        raw_question, user_substitutions, for_placeholders
                     )
                 else:
-                    for placeholder, subs in substitutions.items():
-                        raw_question = raw_question.replace(placeholder, subs)
+                    for placeholder, replacement in user_substitutions.items():
+                        raw_question = raw_question.replace(placeholder, replacement)
                     questions = [raw_question]
                 print("Placeholders sustituidos exitosamente")
             else:
