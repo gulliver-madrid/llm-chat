@@ -12,6 +12,7 @@ from src.menu_manager import ActionName, MenuManager
 from src.model_choice import build_model_name, models, select_model
 from src.placeholders import (
     FOR_COMMAND_PREFFIX,
+    Placeholder,
     find_placeholders,
     replace_placeholders_including_for,
 )
@@ -71,21 +72,21 @@ class Main:
 
 
 def build_questions(
-    raw_question: str, substitutions: dict[str, str]
+    raw_question: str, substitutions: dict[Placeholder, str]
 ) -> list[str] | None:
     """
     Return the result of replacing placeholders with their corresponding values, and also applying possible use of 'for' command.
     """
-    for_placeholders = get_placeholders_with_for(substitutions)
+    placeholders_with_for = get_placeholders_with_for(substitutions)
     questions = None
-    number_of_placeholders_with_for = len(for_placeholders)
+    number_of_placeholders_with_for = len(placeholders_with_for)
     if number_of_placeholders_with_for > 1:
         print(
             f"El uso de varios '{FOR_COMMAND_PREFFIX}' con los placeholders no está soportado"
         )
     elif number_of_placeholders_with_for == 1:
         questions = replace_placeholders_including_for(
-            raw_question, substitutions, for_placeholders
+            raw_question, substitutions, placeholders_with_for
         )
     else:
         question_in_process = raw_question
@@ -96,7 +97,9 @@ def build_questions(
     return questions
 
 
-def get_placeholders_with_for(substitutions: Mapping[str, str]) -> list[str]:
+def get_placeholders_with_for(
+    substitutions: Mapping[Placeholder, str]
+) -> list[Placeholder]:
     return [
         placeholder
         for placeholder, subs in substitutions.items()
@@ -104,15 +107,17 @@ def get_placeholders_with_for(substitutions: Mapping[str, str]) -> list[str]:
     ]
 
 
-def get_raw_substitutions_from_user(occurrences: Sequence[str]) -> dict[str, str]:
-    substitutions: dict[str, str] = {}
-    unique_ocurrences: list[str] = []
+def get_raw_substitutions_from_user(
+    occurrences: Sequence[Placeholder],
+) -> dict[Placeholder, str]:
+    substitutions: dict[Placeholder, str] = {}
+    unique_ocurrences: list[Placeholder] = []
     for occurrence in occurrences:
         if occurrence not in unique_ocurrences:
             unique_ocurrences.append(occurrence)
     for placeholder in unique_ocurrences:
-        subs = get_input("Por favor indica el valor de " + placeholder)
-        substitutions[placeholder] = subs
+        replacement = get_input("Por favor indica el valor de " + placeholder)
+        substitutions[placeholder] = replacement
     return substitutions
 
 
