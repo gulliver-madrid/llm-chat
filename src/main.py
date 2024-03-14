@@ -3,7 +3,7 @@ from rich import print
 
 import os
 
-from src.client_wrapper import ClientWrapper
+from src.infrastructure.client_wrapper import ClientWrapper
 from src.controllers.select_model import SelectModelController
 from src.io_helpers import (
     NEUTRAL_MSG,
@@ -11,8 +11,8 @@ from src.io_helpers import (
     show_error_msg,
 )
 from src.controllers.menu_manager import ActionName, MenuManager
-from src.model_choice import ModelName, build_model_name
-from src.placeholders import (
+from src.models.model_choice import ModelName, build_model_name
+from src.models.placeholders import (
     FOR_COMMAND_PREFFIX,
     Placeholder,
     find_placeholders,
