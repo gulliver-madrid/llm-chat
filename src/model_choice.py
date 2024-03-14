@@ -1,9 +1,9 @@
-from typing import Final, NewType, Sequence
+from typing import  NewType, Sequence
 
 ModelName = NewType("ModelName", str)
 
 MODEL_PREFIX = "mistral"
-models: Final[Sequence[str]] = ["tiny", "small", "medium", "large-2402"]
+
 
 
 def parse_model_choice(modelos: Sequence[str], eleccion: str) -> str :
@@ -27,8 +27,6 @@ def parse_model_choice(modelos: Sequence[str], eleccion: str) -> str :
 
 
 
-
-
-def build_model_name(suffix: str) -> ModelName:
+def build_model_name(suffix: str,models:Sequence[str]) -> ModelName:
     assert suffix in models
     return ModelName(MODEL_PREFIX + "-" + suffix)

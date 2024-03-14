@@ -1,17 +1,17 @@
-from typing import Mapping, Sequence
+from typing import Final, Mapping, Sequence
 from rich import print
 
 import os
 
 from src.client_wrapper import ClientWrapper
-from src.controller import select_model
+from src.controller import SelectModelController
 from src.io_helpers import (
     NEUTRAL_MSG,
     get_input,
     show_error_msg,
 )
 from src.menu_manager import ActionName, MenuManager
-from src.model_choice import build_model_name, models
+from src.model_choice import ModelName, build_model_name
 from src.placeholders import (
     FOR_COMMAND_PREFFIX,
     Placeholder,
@@ -24,12 +24,15 @@ from src.views import print_interaction
 
 
 class Main:
+    def __init__(self, models: Sequence[str]) -> None:
+        self._models = models
+        self._select_model_controler = SelectModelController()
 
     def execute(self) -> None:
         """Runs the text interface to Mistral models"""
         api_key = os.environ["MISTRAL_API_KEY"]
         client_wrapper = ClientWrapper(api_key)
-        model = build_model_name(select_model(models))
+        model = self.select_model()
         chat_response = None
 
         while True:
@@ -46,7 +49,7 @@ class Main:
                     case ActionName.SALIR:
                         break
                     case ActionName.CHANGE_MODEL:
-                        model = build_model_name(select_model(models))
+                        model = self.select_model()
                         continue
                     case _:
                         raise RuntimeError(f"Acción no válida: {action}")
@@ -73,6 +76,11 @@ class Main:
 
                 content = client_wrapper.get_simple_response(model, question)
                 print_interaction(model, question, content)
+
+    def select_model(self) -> ModelName:
+        return build_model_name(
+            self._select_model_controler.select_model(self._models), self._models
+        )
 
 
 def build_questions(
@@ -129,7 +137,8 @@ def get_raw_substitutions_from_user(
 
 
 def main() -> None:
-    main_instance = Main()
+    models: Final[Sequence[str]] = ["tiny", "small", "medium", "large-2402"]
+    main_instance = Main(models)
     main_instance.execute()
     print(NEUTRAL_MSG + "Saliendo")
 
