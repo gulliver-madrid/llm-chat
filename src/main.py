@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Mapping, Sequence
 from rich import print
 
 import os
@@ -75,7 +75,7 @@ class Main:
 
 
 def build_questions(
-    raw_question: str, substitutions: dict[Placeholder, str]
+    raw_question: str, substitutions: Mapping[Placeholder, str]
 ) -> list[str] | None:
     """
     Constructs a list of questions by replacing placeholders in the raw question with user-provided substitutions.
@@ -106,7 +106,7 @@ def build_questions(
 
 def get_raw_substitutions_from_user(
     occurrences: Sequence[Placeholder],
-) -> dict[Placeholder, str]:
+) -> Mapping[Placeholder, str]:
     """
     Prompts the user to provide values for each unique placeholder found in the question.
 
