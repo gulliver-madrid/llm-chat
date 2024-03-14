@@ -10,7 +10,7 @@ from src.io_helpers import (
 )
 from src.menu_manager import CHANGE_MODEL, SALIR, MenuManager
 from src.model_choice import build_model_name, models, select_model
-from src.placeholders import find_placeholders, replace_placeholders
+from src.placeholders import find_placeholders, replace_placeholders_including_for
 from src.views import print_interaction
 
 
@@ -50,7 +50,7 @@ class Main:
 
             if occurrences:
                 user_substitutions = get_raw_substitutions_from_user(occurrences)
-                questions = get_questions(raw_question, user_substitutions)
+                questions = build_questions(raw_question, user_substitutions)
                 if questions is None:
                     continue
                 print("Placeholders sustituidos exitosamente")
@@ -65,16 +65,21 @@ class Main:
                 print_interaction(model, question, content)
 
 
-def get_questions(raw_question: str, substitutions: dict[str, str]) -> list[str] | None:
+def build_questions(
+    raw_question: str, substitutions: dict[str, str]
+) -> list[str] | None:
     """
     Return the result of replacing placeholders with their corresponding values, and also applying possible use of 'for' command.
     """
     for_placeholders = get_placeholders_with_for(substitutions)
     questions = None
-    if len(for_placeholders) > 1:
+    number_of_placeholders_with_for = len(for_placeholders)
+    if number_of_placeholders_with_for > 1:
         print("El uso de varios '/for' con los placeholders no está soportado")
-    elif len(for_placeholders) == 1:
-        questions = replace_placeholders(raw_question, substitutions, for_placeholders)
+    elif number_of_placeholders_with_for == 1:
+        questions = replace_placeholders_including_for(
+            raw_question, substitutions, for_placeholders
+        )
     else:
         question_in_process = raw_question
         del raw_question
