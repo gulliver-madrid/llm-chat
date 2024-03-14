@@ -16,7 +16,7 @@ from src.placeholders import (
     Placeholder,
     find_placeholders,
     get_placeholders_with_for,
-    replace_placeholders_including_for,
+    replace_placeholders_with_one_for,
 )
 from src.views import print_interaction
 
@@ -87,8 +87,8 @@ def build_questions(
             f"El uso de varios '{FOR_COMMAND_PREFFIX}' con los placeholders no está soportado"
         )
     elif number_of_placeholders_with_for == 1:
-        questions = replace_placeholders_including_for(
-            raw_question, substitutions, placeholders_with_for
+        questions = replace_placeholders_with_one_for(
+            raw_question, substitutions, placeholders_with_for[0]
         )
     else:
         question_in_process = raw_question
