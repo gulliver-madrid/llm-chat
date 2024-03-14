@@ -1,6 +1,8 @@
 import re
 from typing import Sequence
 
+FOR_COMMAND_PREFFIX = "/for"
+
 
 def find_placeholders(s: str) -> list[str]:
     return re.findall(r"(?<![a-zA-Z0-9])\$0[a-zA-Z_][a-zA-Z]*[0-9]*", s)
@@ -9,12 +11,11 @@ def find_placeholders(s: str) -> list[str]:
 def replace_placeholders_including_for(
     question: str, substitutions: dict[str, str], placeholders_with_for: Sequence[str]
 ) -> list[str]:
-    for_command_preffix = "/for"
     placeholder_with_for = placeholders_with_for[0]
     replacements_in_for_str = substitutions[placeholder_with_for]
-    assert replacements_in_for_str.startswith(for_command_preffix)
+    assert replacements_in_for_str.startswith(FOR_COMMAND_PREFFIX)
     replacements_in_for_str = replacements_in_for_str.removeprefix(
-        for_command_preffix
+        FOR_COMMAND_PREFFIX
     ).strip()
 
     replacements_in_for = replacements_in_for_str.split(",")

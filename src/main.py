@@ -10,7 +10,11 @@ from src.io_helpers import (
 )
 from src.menu_manager import CHANGE_MODEL, SALIR, MenuManager
 from src.model_choice import build_model_name, models, select_model
-from src.placeholders import find_placeholders, replace_placeholders_including_for
+from src.placeholders import (
+    FOR_COMMAND_PREFFIX,
+    find_placeholders,
+    replace_placeholders_including_for,
+)
 from src.views import print_interaction
 
 
@@ -75,7 +79,9 @@ def build_questions(
     questions = None
     number_of_placeholders_with_for = len(for_placeholders)
     if number_of_placeholders_with_for > 1:
-        print("El uso de varios '/for' con los placeholders no está soportado")
+        print(
+            f"El uso de varios '{FOR_COMMAND_PREFFIX}' con los placeholders no está soportado"
+        )
     elif number_of_placeholders_with_for == 1:
         questions = replace_placeholders_including_for(
             raw_question, substitutions, for_placeholders
@@ -93,7 +99,7 @@ def get_placeholders_with_for(substitutions: Mapping[str, str]) -> list[str]:
     return [
         placeholder
         for placeholder, subs in substitutions.items()
-        if subs.startswith("/for")
+        if subs.startswith(FOR_COMMAND_PREFFIX)
     ]
 
 
