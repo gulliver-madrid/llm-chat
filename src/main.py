@@ -78,7 +78,15 @@ def build_questions(
     raw_question: str, substitutions: dict[Placeholder, str]
 ) -> list[str] | None:
     """
-    Return the result of replacing placeholders with their corresponding values, and also applying possible use of 'for' command.
+    Constructs a list of questions by replacing placeholders in the raw question with user-provided substitutions.
+    If a 'for' command is detected, it generates multiple questions by iterating over the specified range.
+
+    Args:
+        raw_question: The original question template containing placeholders.
+        substitutions: A dictionary mapping placeholders to their substitutions.
+
+    Returns:
+        A list of questions with placeholders replaced by their substitutions, or None if an error occurs.
     """
     placeholders_with_for = get_placeholders_with_for(substitutions)
     questions = None
@@ -99,6 +107,15 @@ def build_questions(
 def get_raw_substitutions_from_user(
     occurrences: Sequence[Placeholder],
 ) -> dict[Placeholder, str]:
+    """
+    Prompts the user to provide values for each unique placeholder found in the question.
+
+    Args:
+        occurrences: A sequence of placeholders found in the question.
+
+    Returns:
+        A dictionary mapping placeholders to the user-provided values.
+    """
     substitutions: dict[Placeholder, str] = {}
     unique_ocurrences: list[Placeholder] = []
     for occurrence in occurrences:
