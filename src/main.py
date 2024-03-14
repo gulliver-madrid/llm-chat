@@ -4,13 +4,14 @@ from rich import print
 import os
 
 from src.client_wrapper import ClientWrapper
+from src.controller import select_model
 from src.io_helpers import (
     NEUTRAL_MSG,
     get_input,
     show_error_msg,
 )
 from src.menu_manager import ActionName, MenuManager
-from src.model_choice import build_model_name, models, select_model
+from src.model_choice import build_model_name, models
 from src.placeholders import (
     FOR_COMMAND_PREFFIX,
     Placeholder,
