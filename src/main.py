@@ -1,4 +1,4 @@
-from typing import Mapping, Sequence
+from typing import Sequence
 from rich import print
 
 import os
@@ -14,6 +14,7 @@ from src.placeholders import (
     FOR_COMMAND_PREFFIX,
     Placeholder,
     find_placeholders,
+    get_placeholders_with_for,
     replace_placeholders_including_for,
 )
 from src.views import print_interaction
@@ -95,16 +96,6 @@ def build_questions(
             question_in_process = question_in_process.replace(placeholder, replacement)
         questions = [question_in_process]
     return questions
-
-
-def get_placeholders_with_for(
-    substitutions: Mapping[Placeholder, str]
-) -> list[Placeholder]:
-    return [
-        placeholder
-        for placeholder, subs in substitutions.items()
-        if subs.startswith(FOR_COMMAND_PREFFIX)
-    ]
 
 
 def get_raw_substitutions_from_user(
