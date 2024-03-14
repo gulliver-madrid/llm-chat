@@ -1,15 +1,19 @@
 import re
-from typing import Sequence
+from typing import NewType, Sequence
+
+Placeholder = NewType("Placeholder", str)
 
 FOR_COMMAND_PREFFIX = "/for"
 
 
-def find_placeholders(s: str) -> list[str]:
+def find_placeholders(s: str) -> list[Placeholder]:
     return re.findall(r"(?<![a-zA-Z0-9])\$0[a-zA-Z_][a-zA-Z]*[0-9]*", s)
 
 
 def replace_placeholders_including_for(
-    question: str, substitutions: dict[str, str], placeholders_with_for: Sequence[str]
+    question: str,
+    substitutions: dict[Placeholder, str],
+    placeholders_with_for: Sequence[Placeholder],
 ) -> list[str]:
     placeholder_with_for = placeholders_with_for[0]
     replacements_in_for_str = substitutions[placeholder_with_for]
