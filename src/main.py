@@ -1,3 +1,4 @@
+from typing import Sequence
 from rich import print
 
 import os
@@ -48,11 +49,7 @@ class Main:
             occurrences = find_placeholders(question)
 
             if occurrences:
-                substitutions: dict[str, str] = {}
-                set_occurrences = set(occurrences)
-                for placeholder in set_occurrences:
-                    subs = get_input("Por favor indica el valor de " + placeholder)
-                    substitutions[placeholder] = subs
+                substitutions = get_raw_substitutions(occurrences)
                 for_placeholders = [
                     placeholder
                     for placeholder, subs in substitutions.items()
@@ -80,6 +77,18 @@ class Main:
 
                 content = client_wrapper.get_simple_response(model, question)
                 print_interaction(model, question, content)
+
+
+def get_raw_substitutions(occurrences: Sequence[str]):
+    substitutions: dict[str, str] = {}
+    unique_ocurrences: list[str] = []
+    for occurrence in occurrences:
+        if occurrence not in unique_ocurrences:
+            unique_ocurrences.append(occurrence)
+    for placeholder in unique_ocurrences:
+        subs = get_input("Por favor indica el valor de " + placeholder)
+        substitutions[placeholder] = subs
+    return substitutions
 
 
 def main() -> None:
