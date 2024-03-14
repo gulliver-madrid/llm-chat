@@ -7,6 +7,7 @@ from src.client_wrapper import ClientWrapper
 from src.io_helpers import (
     NEUTRAL_MSG,
     get_input,
+    show_error_msg,
 )
 from src.menu_manager import ActionName, MenuManager
 from src.model_choice import build_model_name, models, select_model
@@ -82,7 +83,7 @@ def build_questions(
     questions = None
     number_of_placeholders_with_for = len(placeholders_with_for)
     if number_of_placeholders_with_for > 1:
-        print(
+        show_error_msg(
             f"El uso de varios '{FOR_COMMAND_PREFFIX}' con los placeholders no está soportado"
         )
     elif number_of_placeholders_with_for == 1:
