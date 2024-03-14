@@ -31,21 +31,20 @@ class MenuManager:
     def enter_inner_menu(response: ChatCompletionResponse | None) -> Action:
 
         while True:
-            entrada = get_input(
+            user_input = get_input(
                 "Pulsa Enter para continuar con otra consulta. Introduce 'd' para entrar en el modo de depuración, 'q' para salir y 'change' para cambiar de modelo."
             ).lower()
             print()
-            if not entrada:
-                break
-            elif entrada in ["q", "quit", "exit"]:
-                return Action(ActionName.SALIR)
-
-            elif entrada in ["change"]:
-                return Action(ActionName.CHANGE_MODEL)
-
-            elif entrada in ["d", "debug"]:
-                MenuManager.enter_debug_mode(response)
-                break
-            else:
-                show_error_msg("Entrada no válida")
+            match user_input:
+                case "":
+                    break
+                case "q" | "quit" | "exit":
+                    return Action(ActionName.SALIR)
+                case "change":
+                    return Action(ActionName.CHANGE_MODEL)
+                case "d" | "debug":
+                    MenuManager.enter_debug_mode(response)
+                    break
+                case _:
+                    show_error_msg("Entrada no válida")
         return Action(ActionName.NEW_QUERY)
