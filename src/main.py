@@ -17,6 +17,7 @@ from src.placeholders import (
     find_placeholders,
     get_placeholders_with_for,
     replace_placeholders_with_one_for,
+    replace_question_with_substitutions,
 )
 from src.views import print_interaction
 
@@ -91,11 +92,7 @@ def build_questions(
             raw_question, substitutions, placeholders_with_for[0]
         )
     else:
-        question_in_process = raw_question
-        del raw_question
-        for placeholder, replacement in substitutions.items():
-            question_in_process = question_in_process.replace(placeholder, replacement)
-        questions = [question_in_process]
+        questions = [replace_question_with_substitutions(raw_question, substitutions)]
     return questions
 
 

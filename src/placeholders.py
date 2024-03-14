@@ -23,16 +23,24 @@ def replace_placeholders_with_one_for(
 
     replacements_in_for = replacements_in_for_str.split(",")
     questions: list[str] = []
-    for sub in replacements_in_for:
-        questions.append(question.replace(placeholder_with_for, sub))
+    for replacement in replacements_in_for:
+        questions.append(question.replace(placeholder_with_for, replacement))
     del substitutions[placeholder_with_for]
     new_questions: list[str] = []
     for question in questions:
-        for placeholder, subs in substitutions.items():
-            question = question.replace(placeholder, subs)
-        new_questions.append(question)
+        new_questions.append(
+            replace_question_with_substitutions(question, substitutions)
+        )
     questions = new_questions
     return questions
+
+
+def replace_question_with_substitutions(
+    question: str, substitutions: Mapping[Placeholder, str]
+) -> str:
+    for placeholder, replacement in substitutions.items():
+        question = question.replace(placeholder, replacement)
+    return question
 
 
 def get_placeholders_with_for(
