@@ -7,6 +7,15 @@ FOR_COMMAND_PREFFIX = "/for"
 
 
 def find_placeholders(s: str) -> list[Placeholder]:
+    """
+    Finds all placeholders in a given string.
+
+    Args:
+        s: The string to search for placeholders.
+
+    Returns:
+        A list of placeholders found in the string.
+    """
     return re.findall(r"(?<![a-zA-Z0-9])\$0[a-zA-Z_][a-zA-Z]*[0-9]*", s)
 
 
@@ -46,6 +55,15 @@ def replace_question_with_substitutions(
 def get_placeholders_with_for(
     substitutions: Mapping[Placeholder, str]
 ) -> list[Placeholder]:
+    """
+    Identifies placeholders that are associated with a 'for' command in the substitutions.
+
+    Args:
+        substitutions: A mapping of placeholders to their substitutions.
+
+    Returns:
+        A list of placeholders that have a 'for' command as their substitution.
+    """
     return [
         placeholder
         for placeholder, subs in substitutions.items()
