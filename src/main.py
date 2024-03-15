@@ -38,7 +38,7 @@ class Main:
             debug = False
             # modo multilinea por defecto
             raw_question = get_input(
-                "Introduce tu consulta (o pulsa Enter para ver más opciones). Introduce 'end' como único contenido de una línea cuando hayas terminado."
+                "Introduce tu consulta (o pulsa Enter para ver más opciones). Introduce `end` como único contenido de una línea cuando hayas terminado."
             )
 
             if not raw_question:
