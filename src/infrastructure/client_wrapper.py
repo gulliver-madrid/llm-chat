@@ -8,7 +8,9 @@ class ClientWrapper:
     def __init__(self, api_key: str):
         self._client = MistralClient(api_key=api_key)
 
-    def get_simple_response(self, model: ModelName, question: str) -> str:
+    def get_simple_response(
+        self, model: ModelName, question: str, debug: bool = False
+    ) -> str:
         """
         Retrieves a simple response from the Mistral AI client.
         """
@@ -18,5 +20,8 @@ class ClientWrapper:
         )
         choices = chat_response.choices
         content = choices[0].message.content
+        if debug:
+            print(chat_response)
+            breakpoint()
         assert isinstance(content, str)
         return content

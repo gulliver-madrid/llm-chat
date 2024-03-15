@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 
-from mistralai.models.chat_completion import ChatCompletionResponse
 from rich import print
 
-from src.io_helpers import NEUTRAL_MSG, get_input, show_error_msg
+from src.io_helpers import display_neutral_msg, get_input, show_error_msg
 
 
 class ActionName:
@@ -18,19 +17,13 @@ class Action:
 
 
 class MenuManager:
-    @staticmethod
-    def enter_debug_mode(response: ChatCompletionResponse | None) -> None:
-        print(NEUTRAL_MSG + "Entrando en modo de depuracion\n")
-        print(response)
-        breakpoint()
-        print(NEUTRAL_MSG + "\nSaliendo del modo de depuración\n")
 
     @staticmethod
-    def enter_inner_menu(response: ChatCompletionResponse | None) -> Action:
+    def enter_inner_menu() -> Action:
 
         while True:
             user_input = get_input(
-                "Pulsa Enter para continuar con otra consulta. Introduce 'd' para entrar en el modo de depuración, 'q' para salir y 'change' para cambiar de modelo."
+                "Pulsa Enter para continuar con otra consulta. Introduce 'help' para leer un mensaje de ayuda, 'q' para salir y 'change' para cambiar de modelo."
             ).lower()
             print()
             match user_input:
@@ -38,11 +31,20 @@ class MenuManager:
                     break
                 case "q" | "quit" | "exit":
                     return Action(ActionName.SALIR)
+                case "help":
+                    display_neutral_msg("# Consultas")
+                    display_neutral_msg(
+                        "Puedes usar placeholders con el formato $0<name>. Ejemplo: `¿Quién fue $0persona?` El programa te pedirá luego que completes los placeholders uno por uno.\n"
+                    )
+                    display_neutral_msg(
+                        "Puedes empezar el contenido de un placeholder con /for y poner las variantes separadas por comas. Por ejemplo, si en la pregunta anterior introduces como valor de $0persona `/for Alexander Flemming,Albert Einstein` se generarán 2 consultas, una para cada nombre introducido.\n"
+                    )
+                    print("# Comandos")
+                    display_neutral_msg(
+                        "Puedes iniciar tu consulta con '/d' para activar el modo depuración."
+                    )
                 case "change":
                     return Action(ActionName.CHANGE_MODEL)
-                case "d" | "debug":
-                    MenuManager.enter_debug_mode(response)
-                    break
                 case _:
                     show_error_msg("Entrada no válida")
         return Action(ActionName.NEW_QUERY)
