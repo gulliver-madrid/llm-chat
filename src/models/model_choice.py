@@ -6,17 +6,18 @@ MODEL_PREFIX = "mistral"
 
 
 class ModelChoiceParser:
+    def __init__(self, models: Sequence[str]) -> None:
+        self._models = models
 
-    def parse(self, modelos: Sequence[str], eleccion: str) -> str:
+    def parse(self, eleccion: str) -> str:
         # Asegurarse de que la eleccion es valida
         try:
             eleccion_numerica = int(eleccion)
         except ValueError:
             self._raise_no_numeric_input_error()
 
-        if 1 <= eleccion_numerica <= len(modelos):
-            modelo_elegido = modelos[eleccion_numerica - 1]
-            return modelo_elegido
+        if 1 <= eleccion_numerica <= len(self._models):
+            return self._models[eleccion_numerica - 1]
 
         self._raise_out_of_range_input_error()
 

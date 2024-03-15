@@ -15,36 +15,37 @@ from src.models.model_choice import MODEL_PREFIX, ModelChoiceParser
 
 
 class SelectModelController:
-    def __init__(self) -> None:
-        self._model_choice_parser = ModelChoiceParser()
+    def __init__(self, models: Sequence[str]) -> None:
+        self._model_choice_parser = ModelChoiceParser(models)
+        self._models = models
+        self._default_model = self._models[0]
 
-    def select_model(self, models: Sequence[str]) -> str:
+    def select_model(self) -> str:
         """
         Prompt the user to choose a model. Returns the model name without the 'mistral' preffix.
         """
-        num_opciones = len(models)
-        assert num_opciones > 0
-        default_model = models[0]
+        num_options = len(self._models)
+        assert num_options > 0
         chosen_model = None
         while not chosen_model:
 
-            self._show_options(models, default_model)
+            self._show_options()
 
             user_choice = get_input(
-                apply_tag(f"Introduce tu elección (1-{num_opciones})", BOLD_STYLE)
+                apply_tag(f"Introduce tu elección (1-{num_options})", BOLD_STYLE)
             )
             if user_choice:
                 try:
-                    chosen_model = self._model_choice_parser.parse(models, user_choice)
+                    chosen_model = self._model_choice_parser.parse(user_choice)
                 except ValueError as err:
                     show_error_msg(str(err))
             else:
-                chosen_model = default_model
+                chosen_model = self._default_model
 
         print(f"\nModelo elegido: {MODEL_PREFIX}-{chosen_model}")
         return chosen_model
 
-    def _show_options(self, modelos: Sequence[str], default_model: str) -> None:
+    def _show_options(self) -> None:
         # Mostrar opciones al usuario
         print(
             apply_tag(
@@ -52,11 +53,11 @@ class SelectModelController:
                 CALL_TO_ACTION,
             )
         )
-        for i, modelo in enumerate(modelos, start=1):
+        for i, modelo in enumerate(self._models, start=1):
             print(f"{i}. {MODEL_PREFIX}-{modelo}")
 
         styled_default_model_explanation = create_styled_default_model_explanation(
-            default_model
+            self._default_model
         )
         print(styled_default_model_explanation)
 
