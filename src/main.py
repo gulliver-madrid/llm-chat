@@ -38,11 +38,13 @@ class Main:
             debug = False
             # modo multilinea por defecto
             raw_question = get_input(
-                "Introduce tu consulta (o pulsa Enter para ver más opciones). Introduce `end` como único contenido de una línea cuando hayas terminado."
+                "Introduce tu consulta. Introduce `end` como único contenido de una línea cuando hayas terminado. Para obtener ayuda, introduce únicamente `/help` y pulsa Enter."
             )
 
             if not raw_question:
-                action = MenuManager.enter_inner_menu()
+                continue
+            action = MenuManager.enter_inner_menu(raw_question)
+            if action:
                 match action.name:
                     case ActionName.NEW_QUERY:
                         continue
@@ -51,14 +53,14 @@ class Main:
                     case ActionName.CHANGE_MODEL:
                         model = self.select_model()
                         continue
+                    case ActionName.DEBUG:
+                        raw_question = raw_question.removeprefix("/d").strip()
+                        debug = True
                     case _:
                         raise RuntimeError(f"Acción no válida: {action}")
 
-            assert raw_question
-
-            if raw_question.startswith("/d "):
-                raw_question = raw_question.removeprefix("/d")
-                debug = True
+            if not raw_question:
+                continue
 
             while (more := input()).lower() != "end":
                 raw_question += "\n" + more
