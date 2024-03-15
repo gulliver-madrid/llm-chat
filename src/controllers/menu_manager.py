@@ -20,8 +20,6 @@ class Action:
 class MenuManager:
     @staticmethod
     def enter_debug_mode(response: ChatCompletionResponse | None) -> None:
-        from src.debug import show  # pyright: ignore [reportUnusedImport]
-
         print(NEUTRAL_MSG + "Entrando en modo de depuracion\n")
         print(response)
         breakpoint()
