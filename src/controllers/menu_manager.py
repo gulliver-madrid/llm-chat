@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 
 from rich import print
+from rich.console import Console
+from rich.markdown import Markdown
 
-from src.io_helpers import display_neutral_msg, get_input, show_error_msg
+from src.io_helpers import get_input, show_error_msg
 
 
 class ActionName:
@@ -32,17 +34,20 @@ class MenuManager:
                 case "q" | "quit" | "exit":
                     return Action(ActionName.SALIR)
                 case "help":
-                    display_neutral_msg("# Consultas")
-                    display_neutral_msg(
-                        "Puedes usar placeholders con el formato $0<name>. Ejemplo: `¿Quién fue $0persona?` El programa te pedirá luego que completes los placeholders uno por uno.\n"
+                    console = Console()
+                    markdown = Markdown(
+                        """
+## Consultas
+Puedes usar placeholders con el formato `$0<nombre>`. Ejemplo: `¿Quién fue $0persona y que hizo en el ámbito de $0tema?` El programa te pedirá luego que completes los placeholders uno por uno.
+
+Si empiezas el contenido de un placeholder con `/for` y pones las variantes separadas por comas, se generará una consulta con cada variante. Por ejemplo, si en la pregunta anterior introduces como valor de $0persona `/for Alexander Flemming,Albert Einstein` se generarán 2 consultas, una para cada nombre introducido.
+
+### Comandos
+Puedes iniciar tu consulta con `/d` para activar el modo depuración.
+"""
                     )
-                    display_neutral_msg(
-                        "Puedes empezar el contenido de un placeholder con /for y poner las variantes separadas por comas. Por ejemplo, si en la pregunta anterior introduces como valor de $0persona `/for Alexander Flemming,Albert Einstein` se generarán 2 consultas, una para cada nombre introducido.\n"
-                    )
-                    print("# Comandos")
-                    display_neutral_msg(
-                        "Puedes iniciar tu consulta con '/d' para activar el modo depuración."
-                    )
+                    console.print(markdown, width=60)
+
                 case "change":
                     return Action(ActionName.CHANGE_MODEL)
                 case _:
