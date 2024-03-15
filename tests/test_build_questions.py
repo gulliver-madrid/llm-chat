@@ -1,4 +1,4 @@
-from typing import cast
+from typing import TypeGuard
 import unittest
 from src.main import build_questions
 from src.models.placeholders import Placeholder
@@ -7,7 +7,15 @@ from src.models.placeholders import Placeholder
 def as_substitutions(d: dict[str, str]) -> dict[Placeholder, str]:
     assert isinstance(d, dict)
     assert all(isinstance(k, str) and isinstance(v, str) for k, v in d.items())
-    return cast(dict[Placeholder, str], d)
+    assert is_substitutions_dict(d)
+    return d
+
+
+def is_substitutions_dict(
+    d: dict[str, str], is_test: bool = True
+) -> TypeGuard[dict[Placeholder, str]]:
+    preffix = "{" if is_test else "$0"
+    return all(placeholder.startswith(preffix) for placeholder in d)
 
 
 START_TO_END_RAW_QUESTION = "List numbers from {start} to {end}"
