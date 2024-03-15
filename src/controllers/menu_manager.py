@@ -29,19 +29,7 @@ class MenuManager:
             case ["/d", *_] | ["/debug", *_]:
                 return Action(ActionName.DEBUG)
             case ["/h", *_] | ["/help", *_]:
-                console = Console()
-                markdown = Markdown(
-                    """
-## Consultas
-Puedes usar placeholders con el formato `$0<nombre>`. Ejemplo: `¿Quién fue $0persona y que hizo en el ámbito de $0tema?` El programa te pedirá luego que completes los placeholders uno por uno.
-
-Si empiezas el contenido de un placeholder con `/for` y pones las variantes separadas por comas, se generará una consulta con cada variante. Por ejemplo, si en la pregunta anterior introduces como valor de $0persona `/for Alexander Flemming,Albert Einstein` se generarán 2 consultas, una para cada nombre introducido.
-
-### Comandos
-Puedes iniciar tu consulta con `/d` para activar el modo depuración.
-"""
-                )
-                console.print(markdown, width=60)
+                MenuManager.show_help()
                 get_input("Pulsa Enter para continuar")
                 return Action(ActionName.NEW_QUERY)
 
@@ -54,3 +42,17 @@ Puedes iniciar tu consulta con `/d` para activar el modo depuración.
                     return None
             case _:
                 return None
+
+    @staticmethod
+    def show_help():
+        console = Console()
+        markdown = Markdown(
+            """
+## Consultas
+Puedes usar placeholders con el formato `$0<nombre>`. Ejemplo: `¿Quién fue $0persona y que hizo en el ámbito de $0tema?` El programa te pedirá luego que completes los placeholders uno por uno.
+Si empiezas el contenido de un placeholder con `/for` y pones las variantes separadas por comas, se generará una consulta con cada variante. Por ejemplo, si en la pregunta anterior introduces como valor de $0persona `/for Alexander Flemming,Albert Einstein` se generarán 2 consultas, una para cada nombre introducido.
+### Comandos
+Puedes iniciar tu consulta con `/d` para activar el modo depuración.
+"""
+        )
+        console.print(markdown, width=60)
