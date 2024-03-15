@@ -11,44 +11,54 @@ from src.io_helpers import (
     get_input,
     show_error_msg,
 )
-from src.models.model_choice import MODEL_PREFIX, parse_model_choice
+from src.models.model_choice import MODEL_PREFIX, ModelChoiceParser
 
 
 class SelectModelController:
-    def select_model(self, modelos: Sequence[str]) -> str:
-        """Prompt the user to choose a model. Returns the model name without the 'mistral' preffix."""
-        num_opciones = len(modelos)
+    def __init__(self) -> None:
+        self._model_choice_parser = ModelChoiceParser()
+
+    def select_model(self, models: Sequence[str]) -> str:
+        """
+        Prompt the user to choose a model. Returns the model name without the 'mistral' preffix.
+        """
+        num_opciones = len(models)
         assert num_opciones > 0
-        default_model = modelos[0]
-        modelo_elegido = None
-        while not modelo_elegido:
-            # Mostrar opciones al usuario
-            print(
-                apply_tag(
-                    "\nPor favor, elige un modelo introduciendo el número correspondiente:",
-                    CALL_TO_ACTION,
-                )
-            )
-            for i, modelo in enumerate(modelos, start=1):
-                print(f"{i}. {MODEL_PREFIX}-{modelo}")
+        default_model = models[0]
+        chosen_model = None
+        while not chosen_model:
 
-            styled_default_model_explanation = create_styled_default_model_explanation(
-                default_model
-            )
-            print(styled_default_model_explanation)
+            self._show_options(models, default_model)
 
-            eleccion = get_input(
+            user_choice = get_input(
                 apply_tag(f"Introduce tu elección (1-{num_opciones})", BOLD_STYLE)
             )
-            try:
-                modelo_elegido = (
-                    parse_model_choice(modelos, eleccion) if eleccion else default_model
-                )
-            except ValueError as err:
-                show_error_msg(str(err))
+            if user_choice:
+                try:
+                    chosen_model = self._model_choice_parser.parse(models, user_choice)
+                except ValueError as err:
+                    show_error_msg(str(err))
+            else:
+                chosen_model = default_model
 
-        print(f"\nModelo elegido: {MODEL_PREFIX}-{modelo_elegido}")
-        return modelo_elegido
+        print(f"\nModelo elegido: {MODEL_PREFIX}-{chosen_model}")
+        return chosen_model
+
+    def _show_options(self, modelos: Sequence[str], default_model: str) -> None:
+        # Mostrar opciones al usuario
+        print(
+            apply_tag(
+                "\nPor favor, elige un modelo introduciendo el número correspondiente:",
+                CALL_TO_ACTION,
+            )
+        )
+        for i, modelo in enumerate(modelos, start=1):
+            print(f"{i}. {MODEL_PREFIX}-{modelo}")
+
+        styled_default_model_explanation = create_styled_default_model_explanation(
+            default_model
+        )
+        print(styled_default_model_explanation)
 
 
 def create_styled_default_model_explanation(default_model: str) -> str:
