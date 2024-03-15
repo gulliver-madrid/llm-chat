@@ -42,3 +42,7 @@ def apply_tag(s: str, tag: str) -> str:
 
 def highlight_role(role_string: str) -> str:
     return HIGHLIGHT_ROLE + role_string + end(HIGHLIGHT_ROLE)
+
+
+def display_neutral_msg(text: str) -> None:
+    print(NEUTRAL_MSG + text)
