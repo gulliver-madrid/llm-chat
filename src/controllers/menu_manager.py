@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-from rich import print
 from rich.console import Console
 from rich.markdown import Markdown
 
@@ -11,6 +10,7 @@ class ActionName:
     SALIR = "SALIR"
     CHANGE_MODEL = "CHANGE_MODEL"
     NEW_QUERY = "NEW_QUERY"
+    DEBUG = "DEBUG"
 
 
 @dataclass
@@ -21,22 +21,17 @@ class Action:
 class MenuManager:
 
     @staticmethod
-    def enter_inner_menu() -> Action:
+    def enter_inner_menu(raw_question: str) -> Action | None:
 
-        while True:
-            user_input = get_input(
-                "Pulsa Enter para continuar con otra consulta. Introduce 'help' para leer un mensaje de ayuda, 'q' para salir y 'change' para cambiar de modelo."
-            ).lower()
-            print()
-            match user_input:
-                case "":
-                    break
-                case "q" | "quit" | "exit":
-                    return Action(ActionName.SALIR)
-                case "help":
-                    console = Console()
-                    markdown = Markdown(
-                        """
+        match raw_question.strip().split():
+            case ["/q", *_] | ["/quit", *_] | ["/exit", *_]:
+                return Action(ActionName.SALIR)
+            case ["/d", *_] | ["/debug", *_]:
+                return Action(ActionName.DEBUG)
+            case ["/h", *_] | ["/help", *_]:
+                console = Console()
+                markdown = Markdown(
+                    """
 ## Consultas
 Puedes usar placeholders con el formato `$0<nombre>`. Ejemplo: `¿Quién fue $0persona y que hizo en el ámbito de $0tema?` El programa te pedirá luego que completes los placeholders uno por uno.
 
@@ -45,11 +40,17 @@ Si empiezas el contenido de un placeholder con `/for` y pones las variantes sepa
 ### Comandos
 Puedes iniciar tu consulta con `/d` para activar el modo depuración.
 """
-                    )
-                    console.print(markdown, width=60)
+                )
+                console.print(markdown, width=60)
+                get_input("Pulsa Enter para continuar")
+                return Action(ActionName.NEW_QUERY)
 
-                case "change":
-                    return Action(ActionName.CHANGE_MODEL)
-                case _:
+            case ["/change", *_]:
+                return Action(ActionName.CHANGE_MODEL)
+            case [other, *_]:
+                if other.startswith("/"):
                     show_error_msg("Entrada no válida")
-        return Action(ActionName.NEW_QUERY)
+                else:
+                    return None
+            case _:
+                return None
