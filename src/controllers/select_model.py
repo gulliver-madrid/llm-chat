@@ -17,6 +17,8 @@ from src.models.model_choice import MODEL_PREFIX, parse_model_choice
 class SelectModelController:
     def select_model(self, modelos: Sequence[str]) -> str:
         """Prompt the user to choose a model. Returns the model name without the 'mistral' preffix."""
+        num_opciones = len(modelos)
+        assert num_opciones > 0
         default_model = modelos[0]
         modelo_elegido = None
         while not modelo_elegido:
@@ -29,22 +31,12 @@ class SelectModelController:
             )
             for i, modelo in enumerate(modelos, start=1):
                 print(f"{i}. {MODEL_PREFIX}-{modelo}")
-            model_name_styled = apply_tag(
-                f"{MODEL_PREFIX}-{default_model}", BLUE_VIOLET_COLOR
-            )
-            default_model_explanation = (
-                "\nPresiona enter sin seleccionar un número para elegir el modelo "
-                + model_name_styled
-                + " por defecto."
-            )
-            styled_default_model_explanation = apply_tag(
-                default_model_explanation,
-                NEUTRAL_MSG,
+
+            styled_default_model_explanation = create_styled_default_model_explanation(
+                default_model
             )
             print(styled_default_model_explanation)
 
-            # Leer la eleccion del usuario
-            num_opciones = len(modelos)
             eleccion = get_input(
                 apply_tag(f"Introduce tu elección (1-{num_opciones})", BOLD_STYLE)
             )
@@ -57,3 +49,13 @@ class SelectModelController:
 
         print(f"\nModelo elegido: {MODEL_PREFIX}-{modelo_elegido}")
         return modelo_elegido
+
+
+def create_styled_default_model_explanation(default_model: str) -> str:
+    model_name_styled = apply_tag(f"{MODEL_PREFIX}-{default_model}", BLUE_VIOLET_COLOR)
+    explanation = (
+        "\nPresiona enter sin seleccionar un número para elegir el modelo "
+        + model_name_styled
+        + " por defecto."
+    )
+    return apply_tag(explanation, NEUTRAL_MSG)
