@@ -6,7 +6,7 @@ import os
 from src.infrastructure.client_wrapper import ClientWrapper
 from src.controllers.select_model import SelectModelController
 from src.io_helpers import (
-    NEUTRAL_MSG,
+    display_neutral_msg,
     get_input,
     show_error_msg,
 )
@@ -33,16 +33,16 @@ class Main:
         api_key = os.environ["MISTRAL_API_KEY"]
         client_wrapper = ClientWrapper(api_key)
         model = self.select_model()
-        chat_response = None
 
         while True:
+            debug = False
             # modo multilinea por defecto
             raw_question = get_input(
                 "Introduce tu consulta (o pulsa Enter para ver más opciones). Introduce `end` como único contenido de una línea cuando hayas terminado."
             )
 
             if not raw_question:
-                action = MenuManager.enter_inner_menu(chat_response)
+                action = MenuManager.enter_inner_menu()
                 match action.name:
                     case ActionName.NEW_QUERY:
                         continue
@@ -55,6 +55,10 @@ class Main:
                         raise RuntimeError(f"Acción no válida: {action}")
 
             assert raw_question
+
+            if raw_question.startswith("/d "):
+                raw_question = raw_question.removeprefix("/d")
+                debug = True
 
             while (more := input()).lower() != "end":
                 raw_question += "\n" + more
@@ -74,7 +78,7 @@ class Main:
             for i, question in enumerate(questions):
                 print("\n...procesando consulta número", i + 1)
 
-                content = client_wrapper.get_simple_response(model, question)
+                content = client_wrapper.get_simple_response(model, question, debug)
                 print_interaction(model, question, content)
 
     def select_model(self) -> ModelName:
@@ -140,7 +144,7 @@ def main() -> None:
     models: Final[Sequence[str]] = ["tiny", "small", "medium", "large-2402"]
     main_instance = Main(models)
     main_instance.execute()
-    print(NEUTRAL_MSG + "Saliendo")
+    display_neutral_msg("Saliendo")
 
 
 if __name__ == "__main__":
