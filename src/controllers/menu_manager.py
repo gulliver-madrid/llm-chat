@@ -22,24 +22,22 @@ class MenuManager:
 
     @staticmethod
     def enter_inner_menu(raw_question: str) -> Action | None:
-
-        match raw_question.strip().split():
-            case ["/q", *_] | ["/quit", *_] | ["/exit", *_]:
+        possible_commands = raw_question.strip().split()
+        if not possible_commands:
+            return None
+        match possible_commands[0]:
+            case "/q" | "/quit" | "/exit":
                 return Action(ActionName.SALIR)
-            case ["/d", *_] | ["/debug", *_]:
+            case "/d" | "/debug":
                 return Action(ActionName.DEBUG)
-            case ["/h", *_] | ["/help", *_]:
+            case "/h" | "/help":
                 MenuManager.show_help()
                 get_input("Pulsa Enter para continuar")
                 return Action(ActionName.NEW_QUERY)
-
-            case ["/change", *_]:
+            case "/change":
                 return Action(ActionName.CHANGE_MODEL)
-            case [other, *_]:
-                if other.startswith("/"):
-                    show_error_msg("Entrada no válida")
-                else:
-                    return None
+            case other if other.startswith("/"):
+                show_error_msg("Comando no válido")
             case _:
                 return None
 
