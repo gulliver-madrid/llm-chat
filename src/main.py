@@ -26,7 +26,7 @@ from src.views import print_interaction
 class Main:
     def __init__(self, models: Sequence[str]) -> None:
         self._models = models
-        self._select_model_controler = SelectModelController()
+        self._select_model_controler = SelectModelController(models)
 
     def execute(self) -> None:
         """Runs the text interface to Mistral models"""
@@ -83,7 +83,7 @@ class Main:
 
     def select_model(self) -> ModelName:
         return build_model_name(
-            self._select_model_controler.select_model(self._models), self._models
+            self._select_model_controler.select_model(), self._models
         )
 
 
