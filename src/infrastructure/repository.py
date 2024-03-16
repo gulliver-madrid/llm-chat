@@ -16,16 +16,7 @@ class Repository:
 
     def save(self, complete_messages: Sequence[CompleteMessage]) -> None:
         conversation_id = self._get_new_conversation_id()
-        number_of_messages = len(complete_messages)
-        texts = [create_meta_tag("id", conversation_id) + "\n"]
-        texts.append(create_meta_tag("schema_version", SCHEMA_VERSION))
-        texts.append(create_meta_tag("number_of_messages", number_of_messages))
-        texts.append(create_meta_tag("current_time", get_current_time()))
-        for complete_message in complete_messages:
-            texts.append("\n" + create_role_tag(complete_message))
-            message = complete_message.chat_msg
-            assert isinstance(message.content, str)
-            texts.append(message.content)
+        texts = create_conversation_texts(complete_messages, conversation_id)
         self._save_conversation(conversation_id, texts)
 
     def _get_new_conversation_id(self) -> str:
@@ -39,6 +30,22 @@ class Repository:
         filepath = self._data_dir / (conversation_id + ".chat")
         with open(filepath, "w", encoding="utf-8") as file:
             file.write("\n".join(texts))
+
+
+def create_conversation_texts(
+    complete_messages: Sequence[CompleteMessage], conversation_id: str
+) -> Sequence[str]:
+    number_of_messages = len(complete_messages)
+    texts = [create_meta_tag("id", conversation_id) + "\n"]
+    texts.append(create_meta_tag("schema_version", SCHEMA_VERSION))
+    texts.append(create_meta_tag("number_of_messages", number_of_messages))
+    texts.append(create_meta_tag("current_time", get_current_time()))
+    for complete_message in complete_messages:
+        texts.append("\n" + create_role_tag(complete_message))
+        message = complete_message.chat_msg
+        assert isinstance(message.content, str)
+        texts.append(message.content)
+    return texts
 
 
 def find_max_file_number(directory_path: Path) -> int | None:
