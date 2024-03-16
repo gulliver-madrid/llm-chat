@@ -5,13 +5,19 @@ from mistralai.models.chat_completion import ChatMessage
 
 from src.models.model_choice import ModelName
 
-__all__ = ["QueryResult", "ClientWrapper", "ChatMessage"]
+__all__ = ["QueryResult", "ClientWrapper", "CompleteMessage"]
+
+
+@dataclass(frozen=True)
+class CompleteMessage:
+    chat_msg: ChatMessage
+    model: ModelName | None = None
 
 
 @dataclass(frozen=True)
 class QueryResult:
     content: str
-    messages: list[ChatMessage]
+    messages: list[CompleteMessage]
 
 
 class ClientWrapper:
@@ -22,17 +28,23 @@ class ClientWrapper:
         self,
         model: ModelName,
         query: str,
-        prev_messages: Sequence[ChatMessage] | None,
+        prev_messages: Sequence[CompleteMessage] | None,
         debug: bool = False,
     ) -> QueryResult:
         """
         Retrieves a simple response from the Mistral AI client.
         """
         if prev_messages:
-            messages = list(prev_messages)
+            complete_messages = list(prev_messages)
         else:
-            messages = []
-        messages.append(ChatMessage(role="user", content=query))
+            complete_messages = []
+        complete_messages.append(
+            CompleteMessage(ChatMessage(role="user", content=query))
+        )
+        # type annotated here for safety because MistralClient define messages type as list[Any]
+        messages: list[ChatMessage] = [
+            complete_msg.chat_msg for complete_msg in complete_messages
+        ]
         chat_response = self._client.chat(
             model=model,
             messages=messages,
@@ -43,5 +55,5 @@ class ClientWrapper:
             print(chat_response)
             breakpoint()
         assert isinstance(content, str)
-        messages.append(choices[0].message)
-        return QueryResult(content, messages)
+        complete_messages.append(CompleteMessage(choices[0].message, model))
+        return QueryResult(content, complete_messages)
