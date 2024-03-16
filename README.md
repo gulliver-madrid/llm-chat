@@ -65,6 +65,8 @@ The script allows you to interact with it in a conversational manner by inputtin
 
 To indicate that you have finished entering your question, type `end` on a new line. The model will then process your input and provide a response. After receiving a response, you are free to initiate a new query by following the same process.
 
+To start a new conversation instead of continuing with the current one, use the `/new` command at the beginning of your query.
+
 ### Placeholders
 
 If your query includes placeholders (e.g., `$0concept`), simply type your query with these placeholders. After submitting your query, you will be prompted to replace each placeholder one by one. This simple substitution method is the most straightforward way to use placeholders for personalized queries.
