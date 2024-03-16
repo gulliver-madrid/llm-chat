@@ -28,6 +28,13 @@ PROGRAM_PROMPT = "Introduce tu consulta. Introduce `end` como único contenido d
 PRESS_ENTER_TO_CONTINUE = "Pulsa Enter para continuar"
 
 QUERY_NUMBER_LIMIT_WARNING = 5
+HELP_TEXT = """
+## Consultas
+Puedes usar placeholders con el formato `$0<nombre>`. Ejemplo: `¿Quién fue $0persona y que hizo en el ámbito de $0tema?` El programa te pedirá luego que completes los placeholders uno por uno.
+Si empiezas el contenido de un placeholder con `/for` y pones las variantes separadas por comas, se generará una consulta con cada variante. Por ejemplo, si en la pregunta anterior introduces como valor de $0persona `/for Alexander Flemming,Albert Einstein` se generarán 2 consultas, una para cada nombre introducido.
+### Comandos
+Puedes iniciar tu consulta con `/d` para activar el modo depuración.
+"""
 
 
 class Main:
@@ -110,15 +117,7 @@ class Main:
 
 def show_help() -> None:
     console = Console()
-    markdown = Markdown(
-        """
-## Consultas
-Puedes usar placeholders con el formato `$0<nombre>`. Ejemplo: `¿Quién fue $0persona y que hizo en el ámbito de $0tema?` El programa te pedirá luego que completes los placeholders uno por uno.
-Si empiezas el contenido de un placeholder con `/for` y pones las variantes separadas por comas, se generará una consulta con cada variante. Por ejemplo, si en la pregunta anterior introduces como valor de $0persona `/for Alexander Flemming,Albert Einstein` se generarán 2 consultas, una para cada nombre introducido.
-### Comandos
-Puedes iniciar tu consulta con `/d` para activar el modo depuración.
-"""
-    )
+    markdown = Markdown(HELP_TEXT)
     console.print(markdown, width=60)
 
 
