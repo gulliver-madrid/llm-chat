@@ -1,7 +1,7 @@
 from typing import TypeGuard
 import unittest
-from src.main import build_questions
-from src.models.placeholders import Placeholder
+
+from src.models.placeholders import Placeholder, QueryBuildException, build_questions
 
 
 def as_substitutions(d: dict[str, str]) -> dict[Placeholder, str]:
@@ -55,7 +55,8 @@ class TestBuildQuestions(unittest.TestCase):
 
     def test_build_questions_multiple_for_not_supported(self) -> None:
         substitutions = as_substitutions({"{start}": "/for 1", "{end}": "/for 5"})
-        self.assertIsNone(build_questions(START_TO_END_RAW_QUESTION, substitutions))
+        with self.assertRaises(QueryBuildException):
+            build_questions(START_TO_END_RAW_QUESTION, substitutions)
 
 
 if __name__ == "__main__":

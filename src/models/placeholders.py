@@ -6,6 +6,38 @@ Placeholder = NewType("Placeholder", str)
 FOR_COMMAND_PREFFIX = "/for"
 
 
+class QueryBuildException(Exception): ...
+
+
+def build_questions(
+    raw_question: str, substitutions: Mapping[Placeholder, str]
+) -> list[str]:
+    """
+    Constructs a list of questions by replacing placeholders in the raw question with user-provided substitutions.
+    If a 'for' command is detected, it generates multiple questions by iterating over the specified range.
+
+    Args:
+        raw_question: The original question template containing placeholders.
+        substitutions: A dictionary mapping placeholders to their substitutions.
+
+    Returns:
+        A list of questions with placeholders replaced by their substitutions, or None if an error occurs.
+    """
+    placeholders_with_for = get_placeholders_with_for(substitutions)
+    number_of_placeholders_with_for = len(placeholders_with_for)
+    if number_of_placeholders_with_for > 1:
+        raise QueryBuildException(
+            f"El uso de varios '{FOR_COMMAND_PREFFIX}' con los placeholders no está soportado"
+        )
+    elif number_of_placeholders_with_for == 1:
+        questions = replace_placeholders_with_one_for(
+            raw_question, substitutions, placeholders_with_for[0]
+        )
+    else:
+        questions = [replace_question_with_substitutions(raw_question, substitutions)]
+    return questions
+
+
 def find_placeholders(s: str) -> list[Placeholder]:
     """
     Finds all placeholders in a given string.
