@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Sequence
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 
@@ -18,12 +19,20 @@ class ClientWrapper:
         self._client = MistralClient(api_key=api_key)
 
     def get_simple_response(
-        self, model: ModelName, query: str, debug: bool = False
+        self,
+        model: ModelName,
+        query: str,
+        prev_messages: Sequence[ChatMessage] | None,
+        debug: bool = False,
     ) -> QueryResult:
         """
         Retrieves a simple response from the Mistral AI client.
         """
-        messages = [ChatMessage(role="user", content=query)]
+        if prev_messages:
+            messages = list(prev_messages)
+        else:
+            messages = []
+        messages.append(ChatMessage(role="user", content=query))
         chat_response = self._client.chat(
             model=model,
             messages=messages,

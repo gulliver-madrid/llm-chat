@@ -50,7 +50,7 @@ class Main:
         api_key = os.environ["MISTRAL_API_KEY"]
         client_wrapper = ClientWrapper(api_key)
         model = self.select_model()
-
+        prev_messages = None
         while True:
             debug = False
 
@@ -109,9 +109,15 @@ class Main:
             for i, query in enumerate(queries):
                 print("\n...procesando consulta número", i + 1, "de", number_of_queries)
 
-                query_result = client_wrapper.get_simple_response(model, query, debug)
+                query_result = client_wrapper.get_simple_response(
+                    model, query, prev_messages, debug
+                )
                 print_interaction(model, query, query_result.content)
                 self._repository.save(query_result.messages)
+                if len(queries) > 1:
+                    prev_messages = None
+                else:
+                    prev_messages = query_result.messages
 
     def select_model(self) -> ModelName:
         return build_model_name(
