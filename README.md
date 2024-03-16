@@ -119,9 +119,7 @@ This script offers the following features:
 
 ### Debugging
 
-The script includes debugging functionalities in the `src.debug` module.
-
-This feature will display the debug information when you enter the debug mode by typing 'd'. This allows inspect the `response` object returned by the Mistral API.
+The script includes debugging functionalities using the command `/debug`. This allows inspect the `chat_response` object returned by the Mistral API.
 
 ### Development
 
