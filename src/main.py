@@ -98,15 +98,11 @@ class Main:
                 questions = [raw_question]
             del raw_question
             number_of_questions = len(questions)
-            if number_of_questions > QUERY_NUMBER_LIMIT_WARNING:
-                print(
-                    "Se realizarán",
-                    number_of_questions,
-                    "consultas. Quieres continuar? Y/n",
-                )
-                user_input_continue = get_input()
-                if user_input_continue.lower() not in ["", "y", "yes"]:
-                    continue
+            if (
+                number_of_questions > QUERY_NUMBER_LIMIT_WARNING
+                and not confirm_launching_many_queries(number_of_questions)
+            ):
+                continue
 
             for i, question in enumerate(questions):
                 print(
@@ -120,6 +116,16 @@ class Main:
         return build_model_name(
             self._select_model_controler.select_model(), self._models
         )
+
+
+def confirm_launching_many_queries(number_of_queries: int) -> bool:
+    print(
+        "Se realizarán",
+        number_of_queries,
+        "consultas. Quieres continuar? Y/n",
+    )
+    user_input_continue = get_input()
+    return user_input_continue.lower() in ["", "y", "yes"]
 
 
 def show_help() -> None:
