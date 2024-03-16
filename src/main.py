@@ -24,6 +24,11 @@ from src.models.placeholders import (
 )
 from src.views import print_interaction
 
+PROGRAM_PROMPT = "Introduce tu consulta. Introduce `end` como único contenido de una línea cuando hayas terminado. Para obtener ayuda, introduce únicamente `/help` y pulsa Enter."
+PRESS_ENTER_TO_CONTINUE = "Pulsa Enter para continuar"
+
+QUERY_NUMBER_LIMIT_WARNING = 5
+
 
 HELP_TEXT = """
 ## Consultas
@@ -47,10 +52,8 @@ class Main:
 
         while True:
             debug = False
-            # modo multilinea por defecto
-            raw_question = get_input(
-                "Introduce tu consulta. Introduce `end` como único contenido de una línea cuando hayas terminado. Para obtener ayuda, introduce únicamente `/help` y pulsa Enter."
-            )
+
+            raw_question = get_input(PROGRAM_PROMPT)
 
             if not raw_question:
                 continue
@@ -59,7 +62,7 @@ class Main:
                 match action.name:
                     case ActionName.HELP:
                         show_help()
-                        get_input("Pulsa Enter para continuar")
+                        get_input(PRESS_ENTER_TO_CONTINUE)
                         continue
                     case ActionName.SALIR:
                         break
@@ -89,9 +92,21 @@ class Main:
             else:
                 questions = [raw_question]
             del raw_question
+            number_of_questions = len(questions)
+            if number_of_questions > QUERY_NUMBER_LIMIT_WARNING:
+                print(
+                    "Se realizarán",
+                    number_of_questions,
+                    "consultas. Quieres continuar? Y/n",
+                )
+                user_input_continue = get_input()
+                if user_input_continue.lower() not in ["", "y", "yes"]:
+                    continue
 
             for i, question in enumerate(questions):
-                print("\n...procesando consulta número", i + 1)
+                print(
+                    "\n...procesando consulta número", i + 1, "de", number_of_questions
+                )
 
                 content = client_wrapper.get_simple_response(model, question, debug)
                 print_interaction(model, question, content)
