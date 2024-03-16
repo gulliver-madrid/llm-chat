@@ -12,7 +12,7 @@ from src.io_helpers import (
     get_input,
     show_error_msg,
 )
-from src.controllers.menu_manager import ActionName, CommandInterpreter
+from src.controllers.command_interpreter import ActionName, CommandInterpreter
 from src.models.model_choice import ModelName, build_model_name
 from src.models.placeholders import (
     FOR_COMMAND_PREFFIX,
