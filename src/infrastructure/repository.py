@@ -21,9 +21,9 @@ class Repository:
         conversation_id = str(new_number).zfill(NUMBER_OF_DIGITS)
         texts = [f"[META id={conversation_id}]\n"]
         number_of_messages = len(complete_messages)
-        texts.append(f"[META schema_version={SCHEMA_VERSION}]")
-        texts.append(f"[META number_of_messages={number_of_messages}]")
-        texts.append(f"[META current_time={get_current_time()}]")
+        texts.append(create_meta_tag("schema_version", SCHEMA_VERSION))
+        texts.append(create_meta_tag("number_of_messages", number_of_messages))
+        texts.append(create_meta_tag("current_time", get_current_time()))
         for complete_message in complete_messages:
             message = complete_message.chat_msg
             optional_model_info = ""
@@ -56,3 +56,7 @@ def find_max_file_number(directory_path: Path) -> int | None:
             max_number = number
 
     return max_number if max_number >= 0 else None
+
+
+def create_meta_tag(tag_name: str, value: object) -> str:
+    return f"[META {tag_name}={value}]"
