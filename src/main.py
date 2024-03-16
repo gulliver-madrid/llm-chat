@@ -15,12 +15,10 @@ from src.io_helpers import (
 from src.controllers.command_interpreter import ActionName, CommandInterpreter
 from src.models.model_choice import ModelName, build_model_name
 from src.models.placeholders import (
-    FOR_COMMAND_PREFFIX,
     Placeholder,
+    QueryBuildException,
+    build_questions,
     find_placeholders,
-    get_placeholders_with_for,
-    replace_placeholders_with_one_for,
-    replace_question_with_substitutions,
 )
 from src.utils import remove_duplicates
 from src.views import print_interaction
@@ -90,8 +88,10 @@ class Main:
                 user_substitutions = get_raw_substitutions_from_user(
                     unique_placeholders
                 )
-                questions = build_questions(raw_question, user_substitutions)
-                if questions is None:
+                try:
+                    questions = build_questions(raw_question, user_substitutions)
+                except QueryBuildException as err:
+                    show_error_msg(str(err))
                     continue
                 print("Placeholders sustituidos exitosamente")
             else:
@@ -132,36 +132,6 @@ def show_help() -> None:
     console = Console()
     markdown = Markdown(HELP_TEXT)
     console.print(markdown, width=60)
-
-
-def build_questions(
-    raw_question: str, substitutions: Mapping[Placeholder, str]
-) -> list[str] | None:
-    """
-    Constructs a list of questions by replacing placeholders in the raw question with user-provided substitutions.
-    If a 'for' command is detected, it generates multiple questions by iterating over the specified range.
-
-    Args:
-        raw_question: The original question template containing placeholders.
-        substitutions: A dictionary mapping placeholders to their substitutions.
-
-    Returns:
-        A list of questions with placeholders replaced by their substitutions, or None if an error occurs.
-    """
-    placeholders_with_for = get_placeholders_with_for(substitutions)
-    questions = None
-    number_of_placeholders_with_for = len(placeholders_with_for)
-    if number_of_placeholders_with_for > 1:
-        show_error_msg(
-            f"El uso de varios '{FOR_COMMAND_PREFFIX}' con los placeholders no está soportado"
-        )
-    elif number_of_placeholders_with_for == 1:
-        questions = replace_placeholders_with_one_for(
-            raw_question, substitutions, placeholders_with_for[0]
-        )
-    else:
-        questions = [replace_question_with_substitutions(raw_question, substitutions)]
-    return questions
 
 
 def get_raw_substitutions_from_user(
