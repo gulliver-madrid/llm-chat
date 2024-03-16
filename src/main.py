@@ -1,7 +1,9 @@
-from typing import Final, Mapping, Sequence
 from rich import print
+from rich.console import Console
+from rich.markdown import Markdown
 
 import os
+from typing import Final, Mapping, Sequence
 
 from src.infrastructure.client_wrapper import ClientWrapper
 from src.controllers.select_model import SelectModelController
@@ -10,7 +12,7 @@ from src.io_helpers import (
     get_input,
     show_error_msg,
 )
-from src.controllers.menu_manager import ActionName, MenuManager
+from src.controllers.menu_manager import ActionName, CommandInterpreter
 from src.models.model_choice import ModelName, build_model_name
 from src.models.placeholders import (
     FOR_COMMAND_PREFFIX,
@@ -21,6 +23,15 @@ from src.models.placeholders import (
     replace_question_with_substitutions,
 )
 from src.views import print_interaction
+
+
+HELP_TEXT = """
+## Consultas
+Puedes usar placeholders con el formato `$0<nombre>`. Ejemplo: `¿Quién fue $0persona y que hizo en el ámbito de $0tema?` El programa te pedirá luego que completes los placeholders uno por uno.
+Si empiezas el contenido de un placeholder con `/for` y pones las variantes separadas por comas, se generará una consulta con cada variante. Por ejemplo, si en la pregunta anterior introduces como valor de $0persona `/for Alexander Flemming,Albert Einstein` se generarán 2 consultas, una para cada nombre introducido.
+### Comandos
+Puedes iniciar tu consulta con `/d` para activar el modo depuración.
+"""
 
 
 class Main:
@@ -43,10 +54,12 @@ class Main:
 
             if not raw_question:
                 continue
-            action = MenuManager.enter_inner_menu(raw_question)
+            action = CommandInterpreter.parse_user_input(raw_question)
             if action:
                 match action.name:
-                    case ActionName.NEW_QUERY:
+                    case ActionName.HELP:
+                        show_help()
+                        get_input("Pulsa Enter para continuar")
                         continue
                     case ActionName.SALIR:
                         break
@@ -87,6 +100,12 @@ class Main:
         return build_model_name(
             self._select_model_controler.select_model(), self._models
         )
+
+
+def show_help() -> None:
+    console = Console()
+    markdown = Markdown(HELP_TEXT)
+    console.print(markdown, width=60)
 
 
 def build_questions(
