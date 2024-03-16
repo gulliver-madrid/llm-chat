@@ -3,10 +3,10 @@ import re
 from typing import Sequence
 
 from src.infrastructure.ahora import get_current_time
-from src.infrastructure.client_wrapper import ChatMessage
+from src.infrastructure.client_wrapper import CompleteMessage
 
 NUMBER_OF_DIGITS = 4
-SCHEMA_VERSION = "0.1"
+SCHEMA_VERSION = "0.2"
 
 
 class Repository:
@@ -14,18 +14,22 @@ class Repository:
         self._data_dir = Path(__file__).parent.parent.parent / "data"
         self._data_dir.mkdir(exist_ok=True)
 
-    def save(self, messages: Sequence[ChatMessage]) -> None:
+    def save(self, complete_messages: Sequence[CompleteMessage]) -> None:
         max_number = find_max_file_number(self._data_dir)
         new_number = max_number + 1 if max_number is not None else 0
         assert 0 <= new_number < 10**NUMBER_OF_DIGITS
         conversation_id = str(new_number).zfill(NUMBER_OF_DIGITS)
         texts = [f"[META id={conversation_id}]\n"]
-        number_of_messages = len(messages)
+        number_of_messages = len(complete_messages)
         texts.append(f"[META schema_version={SCHEMA_VERSION}]")
         texts.append(f"[META number_of_messages={number_of_messages}]")
         texts.append(f"[META current_time={get_current_time()}]")
-        for message in messages:
-            texts.append(f"\n[ROLE {message.role.upper()}]")
+        for complete_message in complete_messages:
+            message = complete_message.chat_msg
+            optional_model_info = ""
+            if model := complete_message.model:
+                optional_model_info = f" model={model}"
+            texts.append(f"\n[ROLE {message.role.upper()}{optional_model_info}]")
             assert isinstance(message.content, str)
             texts.append(message.content)
         assert conversation_id.isdigit()
