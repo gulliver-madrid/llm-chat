@@ -9,19 +9,19 @@ FOR_COMMAND_PREFFIX = "/for"
 class QueryBuildException(Exception): ...
 
 
-def build_questions(
-    raw_question: str, substitutions: Mapping[Placeholder, str]
+def build_queries(
+    raw_query: str, substitutions: Mapping[Placeholder, str]
 ) -> list[str]:
     """
-    Constructs a list of questions by replacing placeholders in the raw question with user-provided substitutions.
-    If a 'for' command is detected, it generates multiple questions by iterating over the specified range.
+    Constructs a list of queries by replacing placeholders in the raw query with user-provided substitutions.
+    If a 'for' command is detected, it generates multiple queries by iterating over the specified range.
 
     Args:
-        raw_question: The original question template containing placeholders.
+        raw_query: The original query template containing placeholders.
         substitutions: A dictionary mapping placeholders to their substitutions.
 
     Returns:
-        A list of questions with placeholders replaced by their substitutions, or None if an error occurs.
+        A list of queries with placeholders replaced by their substitutions, or None if an error occurs.
     """
     placeholders_with_for = get_placeholders_with_for(substitutions)
     number_of_placeholders_with_for = len(placeholders_with_for)
@@ -30,12 +30,12 @@ def build_questions(
             f"El uso de varios '{FOR_COMMAND_PREFFIX}' con los placeholders no está soportado"
         )
     elif number_of_placeholders_with_for == 1:
-        questions = replace_placeholders_with_one_for(
-            raw_question, substitutions, placeholders_with_for[0]
+        queries = replace_placeholders_with_one_for(
+            raw_query, substitutions, placeholders_with_for[0]
         )
     else:
-        questions = [replace_question_with_substitutions(raw_question, substitutions)]
-    return questions
+        queries = [replace_query_with_substitutions(raw_query, substitutions)]
+    return queries
 
 
 def find_placeholders(s: str) -> list[Placeholder]:
@@ -52,7 +52,7 @@ def find_placeholders(s: str) -> list[Placeholder]:
 
 
 def replace_placeholders_with_one_for(
-    question: str,
+    query: str,
     substitutions: Mapping[Placeholder, str],
     placeholder_with_for: Placeholder,
 ) -> list[str]:
@@ -63,29 +63,27 @@ def replace_placeholders_with_one_for(
     ).strip()
 
     replacements_in_for = replacements_in_for_str.split(",")
-    questions: list[str] = []
+    queries: list[str] = []
     for replacement in replacements_in_for:
-        questions.append(question.replace(placeholder_with_for, replacement))
+        queries.append(query.replace(placeholder_with_for, replacement))
     substitutions = {
         placeholder: value
         for placeholder, value in substitutions.items()
         if placeholder != placeholder_with_for
     }
-    new_questions: list[str] = []
-    for question in questions:
-        new_questions.append(
-            replace_question_with_substitutions(question, substitutions)
-        )
-    questions = new_questions
-    return questions
+    new_queries: list[str] = []
+    for query in queries:
+        new_queries.append(replace_query_with_substitutions(query, substitutions))
+    queries = new_queries
+    return queries
 
 
-def replace_question_with_substitutions(
-    question: str, substitutions: Mapping[Placeholder, str]
+def replace_query_with_substitutions(
+    query: str, substitutions: Mapping[Placeholder, str]
 ) -> str:
     for placeholder, replacement in substitutions.items():
-        question = question.replace(placeholder, replacement)
-    return question
+        query = query.replace(placeholder, replacement)
+    return query
 
 
 def get_placeholders_with_for(

@@ -9,14 +9,14 @@ class ClientWrapper:
         self._client = MistralClient(api_key=api_key)
 
     def get_simple_response(
-        self, model: ModelName, question: str, debug: bool = False
+        self, model: ModelName, query: str, debug: bool = False
     ) -> str:
         """
         Retrieves a simple response from the Mistral AI client.
         """
         chat_response = self._client.chat(
             model=model,
-            messages=[ChatMessage(role="user", content=question)],
+            messages=[ChatMessage(role="user", content=query)],
         )
         choices = chat_response.choices
         content = choices[0].message.content
