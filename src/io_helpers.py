@@ -19,10 +19,11 @@ def end(s: str) -> str:
     return f"[/{s[1:-1]}]"
 
 
-def get_input(text: str) -> str:
+def get_input(text: str = "") -> str:
     """Prompts the user to provide an input, in a styled way"""
+    text_with_breakline_before = f"\n{text}" if text else ""
     print(
-        CALL_TO_ACTION + f"\n{text}\n> ",
+        CALL_TO_ACTION + f"{text_with_breakline_before}\n> ",
         end="",
     )
     return input()
