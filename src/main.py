@@ -7,6 +7,7 @@ from typing import Final, Mapping, Sequence
 
 from src.infrastructure.client_wrapper import ClientWrapper
 from src.controllers.select_model import SelectModelController
+from src.infrastructure.repository import ChatRepository
 from src.io_helpers import (
     display_neutral_msg,
     get_input,
@@ -42,6 +43,7 @@ class Main:
     def __init__(self, models: Sequence[str]) -> None:
         self._models = models
         self._select_model_controler = SelectModelController(models)
+        self._repository = ChatRepository()
 
     def execute(self) -> None:
         """Runs the text interface to Mistral models"""
@@ -107,8 +109,9 @@ class Main:
             for i, query in enumerate(queries):
                 print("\n...procesando consulta número", i + 1, "de", number_of_queries)
 
-                content = client_wrapper.get_simple_response(model, query, debug)
-                print_interaction(model, query, content)
+                query_result = client_wrapper.get_simple_response(model, query, debug)
+                print_interaction(model, query, query_result.content)
+                self._repository.save(query_result.messages)
 
     def select_model(self) -> ModelName:
         return build_model_name(
