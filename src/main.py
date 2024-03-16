@@ -22,6 +22,7 @@ from src.models.placeholders import (
     replace_placeholders_with_one_for,
     replace_question_with_substitutions,
 )
+from src.utils import remove_duplicates
 from src.views import print_interaction
 
 PROGRAM_PROMPT = "Introduce tu consulta. Introduce `end` como único contenido de una línea cuando hayas terminado. Para obtener ayuda, introduce únicamente `/help` y pulsa Enter."
@@ -84,7 +85,11 @@ class Main:
             occurrences = find_placeholders(raw_question)
 
             if occurrences:
-                user_substitutions = get_raw_substitutions_from_user(occurrences)
+                unique_placeholders = remove_duplicates(occurrences)
+                del occurrences
+                user_substitutions = get_raw_substitutions_from_user(
+                    unique_placeholders
+                )
                 questions = build_questions(raw_question, user_substitutions)
                 if questions is None:
                     continue
@@ -154,23 +159,19 @@ def build_questions(
 
 
 def get_raw_substitutions_from_user(
-    occurrences: Sequence[Placeholder],
+    unique_placeholders: Sequence[Placeholder],
 ) -> Mapping[Placeholder, str]:
     """
     Prompts the user to provide values for each unique placeholder found in the question.
 
     Args:
-        occurrences: A sequence of placeholders found in the question.
+        unique_placeholders: A sequence of unique placeholders found in the question.
 
     Returns:
         A dictionary mapping placeholders to the user-provided values.
     """
     substitutions: dict[Placeholder, str] = {}
-    unique_ocurrences: list[Placeholder] = []
-    for occurrence in occurrences:
-        if occurrence not in unique_ocurrences:
-            unique_ocurrences.append(occurrence)
-    for placeholder in unique_ocurrences:
+    for placeholder in unique_placeholders:
         replacement = get_input("Por favor indica el valor de " + placeholder)
         substitutions[placeholder] = replacement
     return substitutions
