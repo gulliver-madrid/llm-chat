@@ -57,20 +57,24 @@ class Main:
             if not raw_query:
                 continue
             action = CommandInterpreter.parse_user_input(raw_query)
+            new_conversation = False
             if action:
                 match action.name:
+                    case ActionName.SALIR:
+                        break
                     case ActionName.HELP:
                         show_help()
                         get_input(PRESS_ENTER_TO_CONTINUE)
                         continue
-                    case ActionName.SALIR:
-                        break
                     case ActionName.CHANGE_MODEL:
                         model = self.select_model()
                         continue
                     case ActionName.DEBUG:
                         raw_query = raw_query.removeprefix("/d").strip()
                         debug = True
+                    case ActionName.NEW_CONVERSATION:
+                        raw_query = raw_query.removeprefix("/new").strip()
+                        new_conversation = True
                     case _:
                         raise RuntimeError(f"Acción no válida: {action}")
 
@@ -103,7 +107,9 @@ class Main:
                 and not confirm_launching_many_queries(number_of_queries)
             ):
                 continue
-
+            if new_conversation:
+                prev_messages = None
+            messages = None
             for i, query in enumerate(queries):
                 print("\n...procesando consulta número", i + 1, "de", number_of_queries)
 
@@ -112,10 +118,12 @@ class Main:
                 )
                 print_interaction(model, query, query_result.content)
                 self._repository.save(query_result.messages)
-                if len(queries) > 1:
-                    prev_messages = None
-                else:
-                    prev_messages = query_result.messages
+                if i == 0:
+                    messages = query_result.messages
+            if len(queries) > 1:
+                prev_messages = None
+            else:
+                prev_messages = messages
 
     def select_model(self) -> ModelName:
         return build_model_name(

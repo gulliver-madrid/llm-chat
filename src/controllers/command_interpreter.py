@@ -9,6 +9,7 @@ class ActionName:
     CHANGE_MODEL = "CHANGE_MODEL"
     DEBUG = "DEBUG"
     HELP = "HELP"
+    NEW_CONVERSATION = "NEW_CONVERSATION"
 
 
 @dataclass
@@ -26,10 +27,12 @@ class CommandInterpreter:
         match possible_commands[0]:
             case "/q" | "/quit" | "/exit":
                 return Action(ActionName.SALIR)
-            case "/d" | "/debug":
-                return Action(ActionName.DEBUG)
             case "/h" | "/help":
                 return Action(ActionName.HELP)
+            case "/d" | "/debug":
+                return Action(ActionName.DEBUG)
+            case "/new":
+                return Action(ActionName.NEW_CONVERSATION)
             case "/change":
                 return Action(ActionName.CHANGE_MODEL)
             case other if other.startswith("/"):
