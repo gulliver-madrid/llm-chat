@@ -19,8 +19,8 @@ class Action:
 class CommandInterpreter:
 
     @staticmethod
-    def parse_user_input(raw_question: str) -> Action | None:
-        possible_commands = raw_question.strip().split()
+    def parse_user_input(raw_query: str) -> Action | None:
+        possible_commands = raw_query.strip().split()
         if not possible_commands:
             return None
         match possible_commands[0]:
