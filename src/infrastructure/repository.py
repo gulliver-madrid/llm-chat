@@ -15,12 +15,9 @@ class ChatRepository:
         self._data_dir.mkdir(exist_ok=True)
 
     def save(self, complete_messages: Sequence[CompleteMessage]) -> None:
-        max_number = find_max_file_number(self._data_dir)
-        new_number = max_number + 1 if max_number is not None else 0
-        assert 0 <= new_number < 10**NUMBER_OF_DIGITS
-        conversation_id = str(new_number).zfill(NUMBER_OF_DIGITS)
-        texts = [f"[META id={conversation_id}]\n"]
+        conversation_id = self.get_new_conversation_id()
         number_of_messages = len(complete_messages)
+        texts = [create_meta_tag("id", conversation_id) + "\n"]
         texts.append(create_meta_tag("schema_version", SCHEMA_VERSION))
         texts.append(create_meta_tag("number_of_messages", number_of_messages))
         texts.append(create_meta_tag("current_time", get_current_time()))
@@ -37,6 +34,12 @@ class ChatRepository:
             self._data_dir / (conversation_id + ".chat"), "w", encoding="utf-8"
         ) as file:
             file.write("\n".join(texts))
+
+    def get_new_conversation_id(self) -> str:
+        max_number = find_max_file_number(self._data_dir)
+        new_number = max_number + 1 if max_number is not None else 0
+        assert 0 <= new_number < 10**NUMBER_OF_DIGITS
+        return str(new_number).zfill(NUMBER_OF_DIGITS)
 
 
 def find_max_file_number(directory_path: Path) -> int | None:
