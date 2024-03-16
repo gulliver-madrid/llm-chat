@@ -2,9 +2,11 @@ from pathlib import Path
 import re
 from typing import Sequence
 
+from src.infrastructure.ahora import get_current_time
 from src.infrastructure.client_wrapper import ChatMessage
 
 NUMBER_OF_DIGITS = 4
+SCHEMA_VERSION = "0.1"
 
 
 class Repository:
@@ -17,7 +19,11 @@ class Repository:
         new_number = max_number + 1 if max_number is not None else 0
         assert 0 <= new_number < 10**NUMBER_OF_DIGITS
         conversation_id = str(new_number).zfill(NUMBER_OF_DIGITS)
-        texts = [f"[META id={conversation_id}]"]
+        texts = [f"[META id={conversation_id}]\n"]
+        number_of_messages = len(messages)
+        texts.append(f"[META schema_version={SCHEMA_VERSION}]")
+        texts.append(f"[META number_of_messages={number_of_messages}]")
+        texts.append(f"[META current_time={get_current_time()}]")
         for message in messages:
             texts.append(f"\n[ROLE {message.role.upper()}]")
             assert isinstance(message.content, str)
