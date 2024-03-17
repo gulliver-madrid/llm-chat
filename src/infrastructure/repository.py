@@ -16,7 +16,9 @@ class Repository:
 
     def save(self, complete_messages: Sequence[CompleteMessage]) -> None:
         conversation_id = self._get_new_conversation_id()
-        conversation = create_conversation_texts(complete_messages, conversation_id)
+        conversation = create_conversation_texts(
+            complete_messages, conversation_id, get_current_time()
+        )
         self._save_conversation(conversation_id, conversation)
 
     def _get_new_conversation_id(self) -> str:
@@ -53,7 +55,9 @@ class ConversationBuilder:
 
 
 def create_conversation_texts(
-    complete_messages: Sequence[CompleteMessage], conversation_id: str
+    complete_messages: Sequence[CompleteMessage],
+    conversation_id: str,
+    current_time: str,
 ) -> str:
     number_of_messages = len(complete_messages)
     builder = ConversationBuilder()
@@ -61,7 +65,7 @@ def create_conversation_texts(
     builder.add_line_break()
     builder.add_meta_tag("schema_version", SCHEMA_VERSION)
     builder.add_meta_tag("number_of_messages", number_of_messages)
-    builder.add_meta_tag("current_time", get_current_time())
+    builder.add_meta_tag("current_time", current_time)
     for complete_message in complete_messages:
         builder.add_line_break()
         builder.add_role_tag(complete_message)
