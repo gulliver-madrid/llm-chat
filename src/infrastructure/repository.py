@@ -16,8 +16,8 @@ class ChatRepository:
 
     def save(self, complete_messages: Sequence[CompleteMessage]) -> None:
         conversation_id = self._get_new_conversation_id()
-        texts = create_conversation_texts(complete_messages, conversation_id)
-        self._save_conversation(conversation_id, texts)
+        conversation = create_conversation_texts(complete_messages, conversation_id)
+        self._save_conversation(conversation_id, conversation)
 
     def _get_new_conversation_id(self) -> str:
         max_number = find_max_file_number(self._data_dir)
@@ -25,27 +25,50 @@ class ChatRepository:
         assert 0 <= new_number < 10**NUMBER_OF_DIGITS
         return str(new_number).zfill(NUMBER_OF_DIGITS)
 
-    def _save_conversation(self, conversation_id: str, texts: Sequence[str]) -> None:
+    def _save_conversation(self, conversation_id: str, conversation: str) -> None:
         assert conversation_id.isdigit()
         filepath = self._data_dir / (conversation_id + ".chat")
         with open(filepath, "w", encoding="utf-8") as file:
-            file.write("\n".join(texts))
+            file.write(conversation)
+
+
+class ConversationBuilder:
+    def __init__(self) -> None:
+        self._texts: list[str] = []
+
+    def add_meta_tag(self, name: str, value: object) -> None:
+        self._texts.append(create_meta_tag(name, value))
+
+    def add_role_tag(self, complete_message: CompleteMessage) -> None:
+        self._texts.append(create_role_tag(complete_message))
+
+    def add_line_break(self) -> None:
+        self._texts.append("")
+
+    def add_text(self, text: str) -> None:
+        self._texts.append(text)
+
+    def build(self) -> str:
+        return "\n".join(self._texts)
 
 
 def create_conversation_texts(
     complete_messages: Sequence[CompleteMessage], conversation_id: str
-) -> Sequence[str]:
+) -> str:
     number_of_messages = len(complete_messages)
-    texts = [create_meta_tag("id", conversation_id) + "\n"]
-    texts.append(create_meta_tag("schema_version", SCHEMA_VERSION))
-    texts.append(create_meta_tag("number_of_messages", number_of_messages))
-    texts.append(create_meta_tag("current_time", get_current_time()))
+    builder = ConversationBuilder()
+    builder.add_meta_tag("id", conversation_id)
+    builder.add_line_break()
+    builder.add_meta_tag("schema_version", SCHEMA_VERSION)
+    builder.add_meta_tag("number_of_messages", number_of_messages)
+    builder.add_meta_tag("current_time", get_current_time())
     for complete_message in complete_messages:
-        texts.append("\n" + create_role_tag(complete_message))
+        builder.add_line_break()
+        builder.add_role_tag(complete_message)
         message = complete_message.chat_msg
         assert isinstance(message.content, str)
-        texts.append(message.content)
-    return texts
+        builder.add_text(message.content)
+    return builder.build()
 
 
 def find_max_file_number(directory_path: Path) -> int | None:
