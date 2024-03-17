@@ -5,7 +5,7 @@ from mistralai.models.chat_completion import ChatMessage
 
 from src.models.model_choice import ModelName
 
-__all__ = ["QueryResult", "ClientWrapper", "CompleteMessage"]
+__all__ = ["QueryResult", "ClientWrapper", "CompleteMessage", "ChatMessage"]
 
 
 @dataclass(frozen=True)

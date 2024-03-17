@@ -10,6 +10,7 @@ class ActionName:
     DEBUG = "DEBUG"
     HELP = "HELP"
     NEW_CONVERSATION = "NEW_CONVERSATION"
+    LOAD_CONVERSATION = "LOAD_CONVERSATION"
 
 
 @dataclass
@@ -31,6 +32,8 @@ class CommandInterpreter:
                 return Action(ActionName.HELP)
             case "/d" | "/debug":
                 return Action(ActionName.DEBUG)
+            case "/load":
+                return Action(ActionName.LOAD_CONVERSATION)
             case "/new":
                 return Action(ActionName.NEW_CONVERSATION)
             case "/change":
