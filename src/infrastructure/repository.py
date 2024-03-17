@@ -3,7 +3,9 @@ import re
 from typing import Sequence
 
 from src.infrastructure.ahora import get_current_time
-from src.infrastructure.client_wrapper import CompleteMessage
+from src.infrastructure.client_wrapper import CompleteMessage, ChatMessage
+from src.models.parsed_line import ParsedLine, TagType
+from src.models.model_choice import ModelName
 
 NUMBER_OF_DIGITS = 4
 SCHEMA_VERSION = "0.2"
@@ -21,6 +23,38 @@ class Repository:
         )
         self._save_conversation(conversation_id, conversation)
 
+    def load_conversation_from_text(self, text: str) -> list[CompleteMessage]:
+        lines = text.split("\n")
+        role_tags_indexes: list[int] = []
+        for i, line in enumerate(lines):
+            parsed = ParsedLine(line)
+            if parsed.get_tag_type() == TagType.ROLE:
+                role_tags_indexes.append(i)
+
+        complete_messages: list[CompleteMessage] = []
+        role_tags_count = len(role_tags_indexes)
+        for i in range(role_tags_count):
+            start = role_tags_indexes[i] + 1
+            if i < role_tags_count - 1:
+                end = role_tags_indexes[i + 1]
+                this_role_lines = lines[start:end]
+            else:
+                assert i == role_tags_count - 1
+                this_role_lines = lines[start:]
+            this_role_text = "\n".join(this_role_lines).strip()
+            role = ParsedLine(lines[role_tags_indexes[i]]).get_role()
+            assert isinstance(role, str)
+            chat_message = ChatMessage(
+                role=role,
+                content=this_role_text,
+            )
+            model = ModelName("unknown") if role == "assistent" else None
+            complete_messages.append(
+                CompleteMessage(chat_msg=chat_message, model=model)
+            )
+
+        return complete_messages
+
     def _get_new_conversation_id(self) -> str:
         max_number = find_max_file_number(self._data_dir)
         new_number = max_number + 1 if max_number is not None else 0
@@ -32,6 +66,13 @@ class Repository:
         filepath = self._data_dir / (conversation_id + ".chat")
         with open(filepath, "w", encoding="utf-8") as file:
             file.write(conversation)
+
+    def load_conversation(self, conversation_id: str) -> str:
+        assert conversation_id.isdigit()
+        filepath = self._data_dir / (conversation_id + ".chat")
+        with open(filepath, "r", encoding="utf-8") as file:
+            text = file.read()
+        return text
 
 
 class ConversationBuilder:

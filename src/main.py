@@ -61,6 +61,7 @@ class Main:
                 continue
             action = CommandInterpreter.parse_user_input(raw_query)
             new_conversation = False
+            conversation_to_load = None
             if action:
                 match action.name:
                     case ActionName.SALIR:
@@ -75,11 +76,27 @@ class Main:
                     case ActionName.DEBUG:
                         raw_query = raw_query.removeprefix("/d").strip()
                         debug = True
+                    case ActionName.LOAD_CONVERSATION:
+                        raw_query = raw_query.removeprefix("/load").strip()
+                        conversation_to_load = raw_query.split()[0]
                     case ActionName.NEW_CONVERSATION:
                         raw_query = raw_query.removeprefix("/new").strip()
                         new_conversation = True
                     case _:
                         raise RuntimeError(f"Acción no válida: {action}")
+
+            if conversation_to_load:
+                conversation = self._repository.load_conversation(conversation_to_load)
+                prev_messages = self._repository.load_conversation_from_text(
+                    conversation
+                )
+                print(f"### Esta es la conversacion con id {conversation_to_load}")
+                print(conversation)
+                print(
+                    f"### Estos son los mensajes de la conversacion con id {conversation_to_load}"
+                )
+                print(prev_messages)
+                continue
 
             if not raw_query:
                 continue
