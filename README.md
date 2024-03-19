@@ -1,5 +1,8 @@
 # Text Interface for Mistral Models
 
+[[leer en español](README.es.md)]
+
+
 [Warning: Risk of Force Push!](#⚠️-warning-risk-of-force-push) • [Disclaimer](#disclaimer) • [Installation](#installation) • [Usage](#usage) • [Project Management Update](#🚀-project-management-update)
 
 This project provides a text interface to interact with [Mistral AI](https://mistral.ai/) models using a local script. The script allows users to select a model, input a
@@ -73,9 +76,9 @@ To start a new conversation instead of continuing with the current one, use the 
 
 If your query includes placeholders (e.g., `$0concept`), simply type your query with these placeholders. After submitting your query, you will be prompted to replace each placeholder one by one. This simple substitution method is the most straightforward way to use placeholders for personalized queries.
 
-For more advanced usage, if your query includes placeholders and you wish to conduct multiple related queries in a single execution, you can use the `/for` command with the format `/for value1,value2,value3`. This allows the script to replace the placeholders with the indicated values before processing the queries. This feature is especially useful for efficiently conducting a series of related queries without the need to restart the process for each new input, thus enhancing the user experience and efficiency when interacting with the system.
-
 Placeholder syntax is designed to be both intuitive and flexible, allowing for dynamic query customization. Placeholders must begin with `$0` followed by one or more alphabetical characters (including underscore _). Optionally, these can be followed by one or more digits. This structure ensures that placeholders are easily identifiable within the query and can be uniquely replaced based on user input or predefined commands. For example, a placeholder might look like `$0concept`, `$0variable_name`, or `$0question1`, where each placeholder is prepared to be substituted with a specific value that the user will provide later. This syntax is essential for distinguishing placeholders from regular text and ensuring that the script accurately identifies and processes them during the query substitution phase.
+
+For more advanced usage, if your query includes placeholders and you wish to conduct multiple related queries in a single execution, you can use the `/for` command with the format `/for value1,value2,value3`. This allows the script to replace the placeholders with the indicated values before processing the queries. This feature is especially useful for efficiently conducting a series of related queries without the need to restart the process for each new input, thus enhancing the user experience and efficiency when interacting with the system.
 
 ### Exiting the program
 
@@ -142,8 +145,7 @@ To improve how we manage versions and document changes, we're making some import
 - **Introducing a Detailed Changelog**: A `CHANGELOG.md` is now part of the project. It will list modifications, new features, and fixes for each release, giving everyone a clear view of how the project evolves.
 
 
----
-
+#### Development dependencies
 
 This project uses [Poetry](https://python-poetry.org/) for package management and dependency handling. To set up the development environment and
 install required tools, run:
@@ -157,7 +159,6 @@ The development dependencies include `mypy` for static type checking.
 ### License
 
 This project is licensed under the [GPLv3 License](https://www.gnu.org/licenses/quick-guide-gplv3.html).
-
 
 
 ### Acknowledgements
