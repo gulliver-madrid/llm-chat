@@ -63,16 +63,19 @@ class ChatRepository:
 
     def _save_conversation(self, conversation_id: str, conversation: str) -> None:
         assert conversation_id.isdigit()
-        filepath = self._data_dir / (conversation_id + ".chat")
+        filepath = self._build_conversation_filepath(conversation_id)
         with open(filepath, "w", encoding="utf-8") as file:
             file.write(conversation)
 
     def load_conversation(self, conversation_id: str) -> str:
         assert conversation_id.isdigit()
-        filepath = self._data_dir / (conversation_id + ".chat")
+        filepath = self._build_conversation_filepath(conversation_id)
         with open(filepath, "r", encoding="utf-8") as file:
             text = file.read()
         return text
+
+    def _build_conversation_filepath(self, conversation_id: str) -> Path:
+        return self._data_dir / (conversation_id + ".chat")
 
 
 class ConversationBuilder:
