@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import Sequence
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
@@ -20,6 +21,11 @@ class QueryResult:
     messages: list[CompleteMessage]
 
 
+class Platform(Enum):
+    Mistral = "Mistral"
+    OpenAI = "OpenAI"
+
+
 class ClientWrapper:
     def __init__(self, api_key: str):
         self._client = MistralClient(api_key=api_key)
@@ -27,6 +33,7 @@ class ClientWrapper:
     def get_simple_response(
         self,
         model: ModelName,
+        platform: Platform,
         query: str,
         prev_messages: Sequence[CompleteMessage] | None,
         debug: bool = False,
@@ -34,6 +41,7 @@ class ClientWrapper:
         """
         Retrieves a simple response from the Mistral AI client.
         """
+        assert platform == Platform.Mistral
         if prev_messages:
             complete_messages = list(prev_messages)
         else:
