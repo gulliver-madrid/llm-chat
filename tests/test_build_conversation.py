@@ -2,7 +2,10 @@ from dataclasses import dataclass
 from typing import cast
 import unittest
 from src.infrastructure.client_wrapper import ChatMessage, CompleteMessage
-from src.infrastructure.repository import create_conversation_texts
+from src.infrastructure.repository import (
+    cast_string_to_conversation_id,
+    create_conversation_texts,
+)
 from src.models.model_choice import ModelName
 
 
@@ -28,7 +31,7 @@ class TestCreateConversationTexts(unittest.TestCase):
         ]
 
     def test_create_conversation_texts(self) -> None:
-        conversation_id = "0001"
+        conversation_id = cast_string_to_conversation_id("0001")
         expected_conversation_text = """\
 [META id=0001]
 

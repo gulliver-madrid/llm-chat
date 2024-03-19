@@ -1,6 +1,6 @@
 from pathlib import Path
 import re
-from typing import Sequence
+from typing import NewType, Sequence, cast
 
 from src.infrastructure.ahora import get_current_time
 from src.infrastructure.client_wrapper import CompleteMessage, ChatMessage
@@ -9,6 +9,8 @@ from src.models.model_choice import ModelName
 
 NUMBER_OF_DIGITS = 4
 SCHEMA_VERSION = "0.2"
+
+ConversationId = NewType("ConversationId", str)
 
 
 class ChatRepository:
@@ -55,27 +57,33 @@ class ChatRepository:
 
         return complete_messages
 
-    def _get_new_conversation_id(self) -> str:
+    def _get_new_conversation_id(self) -> ConversationId:
         max_number = find_max_file_number(self._data_dir)
         new_number = max_number + 1 if max_number is not None else 0
         assert 0 <= new_number < 10**NUMBER_OF_DIGITS
-        return str(new_number).zfill(NUMBER_OF_DIGITS)
+        return cast_string_to_conversation_id(str(new_number).zfill(NUMBER_OF_DIGITS))
 
-    def _save_conversation(self, conversation_id: str, conversation: str) -> None:
-        assert conversation_id.isdigit()
+    def _save_conversation(
+        self, conversation_id: ConversationId, conversation: str
+    ) -> None:
         filepath = self._build_conversation_filepath(conversation_id)
         with open(filepath, "w", encoding="utf-8") as file:
             file.write(conversation)
 
-    def load_conversation(self, conversation_id: str) -> str:
-        assert conversation_id.isdigit()
+    def load_conversation(self, conversation_id: ConversationId) -> str:
         filepath = self._build_conversation_filepath(conversation_id)
         with open(filepath, "r", encoding="utf-8") as file:
             text = file.read()
         return text
 
-    def _build_conversation_filepath(self, conversation_id: str) -> Path:
+    def _build_conversation_filepath(self, conversation_id: ConversationId) -> Path:
         return self._data_dir / (conversation_id + ".chat")
+
+
+def cast_string_to_conversation_id(string: str) -> ConversationId:
+    assert string.isdigit()
+    assert len(string) == NUMBER_OF_DIGITS
+    return cast(ConversationId, string)
 
 
 class ConversationBuilder:
@@ -100,7 +108,7 @@ class ConversationBuilder:
 
 def create_conversation_texts(
     complete_messages: Sequence[CompleteMessage],
-    conversation_id: str,
+    conversation_id: ConversationId,
     current_time: str,
 ) -> str:
     number_of_messages = len(complete_messages)

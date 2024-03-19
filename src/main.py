@@ -7,7 +7,7 @@ from typing import Final, Mapping, Sequence
 
 from src.infrastructure.client_wrapper import ClientWrapper
 from src.controllers.select_model import SelectModelController
-from src.infrastructure.repository import ChatRepository
+from src.infrastructure.repository import ChatRepository, cast_string_to_conversation_id
 from src.io_helpers import (
     display_neutral_msg,
     get_input,
@@ -86,7 +86,8 @@ class Main:
                         raise RuntimeError(f"Acción no válida: {action}")
 
             if conversation_to_load:
-                conversation = self._repository.load_conversation(conversation_to_load)
+                conversation_id = cast_string_to_conversation_id(conversation_to_load)
+                conversation = self._repository.load_conversation(conversation_id)
                 prev_messages = self._repository.load_conversation_from_text(
                     conversation
                 )

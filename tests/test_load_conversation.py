@@ -3,7 +3,7 @@ from typing import cast
 import unittest
 from src.infrastructure.client_wrapper import ChatMessage
 from src.models.parsed_line import ParsedLine, TagType
-from src.infrastructure.repository import Repository
+from src.infrastructure.repository import ChatRepository
 
 
 @dataclass(frozen=True)
@@ -48,7 +48,7 @@ class TestLoadConversation(unittest.TestCase):
         pass
 
     def test_load_conversation_from_text(self) -> None:
-        repository = Repository()
+        repository = ChatRepository()
         result = repository.load_conversation_from_text(TEXT_FROM_FILE)
         for complete_msg, expected_chat_msg in zip(result, expected_messages):
             self.assertEqual(complete_msg.chat_msg.role, expected_chat_msg.role)
