@@ -1,19 +1,11 @@
-from dataclasses import dataclass
-from typing import cast
 import unittest
 from src.infrastructure.client_wrapper import ChatMessage
 from src.models.parsed_line import ParsedLine, TagType
 from src.infrastructure.repository import Repository
 
 
-@dataclass(frozen=True)
-class CustomChatMessage:
-    role: str
-    content: str
-
-
 def create_chat_msg(role: str, content: str) -> ChatMessage:
-    return cast(ChatMessage, CustomChatMessage(role, content))
+    return ChatMessage(role=role, content=content)
 
 
 TEXT_FROM_FILE = """\
