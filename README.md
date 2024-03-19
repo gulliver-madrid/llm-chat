@@ -125,7 +125,23 @@ The script includes debugging functionalities using the command `/debug`. This a
 
 ### Development
 
-⚠️ **Warning: Risk of force push!** If you have local changes that you do not wish to lose, we strongly recommend avoiding the use of `git pull` or `git fetch` without first making sure you understand the implications. These commands can cause your local changes to be overwritten if not handled carefully. ⚠️
+#### ⚠️ Warning: Risk of Force Push!
+
+If you have local changes that you don’t want to lose, please don't use `git pull` or `git fetch`. These commands can overwrite local changes if not used carefully. Also, with the new version management updates, there might be changes that rewrite the project's history in the remote repository to clearly define version change points.
+
+Thanks for your understanding and patience as we make these improvements. If you have any questions or need help navigating the changes, feel free to reach out.
+
+#### 🚀 Project Management Update
+
+To improve how we manage versions and document changes, we're making some important changes:
+
+- **Establishing Version Change Points**: Moving forward, significant versions of the project will be clearly marked in the git history. This makes it easier to navigate the project's different stages and access specific versions.
+
+- **Introducing a Detailed Changelog**: A `CHANGELOG.md` is now part of the project. It will list modifications, new features, and fixes for each release, giving everyone a clear view of how the project evolves.
+
+
+---
+
 
 This project uses [Poetry](https://python-poetry.org/) for package management and dependency handling. To set up the development environment and
 install required tools, run:
