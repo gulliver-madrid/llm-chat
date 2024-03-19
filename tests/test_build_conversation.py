@@ -1,10 +1,10 @@
 import unittest
-from src.infrastructure.client_wrapper import ChatMessage, CompleteMessage
+from src.infrastructure.client_wrapper import ChatMessage, CompleteMessage, Model
 from src.infrastructure.repository import (
     cast_string_to_conversation_id,
     create_conversation_texts,
 )
-from src.models.model_choice import ModelName
+from src.models.shared import ModelName
 
 
 class TestCreateConversationTexts(unittest.TestCase):
@@ -12,11 +12,13 @@ class TestCreateConversationTexts(unittest.TestCase):
         self.complete_messages = [
             CompleteMessage(ChatMessage(role="user", content="Hello"), None),
             CompleteMessage(
-                ChatMessage(role="assistant", content="Hi"), ModelName("model_1")
+                ChatMessage(role="assistant", content="Hi"),
+                Model(None, ModelName("model_1")),
             ),
             CompleteMessage(ChatMessage(role="user", content="How are you?"), None),
             CompleteMessage(
-                ChatMessage(role="assistant", content="I'm fine."), ModelName("model_2")
+                ChatMessage(role="assistant", content="I'm fine."),
+                Model(None, ModelName("model_2")),
             ),
         ]
 

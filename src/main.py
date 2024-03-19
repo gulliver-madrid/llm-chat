@@ -5,7 +5,7 @@ from rich.markdown import Markdown
 import os
 from typing import Final, Mapping, Sequence
 
-from src.infrastructure.client_wrapper import ClientWrapper, Platform
+from src.infrastructure.client_wrapper import ClientWrapper, Model
 from src.controllers.select_model import SelectModelController
 from src.infrastructure.repository import Repository, cast_string_to_conversation_id
 from src.io_helpers import (
@@ -14,13 +14,14 @@ from src.io_helpers import (
     show_error_msg,
 )
 from src.controllers.command_interpreter import ActionName, CommandInterpreter
-from src.models.model_choice import ModelName, build_model_name
+from src.models.model_choice import MISTRAL_MODEL_PREFIX
 from src.models.placeholders import (
     Placeholder,
     QueryBuildException,
     build_queries,
     find_placeholders,
 )
+from src.models.shared import ModelName, Platform
 from src.utils import remove_duplicates
 from src.views import print_interaction
 
@@ -41,7 +42,7 @@ Puedes iniciar tu consulta con `/d` para activar el modo depuración.
 
 
 class Main:
-    def __init__(self, models: Sequence[str]) -> None:
+    def __init__(self, models: Sequence[Model]) -> None:
         self._models = models
         self._select_model_controler = SelectModelController(models)
         self._repository = Repository()
@@ -135,9 +136,9 @@ class Main:
                 print("\n...procesando consulta número", i + 1, "de", number_of_queries)
 
                 query_result = client_wrapper.get_simple_response(
-                    model, Platform.Mistral, query, prev_messages, debug
+                    model, query, prev_messages, debug
                 )
-                print_interaction(model, query, query_result.content)
+                print_interaction(model.model_name, query, query_result.content)
                 self._repository.save(query_result.messages)
                 if i == 0:
                     messages = query_result.messages
@@ -146,10 +147,8 @@ class Main:
             else:
                 prev_messages = messages
 
-    def select_model(self) -> ModelName:
-        return build_model_name(
-            self._select_model_controler.select_model(), self._models
-        )
+    def select_model(self) -> Model:
+        return self._select_model_controler.select_model()
 
 
 def confirm_launching_many_queries(number_of_queries: int) -> bool:
@@ -188,8 +187,16 @@ def get_raw_substitutions_from_user(
 
 
 def main() -> None:
-    models: Final[Sequence[str]] = ["tiny", "small", "medium", "large-2402"]
-    main_instance = Main(models)
+    mistral_models: Final[Sequence[str]] = ["tiny", "small", "medium", "large-2402"]
+    openai_models: Final[Sequence[str]] = ["gpt-3.5-turbo", "gpt-4-1106-preview"]
+
+    main_instance = Main(
+        [
+            Model(Platform.Mistral, ModelName(MISTRAL_MODEL_PREFIX + "-" + model))
+            for model in mistral_models
+        ]
+        + [Model(Platform.OpenAI, ModelName(model)) for model in openai_models]
+    )
     main_instance.execute()
     display_neutral_msg("Saliendo")
 
