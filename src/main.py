@@ -5,7 +5,7 @@ from rich.markdown import Markdown
 import os
 from typing import Final, Mapping, Sequence
 
-from src.infrastructure.client_wrapper import ClientWrapper
+from src.infrastructure.client_wrapper import ClientWrapper, Platform
 from src.controllers.select_model import SelectModelController
 from src.infrastructure.repository import ChatRepository, cast_string_to_conversation_id
 from src.io_helpers import (
@@ -135,7 +135,7 @@ class Main:
                 print("\n...procesando consulta número", i + 1, "de", number_of_queries)
 
                 query_result = client_wrapper.get_simple_response(
-                    model, query, prev_messages, debug
+                    model, Platform.Mistral, query, prev_messages, debug
                 )
                 print_interaction(model, query, query_result.content)
                 self._repository.save(query_result.messages)
