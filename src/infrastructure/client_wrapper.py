@@ -1,18 +1,32 @@
 from dataclasses import dataclass
-from enum import Enum
-from typing import Sequence
+import os
+from typing import Any, Sequence
 from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
+from openai import OpenAI
 
-from src.models.model_choice import ModelName
+from src.models.shared import ModelName, Platform
+
 
 __all__ = ["QueryResult", "ClientWrapper", "CompleteMessage", "ChatMessage"]
 
 
 @dataclass(frozen=True)
+class ChatMessage:
+    role: str
+    content: str
+
+
+@dataclass(frozen=True)
+class Model:
+    platform: Platform | None
+    model_name: ModelName
+
+
+@dataclass(frozen=True)
 class CompleteMessage:
     chat_msg: ChatMessage
-    model: ModelName | None = None
+    model: Model | None = None
 
 
 @dataclass(frozen=True)
@@ -21,19 +35,21 @@ class QueryResult:
     messages: list[CompleteMessage]
 
 
-class Platform(Enum):
-    Mistral = "Mistral"
-    OpenAI = "OpenAI"
-
-
 class ClientWrapper:
-    def __init__(self, api_key: str):
-        self._client = MistralClient(api_key=api_key)
+    def __init__(self, mistral_api_key: str):
+        self._client = MistralClient(api_key=mistral_api_key)
+        openai_api_key = os.environ.get("OPENAI_API_KEY")
+        self._openai_client = (
+            OpenAI(
+                api_key=openai_api_key,
+            )
+            if openai_api_key
+            else None
+        )
 
     def get_simple_response(
         self,
-        model: ModelName,
-        platform: Platform,
+        model: Model,
         query: str,
         prev_messages: Sequence[CompleteMessage] | None,
         debug: bool = False,
@@ -41,7 +57,6 @@ class ClientWrapper:
         """
         Retrieves a simple response from the Mistral AI client.
         """
-        assert platform == Platform.Mistral
         if prev_messages:
             complete_messages = list(prev_messages)
         else:
@@ -53,15 +68,54 @@ class ClientWrapper:
         messages: list[ChatMessage] = [
             complete_msg.chat_msg for complete_msg in complete_messages
         ]
+        if model.platform == Platform.OpenAI:
+            assert self._openai_client
+            openai_messages: Any = [
+                {
+                    "role": msg.role,
+                    "content": msg.content,
+                }
+                for msg in messages
+            ]
+            openai_chat_completion = self._openai_client.chat.completions.create(
+                messages=openai_messages,
+                model="gpt-3.5-turbo",
+            )
+            openai_chat_msg = openai_chat_completion.choices[0].message
+            content = openai_chat_msg.content
+            if debug:
+                breakpoint()
+            assert isinstance(content, str)
+            chat_msg = ChatMessage(openai_chat_msg.role, content)
+        else:
+            mistral_messages = [
+                MistralChatMessage(role=msg.role, content=msg.content)
+                for msg in messages
+            ]
+
+            assert model.platform == Platform.Mistral
+            model_name = model.model_name
+
+            mistral_chat_msg = self.get_mistral_platform_chat_response(
+                model_name, mistral_messages
+            )
+
+            del mistral_messages
+            assert isinstance(mistral_chat_msg.content, str)
+            content = mistral_chat_msg.content
+            if debug:
+                print(mistral_chat_msg)
+                breakpoint()
+            chat_msg = ChatMessage(mistral_chat_msg.role, content)
+        complete_messages.append(CompleteMessage(chat_msg, model))
+        return QueryResult(content, complete_messages)
+
+    def get_mistral_platform_chat_response(
+        self, model_name: ModelName, messages: list[MistralChatMessage]
+    ) -> MistralChatMessage:
         chat_response = self._client.chat(
-            model=model,
+            model=model_name,
             messages=messages,
         )
         choices = chat_response.choices
-        content = choices[0].message.content
-        if debug:
-            print(chat_response)
-            breakpoint()
-        assert isinstance(content, str)
-        complete_messages.append(CompleteMessage(choices[0].message, model))
-        return QueryResult(content, complete_messages)
+        return choices[0].message
