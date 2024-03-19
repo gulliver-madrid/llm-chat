@@ -5,7 +5,7 @@
 
 [Warning: Risk of Force Push!](#⚠️-warning-risk-of-force-push) • [Disclaimer](#disclaimer) • [Installation](#installation) • [Usage](#usage) • [Project Management Update](#🚀-project-management-update)
 
-This project provides a text interface to interact with [Mistral AI](https://mistral.ai/) models using a local script. The script allows users to select a model, input a
+This project provides a text interface to interact with [Mistral AI](https://mistral.ai/) models. The app allows users to select a model, input a
 question, and receive the model's response.
 
 ## Disclaimer
@@ -38,7 +38,7 @@ This command will install the necessary dependencies.
 
 ## Usage
 
-**Before using this script**, ensure you have set your `MISTRAL_API_KEY` environment variable:
+**Before using this app**, ensure you have set your `MISTRAL_API_KEY` environment variable:
 
 On Linux:
 
@@ -52,7 +52,7 @@ set MISTRAL_API_KEY=<your_api_key>
 ```
 
 
-**To run the script**, execute the `src/main.py` file.
+**To run the app**, execute the `src/main.py` file.
 
 Using poetry:
 
@@ -66,25 +66,22 @@ Or, if installed using pip:
 python src/main.py
 ```
 
-The script allows you to interact with it in a conversational manner by inputting questions. After launching the script, it will prompt you to choose from the available models or to proceed with the default model. Once a model is selected, you can begin typing your question. If your query spans multiple lines, simply continue typing until you've finished formulating your question.
+The app allows you to interact with `mistral` LLM models in a conversational manner by inputting questions. After launching the app, it will prompt you to choose from the available models or to proceed with the default model. Once a model is selected, you can begin typing your question. If your query spans multiple lines, simply continue typing until you've finished formulating your question.
 
 To indicate that you have finished entering your question, type `end` on a new line. The model will then process your input and provide a response. After receiving a response, you are free to initiate a new query by following the same process.
 
 To start a new conversation instead of continuing with the current one, use the `/new` command at the beginning of your query.
 
+To get help about the available commands, use the command `/help`.
+
 ### Placeholders
 
 If your query includes placeholders (e.g., `$0concept`), simply type your query with these placeholders. After submitting your query, you will be prompted to replace each placeholder one by one. This simple substitution method is the most straightforward way to use placeholders for personalized queries.
 
-Placeholder syntax is designed to be both intuitive and flexible, allowing for dynamic query customization. Placeholders must begin with `$0` followed by one or more alphabetical characters (including underscore _). Optionally, these can be followed by one or more digits. This structure ensures that placeholders are easily identifiable within the query and can be uniquely replaced based on user input or predefined commands. For example, a placeholder might look like `$0concept`, `$0variable_name`, or `$0question1`, where each placeholder is prepared to be substituted with a specific value that the user will provide later. This syntax is essential for distinguishing placeholders from regular text and ensuring that the script accurately identifies and processes them during the query substitution phase.
+#### Placeholders syntax
+Placeholder syntax is designed to be both intuitive and flexible, allowing for dynamic query customization. Placeholders must begin with the preffix `$0` followed by one or more alphabetical characters (including underscore `_`). Optionally, these can be followed by one or more digits. This structure ensures that placeholders are easily identifiable within the query and can be uniquely replaced based on user input. For example, a placeholder might look like `$0concept`, `$0variable_name`, or `$0question1`, where each placeholder is prepared to be substituted with a specific value that the user will provide later. This syntax is essential for distinguishing placeholders from regular text and ensuring that the app accurately identifies and processes them during the query substitution phase.
 
-For more advanced usage, if your query includes placeholders and you wish to conduct multiple related queries in a single execution, you can use the `/for` command with the format `/for value1,value2,value3`. This allows the script to replace the placeholders with the indicated values before processing the queries. This feature is especially useful for efficiently conducting a series of related queries without the need to restart the process for each new input, thus enhancing the user experience and efficiency when interacting with the system.
-
-### Exiting the program
-
-To exit the program, simply leave the question blank and write `exit` in the next menu.
-
-### Example of a simple placeholder substitution:
+#### Example of a simple placeholder substitution:
 
 ```
 Please enter your query (or press Enter to see more options). Type
@@ -98,8 +95,10 @@ Placeholder substituted successfully
 
 ...processing query
 ```
+#### Automatic Generation of Multiple Queries
+For more advanced usage, if your query includes placeholders and you wish to conduct multiple related queries in a single execution, you can use the `/for` command with the format `/for value1,value2,value3`. This allows the app to replace the placeholders with the indicated values before processing the queries. This feature is especially useful for efficiently conducting a series of related queries without the need to restart the process for each new input, thus enhancing the user experience and efficiency when interacting with the system.
 
-### Example of an advanced query with the `/for` command:
+#### Example of an advanced query with the `/for` command:
 
 ```
 Please enter your query (or press Enter to see more options). Type
@@ -114,19 +113,25 @@ Placeholders substituted successfully
 ...processing query
 ```
 
+### Exiting the program
+
+To exit the program, simply leave the question blank and write `exit` in the next menu.
+
+
 
 ### Features
 
-This script offers the following features:
+This application offers the following features:
 
-- Interactive model selection
-- Input validation and error handling
-- Display of model interactions with time-stamps and role indicators
+- Interactive model selection.
+- Input validation and error handling.
+- Display of model interactions with time-stamps and role indicators.
+- Loading of previous conversations, in their original state or edited by the user.
 - Support for entering debug mode.
 
 ### Debugging
 
-The script includes debugging functionalities using the command `/debug`. This allows inspect the `chat_response` object returned by the Mistral API.
+This application includes debugging functionalities using the command `/debug`. This allows inspect the `chat_response` object returned by the Mistral API.
 
 ### Development
 
