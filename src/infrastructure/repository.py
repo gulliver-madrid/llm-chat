@@ -34,13 +34,14 @@ class Repository:
                 role_tags_indexes.append(i)
 
         complete_messages: list[CompleteMessage] = []
-        for i in range(len(role_tags_indexes)):
+        role_tags_count = len(role_tags_indexes)
+        for i in range(role_tags_count):
             start = role_tags_indexes[i] + 1
-            if i < len(role_tags_indexes) - 1:
+            if i < role_tags_count - 1:
                 end = role_tags_indexes[i + 1]
                 this_role_lines = lines[start:end]
             else:
-                assert i == len(role_tags_indexes) - 1
+                assert i == role_tags_count - 1
                 this_role_lines = lines[start:]
             this_role_text = "\n".join(this_role_lines).strip()
             role = ParsedLine(lines[role_tags_indexes[i]]).get_role()
