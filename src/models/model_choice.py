@@ -1,15 +1,16 @@
-from typing import NewType, NoReturn, Sequence
+from typing import NoReturn, Sequence
 
-ModelName = NewType("ModelName", str)
+from src.infrastructure.client_wrapper import Model
 
-MODEL_PREFIX = "mistral"
+
+MISTRAL_MODEL_PREFIX = "mistral"
 
 
 class ModelChoiceParser:
-    def __init__(self, models: Sequence[str]) -> None:
+    def __init__(self, models: Sequence[Model]) -> None:
         self._models = models
 
-    def parse(self, eleccion: str) -> str:
+    def parse(self, eleccion: str) -> Model:
         # Asegurarse de que la eleccion es valida
         try:
             eleccion_numerica = int(eleccion)
@@ -32,8 +33,3 @@ class ModelChoiceParser:
         raise ValueError(
             "Entrada no válida. Por favor introduce un número válido o solo pulsa Enter para seleccionar el modelo por defecto."
         )
-
-
-def build_model_name(suffix: str, models: Sequence[str]) -> ModelName:
-    assert suffix in models
-    return ModelName(MODEL_PREFIX + "-" + suffix)

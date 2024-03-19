@@ -5,7 +5,8 @@ from typing import NewType, Sequence, cast
 from src.infrastructure.ahora import get_current_time
 from src.infrastructure.client_wrapper import CompleteMessage, ChatMessage
 from src.models.parsed_line import ParsedLine, TagType
-from src.models.model_choice import ModelName
+from src.models.shared import ModelName
+
 
 NUMBER_OF_DIGITS = 4
 SCHEMA_VERSION = "0.2"
@@ -50,10 +51,7 @@ class ChatRepository:
                 role=role,
                 content=this_role_text,
             )
-            model = ModelName("unknown") if role == "assistent" else None
-            complete_messages.append(
-                CompleteMessage(chat_msg=chat_message, model=model)
-            )
+            complete_messages.append(CompleteMessage(chat_msg=chat_message, model=None))
 
         return complete_messages
 
@@ -150,7 +148,8 @@ def create_role_tag(complete_message: CompleteMessage) -> str:
     message = complete_message.chat_msg
     optional_model_info = ""
     if model := complete_message.model:
-        optional_model_info = f" model={model}"
+        model_name: ModelName = model.model_name
+        optional_model_info = f" model={model_name}"
         assert message.role == "assistant"
     return f"[ROLE {message.role.upper()}{optional_model_info}]"
 
