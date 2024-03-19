@@ -1,5 +1,7 @@
 # Text Interface for Mistral Models
 
+[Warning: Risk of Force Push!](#⚠️-warning-risk-of-force-push) • [Disclaimer](#disclaimer) • [Installation](#installation) • [Usage](#usage) • [Project Management Update](#🚀-project-management-update)
+
 This project provides a text interface to interact with [Mistral AI](https://mistral.ai/) models using a local script. The script allows users to select a model, input a
 question, and receive the model's response.
 
