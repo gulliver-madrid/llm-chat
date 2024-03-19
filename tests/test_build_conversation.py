@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-from typing import cast
 import unittest
 from src.infrastructure.client_wrapper import ChatMessage, CompleteMessage
 from src.infrastructure.repository import (
@@ -9,24 +7,16 @@ from src.infrastructure.repository import (
 from src.models.model_choice import ModelName
 
 
-@dataclass(frozen=True)
-class CustomChatMessage:
-    role: str
-    content: str
-
-
-def create_chat_msg(role: str, content: str) -> ChatMessage:
-    return cast(ChatMessage, CustomChatMessage(role, content))
-
-
 class TestCreateConversationTexts(unittest.TestCase):
     def setUp(self) -> None:
         self.complete_messages = [
-            CompleteMessage(create_chat_msg("user", "Hello"), None),
-            CompleteMessage(create_chat_msg("assistant", "Hi"), ModelName("model_1")),
-            CompleteMessage(create_chat_msg("user", "How are you?"), None),
+            CompleteMessage(ChatMessage(role="user", content="Hello"), None),
             CompleteMessage(
-                create_chat_msg("assistant", "I'm fine."), ModelName("model_2")
+                ChatMessage(role="assistant", content="Hi"), ModelName("model_1")
+            ),
+            CompleteMessage(ChatMessage(role="user", content="How are you?"), None),
+            CompleteMessage(
+                ChatMessage(role="assistant", content="I'm fine."), ModelName("model_2")
             ),
         ]
 
