@@ -3,6 +3,7 @@ import os
 from typing import Any, Sequence
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
+from mistralai.exceptions import MistralConnectionException
 from openai import OpenAI
 
 from src.models.shared import ModelName, Platform
@@ -96,9 +97,14 @@ class ClientWrapper:
             assert model.platform == Platform.Mistral
             model_name = model.model_name
 
-            mistral_chat_msg = self.get_mistral_platform_chat_response(
-                model_name, mistral_messages
-            )
+            try:
+                mistral_chat_msg = self.get_mistral_platform_chat_response(
+                    model_name, mistral_messages
+                )
+            except MistralConnectionException:
+                raise RuntimeError(
+                    "Error de conexión con la API de Mistral. Por favor, revise su conexión a internet."
+                ) from None
 
             del mistral_messages
             assert isinstance(mistral_chat_msg.content, str)
