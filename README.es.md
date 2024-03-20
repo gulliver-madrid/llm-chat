@@ -1,8 +1,11 @@
-# Interfaz de Texto para Modelos Mistral
+# Interfaz de Texto para Grandes Modelos de Lenguaje (LLMs)
 
 [Advertencia: ¡Riesgo de Force Push!](#⚠️-advertencia-¡riesgo-de-force-push) • [Descargo de Responsabilidad](#descargo-de-responsabilidad) • [Instalación](#instalación) • [Uso](#uso) • [Actualización de Gestión de Proyecto](#🚀-actualización-de-gestión-de-proyecto)
 
-Este proyecto proporciona una interfaz de texto para interactuar con los modelos de [Mistral AI](https://mistral.ai/). La aplicación permite a los usuarios seleccionar un modelo, ingresar una pregunta y recibir la respuesta del modelo.
+Este proyecto proporciona una interfaz de texto para interactuar con los modelos de [Mistral AI](https://mistral.ai/) y OpenAI. La aplicación permite a los usuarios seleccionar un modelo, ingresar una pregunta y recibir la respuesta del modelo.
+
+## Nota
+Hasta ahora este proyecto solo permitía acceder a los modelos de Mistral. Ahora es posible acceder también a varios modelos de OpenAI. Estamos actualizando la documentación en consecuencia, pero el proceso de actualización aún no está completado.
 
 ## Descargo de Responsabilidad
 Este proyecto no está afiliado, asociado, autorizado, o de cualquier manera oficialmente conectado con Mistral AI, o cualquiera de sus filiales o afiliados. El sitio web oficial de Mistral AI se puede encontrar en https://mistral.ai/. El nombre "Mistral AI" así como nombres relacionados, marcas, emblemas e imágenes son marcas registradas de sus respectivos propietarios.
