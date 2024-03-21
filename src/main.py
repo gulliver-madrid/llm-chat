@@ -19,10 +19,9 @@ from src.models.placeholders import (
     Placeholder,
     QueryBuildException,
     build_queries,
-    find_placeholders,
+    find_unique_placeholders,
 )
 from src.models.shared import ModelName, Platform
-from src.utils import remove_duplicates
 from src.views import print_interaction
 
 PROGRAM_PROMPT = "Introduce tu consulta. Introduce `end` como único contenido de una línea cuando hayas terminado. Para obtener ayuda, introduce únicamente `/help` y pulsa Enter."
@@ -106,13 +105,11 @@ class Main:
             while (more := input()).lower() != "end":
                 raw_query += "\n" + more
 
-            occurrences = find_placeholders(raw_query)
+            placeholders = find_unique_placeholders(raw_query)
 
-            if occurrences:
-                unique_placeholders = remove_duplicates(occurrences)
-                del occurrences
+            if placeholders:
                 user_substitutions = get_raw_substitutions_from_user(
-                    unique_placeholders
+                    placeholders
                 )
                 try:
                     queries = build_queries(raw_query, user_substitutions)
