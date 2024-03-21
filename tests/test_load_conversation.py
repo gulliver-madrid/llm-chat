@@ -1,4 +1,3 @@
-import unittest
 from src.infrastructure.client_wrapper import ChatMessage
 from src.models.parsed_line import ParsedLine, TagType
 from src.infrastructure.repository import ChatRepository
@@ -35,51 +34,47 @@ expected_messages = [
 ]
 
 
-class TestLoadConversation(unittest.TestCase):
-    def setUp(self) -> None:
-        pass
-
-    def test_load_conversation_from_text(self) -> None:
-        repository = ChatRepository()
-        result = repository.load_conversation_from_text(TEXT_FROM_FILE)
-        for complete_msg, expected_chat_msg in zip(result, expected_messages):
-            self.assertEqual(complete_msg.chat_msg.role, expected_chat_msg.role)
-            self.assertEqual(complete_msg.chat_msg.content, expected_chat_msg.content)
-
-    def test_is_tag(self) -> None:
-        # no tags
-        self.assert_is_tag(False, "")
-        # something before
-        self.assert_is_tag(False, " [META id=0001]")
-        # something after
-        self.assert_is_tag(False, "[META id=0001] ")
-        # missing space
-        self.assert_is_tag(False, "[METAid]")
-
-        # tags
-        self.assert_is_tag(True, "[META id=0001]")
-        self.assert_is_tag(True, "[ROLE ASSISTANT model=model_1]")
-
-    def test_get_tag_type(self) -> None:
-        # no tags
-        self.assert_tag_type(None, "")
-        # something before
-        self.assert_tag_type(None, " [META id=0001]")
-        # something after
-        self.assert_tag_type(None, "[META id=0001] ")
-        # missing space
-        self.assert_tag_type(None, "[METAid]")
-
-        # tags
-        self.assert_tag_type(TagType.META, "[META id=0001]")
-        self.assert_tag_type(TagType.ROLE, "[ROLE ASSISTANT model=model_1]")
-
-    def assert_is_tag(self, expected: bool, string: str) -> None:
-        self.assertEqual(expected, ParsedLine(string).is_tag())
-
-    def assert_tag_type(self, expected: TagType | None, string: str) -> None:
-        self.assertEqual(expected, ParsedLine(string).get_tag_type())
+def test_load_conversation_from_text() -> None:
+    repository = ChatRepository()
+    result = repository.load_conversation_from_text(TEXT_FROM_FILE)
+    for complete_msg, expected_chat_msg in zip(result, expected_messages):
+        assert complete_msg.chat_msg.role == expected_chat_msg.role
+        assert complete_msg.chat_msg.content == expected_chat_msg.content
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_is_tag() -> None:
+    # no tags
+    assert_is_tag(False, "")
+    # something before
+    assert_is_tag(False, " [META id=0001]")
+    # something after
+    assert_is_tag(False, "[META id=0001] ")
+    # missing space
+    assert_is_tag(False, "[METAid]")
+
+    # tags
+    assert_is_tag(True, "[META id=0001]")
+    assert_is_tag(True, "[ROLE ASSISTANT model=model_1]")
+
+
+def test_get_tag_type() -> None:
+    # no tags
+    assert_tag_type(None, "")
+    # something before
+    assert_tag_type(None, " [META id=0001]")
+    # something after
+    assert_tag_type(None, "[META id=0001] ")
+    # missing space
+    assert_tag_type(None, "[METAid]")
+
+    # tags
+    assert_tag_type(TagType.META, "[META id=0001]")
+    assert_tag_type(TagType.ROLE, "[ROLE ASSISTANT model=model_1]")
+
+
+def assert_is_tag(expected: bool, string: str) -> None:
+    assert expected == ParsedLine(string).is_tag()
+
+
+def assert_tag_type(expected: TagType | None, string: str) -> None:
+    assert expected == ParsedLine(string).get_tag_type()
