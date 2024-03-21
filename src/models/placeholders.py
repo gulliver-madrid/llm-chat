@@ -1,6 +1,8 @@
 import re
 from typing import Mapping, NewType
 
+from src.utils import remove_duplicates
+
 Placeholder = NewType("Placeholder", str)
 
 FOR_COMMAND_PREFFIX = "/for"
@@ -38,18 +40,13 @@ def build_queries(
     return queries
 
 
-def find_placeholders(s: str) -> list[Placeholder]:
+def find_unique_placeholders(s: str) -> list[Placeholder]:
     """
-    Finds all placeholders in a given string.
-
-    Args:
-        s: The string to search for placeholders.
-
-    Returns:
-        A list of placeholders found in the string.
+    Finds all unique placeholders in a given string.
     """
     pattern= re.compile(r"(?<![a-zA-Z0-9])\$0[a-zA-Z_][a-zA-Z]*[0-9]*")
-    return pattern.findall(s)
+    return remove_duplicates(pattern.findall(s))
+
 
 
 def replace_placeholders_with_one_for(
