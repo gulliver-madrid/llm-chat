@@ -44,9 +44,15 @@ def find_unique_placeholders(s: str) -> list[Placeholder]:
     """
     Finds all unique placeholders in a given string.
     """
-    pattern= re.compile(r"(?<![a-zA-Z0-9])\$0[a-zA-Z_][a-zA-Z]*[0-9]*")
+    pattern = re.compile(
+        r"""
+        (?:[^|^a-zA-Z0-9])      # not alphanumeric before
+        (\$0[a-zA-Z_]+[0-9]*)   # the placeholder to find
+        (?:[^a-zA-Z0-9]|$)      # the end of the string or a not alphanumeric character after
+        """,
+        re.VERBOSE,
+    )
     return remove_duplicates(pattern.findall(s))
-
 
 
 def replace_placeholders_with_one_for(
