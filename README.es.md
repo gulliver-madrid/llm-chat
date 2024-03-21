@@ -1,4 +1,4 @@
-# Interfaz de Texto para Grandes Modelos de Lenguaje (LLMs)
+# LLM-Chat: Interfaz de Texto para Grandes Modelos de Lenguaje (LLMs)
 
 [Advertencia: ¡Riesgo de Force Push!](#⚠️-advertencia-¡riesgo-de-force-push) • [Descargo de Responsabilidad](#descargo-de-responsabilidad) • [Instalación](#instalación) • [Uso](#uso) • [Actualización de Gestión de Proyecto](#🚀-actualización-de-gestión-de-proyecto)
 
@@ -8,10 +8,10 @@ Este proyecto proporciona una interfaz de texto para interactuar con los modelos
 Hasta ahora este proyecto solo permitía acceder a los modelos de Mistral. Ahora es posible acceder también a varios modelos de OpenAI. Estamos actualizando la documentación en consecuencia, pero el proceso de actualización aún no está completado.
 
 ## Descargo de Responsabilidad
-Este proyecto no está afiliado, asociado, autorizado, o de cualquier manera oficialmente conectado con Mistral AI, o cualquiera de sus filiales o afiliados. El sitio web oficial de Mistral AI se puede encontrar en https://mistral.ai/. El nombre "Mistral AI" así como nombres relacionados, marcas, emblemas e imágenes son marcas registradas de sus respectivos propietarios.
+Este proyecto no está afiliado, asociado, autorizado, o de cualquier manera oficialmente conectado con las empresas Mistral AI u OpenAI, o cualquiera de sus filiales o afiliados. Los nombres "Mistral AI" y "OpenAI" así como nombres relacionados, marcas, emblemas e imágenes son marcas registradas de sus respectivos propietarios. El sitio web oficial de Mistral AI se puede encontrar en [https://mistral.ai/] y el de OpenAI en [https://www.openai.com/].
 
 ## Prerrequisitos
-Para usar este proyecto con éxito, se requiere una clave API de Mistral AI. Obtener esta clave API puede incurrir en un costo financiero y debe adquirirse directamente de Mistral AI. Por favor, visite el sitio web oficial de Mistral AI para más información sobre cómo obtener su clave API.
+Para usar este proyecto con éxito, se requiere una clave API de Mistral AI o de OpenAI (o de ambas). Obtener estas clave API puede incurrir en costos financiero y deben adquirirse directamente de Mistral AI u OpenAI respectivamente. Por favor, visite los sitios web oficiales de Mistral AI y OpenAI para más información sobre cómo obtener sus claves API.
 
 ## Instalación
 

@@ -1,4 +1,4 @@
-# Text Interface for Mistral Models
+# LLM-Chat: Text Interface for LLM Models
 
 [[leer en español](README.es.md)]
 
@@ -11,10 +11,10 @@ This project provides a text interface to interact with the models of [Mistral A
 So far, this project only allowed access to Mistral models. Now it is also possible to access several OpenAI models. We are updating the documentation accordingly, but the updating process is not yet complete.
 
 ## Disclaimer
-This project is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Mistral AI, or any of its subsidiaries or its affiliates. The official Mistral AI website can be found at https://mistral.ai/. The name "Mistral AI" as well as related names, marks, emblems, and images are registered trademarks of their respective owners.
+This project is not affiliated, associated, authorized, or in any way officially connected with Mistral AI, OpenAI, or any of their subsidiaries or affiliates. The names "Mistral AI" and "OpenAI" as well as related names, trademarks, logos, and images are trademarks of their respective owners. The official website of Mistral AI can be found at [https://mistral.ai/] and OpenAI at [https://www.openai.com/].
 
 ## Prerequisites
-To use this project successfully, an API key from Mistral AI is required. Obtaining this API key may incur a financial cost and must be acquired directly from Mistral AI. Please visit the official Mistral AI website for more information on how to obtain your API key.
+To successfully use this project, an API key from Mistral AI or OpenAI (or both) is required. Obtaining these API keys may incur financial costs and must be purchased directly from Mistral AI or OpenAI respectively. Please visit the official websites of Mistral AI and OpenAI for more information on how to obtain their API keys.
 
 ## Installation
 
