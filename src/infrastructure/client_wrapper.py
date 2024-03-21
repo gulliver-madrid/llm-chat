@@ -69,6 +69,8 @@ class ClientWrapper:
         messages: list[ChatMessage] = [
             complete_msg.chat_msg for complete_msg in complete_messages
         ]
+        content: str
+        role: str
         if model.platform == Platform.OpenAI:
             assert self._openai_client
             openai_messages: Any = [
@@ -83,11 +85,9 @@ class ClientWrapper:
                 model="gpt-3.5-turbo",
             )
             openai_chat_msg = openai_chat_completion.choices[0].message
+            assert isinstance(openai_chat_msg.content, str)
             content = openai_chat_msg.content
-            if debug:
-                breakpoint()
-            assert isinstance(content, str)
-            chat_msg = ChatMessage(openai_chat_msg.role, content)
+            role = openai_chat_msg.role
         else:
             mistral_messages = [
                 MistralChatMessage(role=msg.role, content=msg.content)
@@ -109,10 +109,11 @@ class ClientWrapper:
             del mistral_messages
             assert isinstance(mistral_chat_msg.content, str)
             content = mistral_chat_msg.content
-            if debug:
-                print(mistral_chat_msg)
-                breakpoint()
-            chat_msg = ChatMessage(mistral_chat_msg.role, content)
+            role = mistral_chat_msg.role
+        chat_msg = ChatMessage(role, content)
+        if debug:
+            print(chat_msg)
+            breakpoint()
         complete_messages.append(CompleteMessage(chat_msg, model))
         return QueryResult(content, complete_messages)
 
