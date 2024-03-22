@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "llm-chat"
-version = "0.5.0"
+version = "0.6.0"
 description = "Text interface to interact with LLM models"
 authors = ["gulliver-madrid <49131885+gulliver-madrid@users.noreply.github.com>"]
 readme = "README.md"
