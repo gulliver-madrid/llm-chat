@@ -1,8 +1,4 @@
-from rich import print
-from rich.console import Console
-from rich.markdown import Markdown
-
-from typing import Mapping, Sequence
+from typing import Sequence
 
 from src.infrastructure.client_wrapper import ClientWrapper, CompleteMessage, Model
 from src.controllers.select_model import SelectModelController
@@ -13,11 +9,11 @@ from src.io_helpers import (
 )
 from src.controllers.command_interpreter import ActionName, CommandInterpreter
 from src.models.placeholders import (
-    Placeholder,
     QueryBuildException,
     build_queries,
     find_unique_placeholders,
 )
+from src.view import View
 from src.views import print_interaction
 
 
@@ -28,14 +24,6 @@ class ExitException(Exception): ...
 QUERY_NUMBER_LIMIT_WARNING = 5
 
 PRESS_ENTER_TO_CONTINUE = "Pulsa Enter para continuar"
-HELP_TEXT = """
-## Consultas
-Puedes usar placeholders con el formato `$0<nombre>`. Ejemplo: `¿Quién fue $0persona y que hizo en el ámbito de $0tema?` El programa te pedirá luego que completes los placeholders uno por uno.
-Si empiezas el contenido de un placeholder con `/for` y pones las variantes separadas por comas, se generará una consulta con cada variante. Por ejemplo, si en la pregunta anterior introduces como valor de $0persona `/for Alexander Flemming,Albert Einstein` se generarán 2 consultas, una para cada nombre introducido.
-### Comandos
-Para empezar una nueva conversación en lugar de seguir con la actual, usa el comando `/new` al inicio de tu consulta.
-Puedes iniciar tu consulta con `/d` para activar el modo depuración.
-"""
 
 
 class MainEngine:
@@ -44,6 +32,7 @@ class MainEngine:
         self._select_model_controler = SelectModelController(models)
         self._repository = ChatRepository()
         self.client_wrapper = client_wrapper
+        self.view = View()
         self._prev_messages: list[CompleteMessage] | None = None
 
     def process_raw_query(self, raw_query: str) -> None:
@@ -56,7 +45,7 @@ class MainEngine:
                 case ActionName.SALIR:
                     raise ExitException()
                 case ActionName.HELP:
-                    show_help()
+                    self.view.show_help()
                     get_input(PRESS_ENTER_TO_CONTINUE)
                     return
                 case ActionName.CHANGE_MODEL:
@@ -80,12 +69,14 @@ class MainEngine:
             self._prev_messages = self._repository.load_conversation_from_text(
                 conversation
             )
-            print(f"### Esta es la conversacion con id {conversation_to_load}")
-            print(conversation)
-            print(
+            self.view.write_object(
+                f"### Esta es la conversacion con id {conversation_to_load}"
+            )
+            self.view.write_object(conversation)
+            self.view.write_object(
                 f"### Estos son los mensajes de la conversacion con id {conversation_to_load}"
             )
-            print(self._prev_messages)
+            self.view.write_object(self._prev_messages)
             return
 
         if not raw_query:
@@ -97,27 +88,29 @@ class MainEngine:
         placeholders = find_unique_placeholders(raw_query)
 
         if placeholders:
-            user_substitutions = get_raw_substitutions_from_user(placeholders)
+            user_substitutions = self.view.get_raw_substitutions_from_user(placeholders)
             try:
                 queries = build_queries(raw_query, user_substitutions)
             except QueryBuildException as err:
                 show_error_msg(str(err))
                 return
-            print("Placeholders sustituidos exitosamente")
+            self.view.write_object("Placeholders sustituidos exitosamente")
         else:
             queries = [raw_query]
         del raw_query
         number_of_queries = len(queries)
         if (
             number_of_queries > QUERY_NUMBER_LIMIT_WARNING
-            and not confirm_launching_many_queries(number_of_queries)
+            and not self.view.confirm_launching_many_queries(number_of_queries)
         ):
             return
         if new_conversation:
             self._prev_messages = None
         messages = None
         for i, query in enumerate(queries):
-            print("\n...procesando consulta número", i + 1, "de", number_of_queries)
+            self.view.write_object(
+                f"\n...procesando consulta número {i + 1} de {number_of_queries}"
+            )
 
             query_result = self.client_wrapper.get_simple_response(
                 self._model, query, self._prev_messages, debug
@@ -133,38 +126,3 @@ class MainEngine:
 
     def select_model(self) -> None:
         self._model = self._select_model_controler.select_model()
-
-
-def show_help() -> None:
-    console = Console()
-    markdown = Markdown(HELP_TEXT)
-    console.print(markdown, width=60)
-
-
-def get_raw_substitutions_from_user(
-    unique_placeholders: Sequence[Placeholder],
-) -> Mapping[Placeholder, str]:
-    """
-    Prompts the user to provide values for each unique placeholder found in the query.
-
-    Args:
-        unique_placeholders: A sequence of unique placeholders found in the query.
-
-    Returns:
-        A dictionary mapping placeholders to the user-provided values.
-    """
-    substitutions: dict[Placeholder, str] = {}
-    for placeholder in unique_placeholders:
-        replacement = get_input("Por favor indica el valor de " + placeholder)
-        substitutions[placeholder] = replacement
-    return substitutions
-
-
-def confirm_launching_many_queries(number_of_queries: int) -> bool:
-    print(
-        "Se realizarán",
-        number_of_queries,
-        "consultas. Quieres continuar? Y/n",
-    )
-    user_input_continue = get_input()
-    return user_input_continue.lower() in ["", "y", "yes"]
