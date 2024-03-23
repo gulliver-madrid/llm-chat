@@ -48,8 +48,11 @@ class Main:
 
     def execute(self) -> None:
         """Runs the text interface to Mistral models"""
-        api_key = os.environ["MISTRAL_API_KEY"]
-        client_wrapper = ClientWrapper(api_key)
+        mistral_api_key = os.environ.get("MISTRAL_API_KEY")
+        openai_api_key = os.environ.get("OPENAI_API_KEY")
+        client_wrapper = ClientWrapper(
+            mistral_api_key=mistral_api_key, openai_api_key=openai_api_key
+        )
         model = self.select_model()
         prev_messages = None
         while True:
@@ -108,9 +111,7 @@ class Main:
             placeholders = find_unique_placeholders(raw_query)
 
             if placeholders:
-                user_substitutions = get_raw_substitutions_from_user(
-                    placeholders
-                )
+                user_substitutions = get_raw_substitutions_from_user(placeholders)
                 try:
                     queries = build_queries(raw_query, user_substitutions)
                 except QueryBuildException as err:
