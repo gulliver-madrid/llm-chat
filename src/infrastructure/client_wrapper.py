@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import os
 from typing import Any, Sequence
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
@@ -37,9 +36,10 @@ class QueryResult:
 
 
 class ClientWrapper:
-    def __init__(self, mistral_api_key: str):
-        self._client = MistralClient(api_key=mistral_api_key)
-        openai_api_key = os.environ.get("OPENAI_API_KEY")
+    def __init__(self, *, mistral_api_key: str | None, openai_api_key: str | None):
+        self._mistralai_client = (
+            MistralClient(api_key=mistral_api_key) if mistral_api_key else None
+        )
         self._openai_client = (
             OpenAI(
                 api_key=openai_api_key,
@@ -72,7 +72,9 @@ class ClientWrapper:
         content: str
         role: str
         if model.platform == Platform.OpenAI:
-            assert self._openai_client
+            assert (
+                self._openai_client
+            ), "OpenAI client not defined. Did you forget to provide an api key for OpenAI API?"
             openai_messages: Any = [
                 {
                     "role": msg.role,
@@ -120,7 +122,10 @@ class ClientWrapper:
     def get_mistral_platform_chat_response(
         self, model_name: ModelName, messages: list[MistralChatMessage]
     ) -> MistralChatMessage:
-        chat_response = self._client.chat(
+        assert (
+            self._mistralai_client
+        ), "Mistral AI client not defined. Did you forget to provide an api key for Mistral API?"
+        chat_response = self._mistralai_client.chat(
             model=model_name,
             messages=messages,
         )
