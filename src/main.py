@@ -5,7 +5,7 @@ from rich.markdown import Markdown
 import os
 from typing import Final, Mapping, Sequence
 
-from src.infrastructure.client_wrapper import ClientWrapper, Model
+from src.infrastructure.client_wrapper import ClientWrapper, CompleteMessage, Model
 from src.controllers.select_model import SelectModelController
 from src.infrastructure.repository import Repository, cast_string_to_conversation_id
 from src.io_helpers import (
@@ -38,113 +38,130 @@ Puedes iniciar tu consulta con `/d` para activar el modo depuración.
 """
 
 
+class ExitException(Exception): ...
+
+
 class Main:
     def __init__(self, models: Sequence[Model]) -> None:
-        self._models = models
         self._select_model_controler = SelectModelController(models)
-        self._repository = Repository()
+        mistral_api_key = os.environ.get("MISTRAL_API_KEY")
+        openai_api_key = os.environ.get("OPENAI_API_KEY")
+        self._engine = MainEngine(
+            models,
+            ClientWrapper(
+                mistral_api_key=mistral_api_key, openai_api_key=openai_api_key
+            ),
+        )
 
     def execute(self) -> None:
         """Runs the text interface to Mistral models"""
-        mistral_api_key = os.environ.get("MISTRAL_API_KEY")
-        openai_api_key = os.environ.get("OPENAI_API_KEY")
-        client_wrapper = ClientWrapper(
-            mistral_api_key=mistral_api_key, openai_api_key=openai_api_key
-        )
-        model = self.select_model()
-        prev_messages = None
-        while True:
-            debug = False
 
+        self._engine.select_model()
+
+        while True:
             raw_query = get_input(PROGRAM_PROMPT)
 
             if not raw_query:
                 continue
-            action = CommandInterpreter.parse_user_input(raw_query)
-            new_conversation = False
-            conversation_to_load = None
-            if action:
-                match action.name:
-                    case ActionName.SALIR:
-                        break
-                    case ActionName.HELP:
-                        show_help()
-                        get_input(PRESS_ENTER_TO_CONTINUE)
-                        continue
-                    case ActionName.CHANGE_MODEL:
-                        model = self.select_model()
-                        continue
-                    case ActionName.DEBUG:
-                        raw_query = raw_query.removeprefix("/d").strip()
-                        debug = True
-                    case ActionName.LOAD_CONVERSATION:
-                        raw_query = raw_query.removeprefix("/load").strip()
-                        conversation_to_load = raw_query.split()[0]
-                    case ActionName.NEW_CONVERSATION:
-                        raw_query = raw_query.removeprefix("/new").strip()
-                        new_conversation = True
-                    case _:
-                        raise RuntimeError(f"Acción no válida: {action}")
 
-            if conversation_to_load:
-                conversation_id = cast_string_to_conversation_id(conversation_to_load)
-                conversation = self._repository.load_conversation(conversation_id)
-                prev_messages = self._repository.load_conversation_from_text(
-                    conversation
-                )
-                print(f"### Esta es la conversacion con id {conversation_to_load}")
-                print(conversation)
-                print(
-                    f"### Estos son los mensajes de la conversacion con id {conversation_to_load}"
-                )
-                print(prev_messages)
-                continue
+            self._engine.process_raw_query(raw_query)
 
-            if not raw_query:
-                continue
 
-            while (more := input()).lower() != "end":
-                raw_query += "\n" + more
+class MainEngine:
+    def __init__(self, models: Sequence[Model], client_wrapper: ClientWrapper) -> None:
+        self._models = models
+        self._select_model_controler = SelectModelController(models)
+        self._repository = Repository()
+        self.client_wrapper = client_wrapper
+        self._prev_messages: list[CompleteMessage] | None = None
 
-            placeholders = find_unique_placeholders(raw_query)
+    def process_raw_query(self, raw_query: str) -> None:
+        debug = False
+        action = CommandInterpreter.parse_user_input(raw_query)
+        new_conversation = False
+        conversation_to_load = None
+        if action:
+            match action.name:
+                case ActionName.SALIR:
+                    raise ExitException()
+                case ActionName.HELP:
+                    show_help()
+                    get_input(PRESS_ENTER_TO_CONTINUE)
+                    return
+                case ActionName.CHANGE_MODEL:
+                    self.select_model()
+                    return
+                case ActionName.DEBUG:
+                    raw_query = raw_query.removeprefix("/d").strip()
+                    debug = True
+                case ActionName.LOAD_CONVERSATION:
+                    raw_query = raw_query.removeprefix("/load").strip()
+                    conversation_to_load = raw_query.split()[0]
+                case ActionName.NEW_CONVERSATION:
+                    raw_query = raw_query.removeprefix("/new").strip()
+                    new_conversation = True
+                case _:
+                    raise RuntimeError(f"Acción no válida: {action}")
 
-            if placeholders:
-                user_substitutions = get_raw_substitutions_from_user(placeholders)
-                try:
-                    queries = build_queries(raw_query, user_substitutions)
-                except QueryBuildException as err:
-                    show_error_msg(str(err))
-                    continue
-                print("Placeholders sustituidos exitosamente")
-            else:
-                queries = [raw_query]
-            del raw_query
-            number_of_queries = len(queries)
-            if (
-                number_of_queries > QUERY_NUMBER_LIMIT_WARNING
-                and not confirm_launching_many_queries(number_of_queries)
-            ):
-                continue
-            if new_conversation:
-                prev_messages = None
-            messages = None
-            for i, query in enumerate(queries):
-                print("\n...procesando consulta número", i + 1, "de", number_of_queries)
+        if conversation_to_load:
+            conversation_id = cast_string_to_conversation_id(conversation_to_load)
+            conversation = self._repository.load_conversation(conversation_id)
+            self._prev_messages = self._repository.load_conversation_from_text(
+                conversation
+            )
+            print(f"### Esta es la conversacion con id {conversation_to_load}")
+            print(conversation)
+            print(
+                f"### Estos son los mensajes de la conversacion con id {conversation_to_load}"
+            )
+            print(self._prev_messages)
+            return
 
-                query_result = client_wrapper.get_simple_response(
-                    model, query, prev_messages, debug
-                )
-                print_interaction(model.model_name, query, query_result.content)
-                self._repository.save(query_result.messages)
-                if i == 0:
-                    messages = query_result.messages
-            if len(queries) > 1:
-                prev_messages = None
-            else:
-                prev_messages = messages
+        if not raw_query:
+            return
 
-    def select_model(self) -> Model:
-        return self._select_model_controler.select_model()
+        while (more := input()).lower() != "end":
+            raw_query += "\n" + more
+
+        placeholders = find_unique_placeholders(raw_query)
+
+        if placeholders:
+            user_substitutions = get_raw_substitutions_from_user(placeholders)
+            try:
+                queries = build_queries(raw_query, user_substitutions)
+            except QueryBuildException as err:
+                show_error_msg(str(err))
+                return
+            print("Placeholders sustituidos exitosamente")
+        else:
+            queries = [raw_query]
+        del raw_query
+        number_of_queries = len(queries)
+        if (
+            number_of_queries > QUERY_NUMBER_LIMIT_WARNING
+            and not confirm_launching_many_queries(number_of_queries)
+        ):
+            return
+        if new_conversation:
+            self._prev_messages = None
+        messages = None
+        for i, query in enumerate(queries):
+            print("\n...procesando consulta número", i + 1, "de", number_of_queries)
+
+            query_result = self.client_wrapper.get_simple_response(
+                self._model, query, self._prev_messages, debug
+            )
+            print_interaction(self._model.model_name, query, query_result.content)
+            self._repository.save(query_result.messages)
+            if i == 0:
+                messages = query_result.messages
+        if len(queries) > 1:
+            self._prev_messages = None
+        else:
+            self._prev_messages = messages
+
+    def select_model(self) -> None:
+        self._model = self._select_model_controler.select_model()
 
 
 def confirm_launching_many_queries(number_of_queries: int) -> bool:
