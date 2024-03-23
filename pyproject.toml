@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mistral-chat"
-version = "0.4.0"
+version = "0.5.0"
 description = "Text interface to interact with Mistral models"
 authors = ["gulliver-madrid <49131885+gulliver-madrid@users.noreply.github.com>"]
 readme = "README.md"
