@@ -7,7 +7,11 @@ from src.io_helpers import (
     get_input,
     show_error_msg,
 )
-from src.controllers.command_interpreter import ActionName, CommandInterpreter
+from src.controllers.command_interpreter import (
+    ActionName,
+    CommandInterpreter,
+    CommandNoValid,
+)
 from src.models.placeholders import (
     QueryBuildException,
     build_queries,
@@ -38,7 +42,11 @@ class MainEngine:
 
     def process_raw_query(self, raw_query: str) -> None:
         debug = False
-        action = self._command_interpreter.parse_user_input(raw_query)
+        try:
+            action = self._command_interpreter.parse_user_input(raw_query)
+        except CommandNoValid as err:
+            show_error_msg(str(err))
+            return
         new_conversation = False
         system_prompt = False
         conversation_to_load = None

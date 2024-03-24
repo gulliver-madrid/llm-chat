@@ -19,6 +19,11 @@ class Action:
     name: str
 
 
+class CommandNoValid(Exception):
+    def __init__(self) -> None:
+        super().__init__("Comando no válido")
+
+
 class CommandInterpreter:
 
     def parse_user_input(self, raw_query: str) -> Action | None:
@@ -41,7 +46,6 @@ class CommandInterpreter:
             case "/sys" | "/system":
                 return Action(ActionName.SYSTEM_PROMPT)
             case other if other.startswith("/"):
-                show_error_msg("Comando no válido")
-                return None
+                raise CommandNoValid()
             case _:
                 return None
