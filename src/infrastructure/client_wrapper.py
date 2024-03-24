@@ -58,10 +58,8 @@ class ClientWrapper:
         """
         Retrieves a simple response from the LLM client.
         """
-        if prev_messages:
-            complete_messages = list(prev_messages)
-        else:
-            complete_messages = []
+
+        complete_messages = list(prev_messages) if prev_messages else []
         complete_messages.append(
             CompleteMessage(ChatMessage(role="user", content=query))
         )
@@ -77,7 +75,7 @@ class ClientWrapper:
             case _:
                 raise ValueError(f"Missing platform in model: {model}")
         if debug:
-            print(chat_msg)
+            print(f"{chat_msg=}")
             breakpoint()
         complete_messages.append(CompleteMessage(chat_msg, model))
         return QueryResult(chat_msg.content, complete_messages)
