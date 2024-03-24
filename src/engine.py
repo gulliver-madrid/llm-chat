@@ -13,6 +13,7 @@ from src.controllers.command_interpreter import (
     CommandNoValid,
 )
 from src.models.placeholders import (
+    Placeholder,
     QueryBuildException,
     build_queries,
     find_unique_placeholders,
@@ -96,24 +97,12 @@ class MainEngine:
 
         placeholders = find_unique_placeholders(rest_query)
 
-        if placeholders:
-            user_substitutions = self._view.get_raw_substitutions_from_user(
-                placeholders
-            )
-            try:
-                queries = build_queries(rest_query, user_substitutions)
-            except QueryBuildException as err:
-                show_error_msg(str(err))
-                return
-            self._view.write_object("Placeholders sustituidos exitosamente")
-        else:
-            queries = [rest_query]
-        del rest_query
+        queries = self._define_final_queries(rest_query, placeholders)
+        if queries is None:
+            return
+
         number_of_queries = len(queries)
-        if (
-            number_of_queries > QUERY_NUMBER_LIMIT_WARNING
-            and not self._view.confirm_launching_many_queries(number_of_queries)
-        ):
+        if self._should_cancel_for_being_too_many_queries(number_of_queries):
             return
         if new_conversation:
             self._prev_messages = None
@@ -137,6 +126,29 @@ class MainEngine:
             self._prev_messages = None
         else:
             self._prev_messages = messages
+
+    def _should_cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
+        return (
+            number_of_queries > QUERY_NUMBER_LIMIT_WARNING
+            and not self._view.confirm_launching_many_queries(number_of_queries)
+        )
+
+    def _define_final_queries(
+        self, rest_query: str, placeholders: list[Placeholder]
+    ) -> list[str] | None:
+        if placeholders:
+            user_substitutions = self._view.get_raw_substitutions_from_user(
+                placeholders
+            )
+            try:
+                queries = build_queries(rest_query, user_substitutions)
+            except QueryBuildException as err:
+                show_error_msg(str(err))
+                return None
+            self._view.write_object("Placeholders sustituidos exitosamente")
+        else:
+            queries = [rest_query]
+        return queries
 
     def select_model(self) -> None:
         self._model = self._select_model_controler.select_model()
