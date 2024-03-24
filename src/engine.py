@@ -1,6 +1,11 @@
 from typing import Sequence
 
-from src.infrastructure.client_wrapper import ClientWrapper, CompleteMessage, Model
+from src.infrastructure.client_wrapper import (
+    ClientWrapper,
+    CompleteMessage,
+    Model,
+    QueryResult,
+)
 from src.controllers.select_model import SelectModelController
 from src.infrastructure.repository import ChatRepository, cast_string_to_conversation_id
 from src.io_helpers import (
@@ -113,17 +118,19 @@ class MainEngine:
             )
             self._view.write_object(text)
 
-            query_result = self._client_wrapper.get_simple_response(
-                self._model, query, self._prev_messages, debug
-            )
+            query_result = self._get_simple_response_from_model(query, debug)
             print_interaction(self._model.model_name, query, query_result.content)
             self._repository.save(query_result.messages)
             if i == 0:
                 messages = query_result.messages
-        if len(queries) > 1:
-            self._prev_messages = None
-        else:
-            self._prev_messages = messages
+        self._prev_messages = None if len(queries) > 1 else messages
+
+    def _get_simple_response_from_model(
+        self, query: str, debug: bool = False
+    ) -> QueryResult:
+        return self._client_wrapper.get_simple_response(
+            self._model, query, self._prev_messages, debug
+        )
 
     def _define_processing_query_text(
         self, *, index_current_query: int, number_of_queries: int
