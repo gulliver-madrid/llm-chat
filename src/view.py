@@ -4,6 +4,8 @@ from rich.markdown import Markdown
 
 from typing import Mapping, Sequence
 
+from src.infrastructure.client_wrapper import CompleteMessage
+from src.infrastructure.repository import ConversationId
 from src.io_helpers import (
     get_input,
 )
@@ -58,3 +60,16 @@ class View:
 
     def write_object(self, texto: object) -> None:
         print(texto)
+
+    def write_conversation(
+        self,
+        conversation_id: ConversationId,
+        conversation: str,
+        prev_messages: Sequence[CompleteMessage],
+    ) -> None:
+        self.write_object(f"### Esta es la conversacion con id {conversation_id}")
+        self.write_object(conversation)
+        self.write_object(
+            f"### Estos son los mensajes de la conversacion con id {conversation_id}"
+        )
+        self.write_object(prev_messages)
