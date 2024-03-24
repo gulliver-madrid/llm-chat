@@ -1,7 +1,7 @@
 import os
 from typing import Final, Sequence
 
-from src.engine import MainEngine
+from src.engine import ExitException, MainEngine
 from src.infrastructure.client_wrapper import ClientWrapper, Model
 from src.controllers.select_model import SelectModelController
 from src.io_helpers import (
@@ -51,7 +51,10 @@ def main() -> None:
         ]
         + [Model(Platform.OpenAI, ModelName(model)) for model in openai_models]
     )
-    main_instance.execute()
+    try:
+        main_instance.execute()
+    except ExitException:
+        pass
     display_neutral_msg("Saliendo")
 
 
