@@ -69,11 +69,13 @@ class ClientWrapper:
         messages: list[ChatMessage] = [
             complete_msg.chat_msg for complete_msg in complete_messages
         ]
-        assert model.platform
-        if model.platform == Platform.OpenAI:
-            chat_msg = self._answer_using_openai(model, messages)
-        else:
-            chat_msg = self._answer_using_mistral(model, messages)
+        match model.platform:
+            case Platform.OpenAI:
+                chat_msg = self._answer_using_openai(model, messages)
+            case Platform.Mistral:
+                chat_msg = self._answer_using_mistral(model, messages)
+            case _:
+                raise ValueError(f"Missing platform in model: {model}")
         if debug:
             print(chat_msg)
             breakpoint()
