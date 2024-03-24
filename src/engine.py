@@ -43,10 +43,11 @@ class MainEngine:
     def process_raw_query(self, raw_query: str) -> None:
         debug = False
         try:
-            action = self._command_interpreter.parse_user_input(raw_query)
+            action, rest_query = self._command_interpreter.parse_user_input(raw_query)
         except CommandNoValid as err:
             show_error_msg(str(err))
             return
+        del raw_query
         new_conversation = False
         system_prompt = False
         conversation_to_load = None
@@ -63,23 +64,21 @@ class MainEngine:
                     return
                 case ActionName.DEBUG:
                     # TODO: match exact preffix
-                    raw_query = raw_query.removeprefix("/d").strip()
                     debug = True
                 case ActionName.LOAD_CONVERSATION:
-                    raw_query = raw_query.removeprefix("/load").strip()
-                    conversation_to_load = raw_query.split()[0]
+                    conversation_to_load = rest_query
                 case ActionName.NEW_CONVERSATION:
-                    raw_query = raw_query.removeprefix("/new").strip()
+                    # raw_query = raw_query.removeprefix("/new").strip()
                     new_conversation = True
                 case ActionName.SYSTEM_PROMPT:
                     # TODO: match exact preffix
-                    raw_query = raw_query.removeprefix("/sys").strip()
+                    # raw_query = raw_query.removeprefix("/sys").strip()
                     system_prompt = True
                 case _:
                     raise RuntimeError(f"Acción no válida: {action}")
 
         if system_prompt:
-            self._prev_messages = self._client_wrapper.define_system_prompt(raw_query)
+            self._prev_messages = self._client_wrapper.define_system_prompt(rest_query)
             self._view.write_object("System prompt established")
             return
 
@@ -99,27 +98,27 @@ class MainEngine:
             self._view.write_object(self._prev_messages)
             return
 
-        if not raw_query:
+        if not rest_query:
             return
 
         while (more := input()).lower() != "end":
-            raw_query += "\n" + more
+            rest_query += "\n" + more
 
-        placeholders = find_unique_placeholders(raw_query)
+        placeholders = find_unique_placeholders(rest_query)
 
         if placeholders:
             user_substitutions = self._view.get_raw_substitutions_from_user(
                 placeholders
             )
             try:
-                queries = build_queries(raw_query, user_substitutions)
+                queries = build_queries(rest_query, user_substitutions)
             except QueryBuildException as err:
                 show_error_msg(str(err))
                 return
             self._view.write_object("Placeholders sustituidos exitosamente")
         else:
-            queries = [raw_query]
-        del raw_query
+            queries = [rest_query]
+        del rest_query
         number_of_queries = len(queries)
         if (
             number_of_queries > QUERY_NUMBER_LIMIT_WARNING
