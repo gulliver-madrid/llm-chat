@@ -56,7 +56,7 @@ class ClientWrapper:
         debug: bool = False,
     ) -> QueryResult:
         """
-        Retrieves a simple response from the Mistral AI client.
+        Retrieves a simple response from the LLM client.
         """
         if prev_messages:
             complete_messages = list(prev_messages)
@@ -69,28 +69,9 @@ class ClientWrapper:
         messages: list[ChatMessage] = [
             complete_msg.chat_msg for complete_msg in complete_messages
         ]
-        content: str
-        role: str
+        assert model.platform
         if model.platform == Platform.OpenAI:
-            assert (
-                self._openai_client
-            ), "OpenAI client not defined. Did you forget to provide an api key for OpenAI API?"
-            openai_messages: Any = [
-                {
-                    "role": msg.role,
-                    "content": msg.content,
-                }
-                for msg in messages
-            ]
-            openai_chat_completion = self._openai_client.chat.completions.create(
-                messages=openai_messages,
-                model="gpt-3.5-turbo",
-            )
-            openai_chat_msg = openai_chat_completion.choices[0].message
-            assert isinstance(openai_chat_msg.content, str)
-            content = openai_chat_msg.content
-            role = openai_chat_msg.role
-            chat_msg = ChatMessage(role, content)
+            chat_msg = self._answer_using_openai(model, messages)
         else:
             chat_msg = self._answer_using_mistral(model, messages)
         if debug:
@@ -98,6 +79,29 @@ class ClientWrapper:
             breakpoint()
         complete_messages.append(CompleteMessage(chat_msg, model))
         return QueryResult(chat_msg.content, complete_messages)
+
+    def _answer_using_openai(
+        self, model: Model, messages: Sequence[ChatMessage]
+    ) -> ChatMessage:
+        assert (
+            self._openai_client
+        ), "OpenAI client not defined. Did you forget to provide an api key for OpenAI API?"
+        openai_messages: Any = [
+            {
+                "role": msg.role,
+                "content": msg.content,
+            }
+            for msg in messages
+        ]
+        openai_chat_completion = self._openai_client.chat.completions.create(
+            messages=openai_messages,
+            model=model.model_name,
+        )
+        openai_chat_msg = openai_chat_completion.choices[0].message
+        assert isinstance(openai_chat_msg.content, str)
+        content = openai_chat_msg.content
+        role = openai_chat_msg.role
+        return ChatMessage(role, content)
 
     def _answer_using_mistral(
         self, model: Model, messages: Sequence[ChatMessage]
@@ -109,11 +113,10 @@ class ClientWrapper:
         assert (
             self._mistralai_client
         ), "Mistral AI client not defined. Did you forget to provide an api key for Mistral API?"
-        model_name = model.model_name
 
         try:
             chat_response = self._mistralai_client.chat(
-                model=model_name,
+                model=model.model_name,
                 messages=mistral_messages,
             )
         except MistralConnectionException:
