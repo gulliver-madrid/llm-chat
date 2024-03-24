@@ -119,9 +119,12 @@ class MainEngine:
             self._prev_messages = None
         messages = None
         for i, query in enumerate(queries):
-            self.view.write_object(
-                f"\n...procesando consulta número {i + 1} de {number_of_queries}"
-            )
+            text = f"\n...procesando consulta"
+            if number_of_queries > 1:
+                extra = f"número {i + 1} de {number_of_queries}"
+                text = " ".join([text, extra])
+
+            self.view.write_object(text)
 
             query_result = self.client_wrapper.get_simple_response(
                 self._model, query, self._prev_messages, debug
