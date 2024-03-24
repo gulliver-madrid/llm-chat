@@ -1,10 +1,8 @@
 from dataclasses import dataclass
+from enum import Enum
 
 
-from src.io_helpers import show_error_msg
-
-
-class ActionName:
+class ActionType(Enum):
     SALIR = "SALIR"
     CHANGE_MODEL = "CHANGE_MODEL"
     DEBUG = "DEBUG"
@@ -16,7 +14,7 @@ class ActionName:
 
 @dataclass
 class Action:
-    name: str
+    name: ActionType
 
 
 class CommandNoValid(Exception):
@@ -33,19 +31,19 @@ class CommandInterpreter:
         action = None
         match splitted[0]:
             case "/q" | "/quit" | "/exit":
-                action = Action(ActionName.SALIR)
+                action = Action(ActionType.SALIR)
             case "/h" | "/help":
-                action = Action(ActionName.HELP)
+                action = Action(ActionType.HELP)
             case "/d" | "/debug":
-                action = Action(ActionName.DEBUG)
+                action = Action(ActionType.DEBUG)
             case "/load":
-                action = Action(ActionName.LOAD_CONVERSATION)
+                action = Action(ActionType.LOAD_CONVERSATION)
             case "/new":
-                action = Action(ActionName.NEW_CONVERSATION)
+                action = Action(ActionType.NEW_CONVERSATION)
             case "/change":
-                action = Action(ActionName.CHANGE_MODEL)
+                action = Action(ActionType.CHANGE_MODEL)
             case "/sys" | "/system":
-                action = Action(ActionName.SYSTEM_PROMPT)
+                action = Action(ActionType.SYSTEM_PROMPT)
             case other if other.startswith("/"):
                 raise CommandNoValid()
             case _:

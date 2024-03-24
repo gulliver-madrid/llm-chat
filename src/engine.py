@@ -8,7 +8,7 @@ from src.io_helpers import (
     show_error_msg,
 )
 from src.controllers.command_interpreter import (
-    ActionName,
+    ActionType,
     CommandInterpreter,
     CommandNoValid,
 )
@@ -53,29 +53,27 @@ class MainEngine:
         conversation_to_load = None
         if action:
             match action.name:
-                case ActionName.SALIR:
+                case ActionType.SALIR:
                     raise ExitException()
-                case ActionName.HELP:
+                case ActionType.HELP:
                     self._view.show_help()
                     get_input(PRESS_ENTER_TO_CONTINUE)
                     return
-                case ActionName.CHANGE_MODEL:
+                case ActionType.CHANGE_MODEL:
                     self.select_model()
                     return
-                case ActionName.DEBUG:
+                case ActionType.DEBUG:
                     # TODO: match exact preffix
                     debug = True
-                case ActionName.LOAD_CONVERSATION:
+                case ActionType.LOAD_CONVERSATION:
                     conversation_to_load = rest_query
-                case ActionName.NEW_CONVERSATION:
+                case ActionType.NEW_CONVERSATION:
                     # raw_query = raw_query.removeprefix("/new").strip()
                     new_conversation = True
-                case ActionName.SYSTEM_PROMPT:
+                case ActionType.SYSTEM_PROMPT:
                     # TODO: match exact preffix
                     # raw_query = raw_query.removeprefix("/sys").strip()
                     system_prompt = True
-                case _:
-                    raise RuntimeError(f"Acción no válida: {action}")
 
         if system_prompt:
             self._prev_messages = self._client_wrapper.define_system_prompt(rest_query)
