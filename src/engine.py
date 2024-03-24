@@ -78,18 +78,14 @@ class MainEngine:
 
         if conversation_to_load:
             conversation_id = cast_string_to_conversation_id(conversation_to_load)
+            del conversation_to_load
             conversation = self._repository.load_conversation(conversation_id)
             self._prev_messages = self._repository.load_conversation_from_text(
                 conversation
             )
-            self._view.write_object(
-                f"### Esta es la conversacion con id {conversation_to_load}"
+            self._view.write_conversation(
+                conversation_id, conversation, self._prev_messages
             )
-            self._view.write_object(conversation)
-            self._view.write_object(
-                f"### Estos son los mensajes de la conversacion con id {conversation_to_load}"
-            )
-            self._view.write_object(self._prev_messages)
             return
 
         if not rest_query:
