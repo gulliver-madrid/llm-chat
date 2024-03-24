@@ -108,11 +108,9 @@ class MainEngine:
             self._prev_messages = None
         messages = None
         for i, query in enumerate(queries):
-            text = f"\n...procesando consulta"
-            if number_of_queries > 1:
-                extra = f"número {i + 1} de {number_of_queries}"
-                text = " ".join([text, extra])
-
+            text = self._define_processing_query_text(
+                number_of_queries=number_of_queries, index_current_query=i
+            )
             self._view.write_object(text)
 
             query_result = self._client_wrapper.get_simple_response(
@@ -126,6 +124,16 @@ class MainEngine:
             self._prev_messages = None
         else:
             self._prev_messages = messages
+
+    def _define_processing_query_text(
+        self, *, index_current_query: int, number_of_queries: int
+    ) -> str:
+        assert number_of_queries > index_current_query
+        text = f"\n...procesando consulta"
+        if number_of_queries > 1:
+            extra = f"número {index_current_query + 1} de {number_of_queries}"
+            text = " ".join([text, extra])
+        return text
 
     def _cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
         return (
