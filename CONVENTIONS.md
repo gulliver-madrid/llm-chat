@@ -6,7 +6,7 @@
 
 3. **Variable and Method Names**: Variables and methods should use descriptive lowercase names, separated by underscores (`_`) if necessary.
 
-4. **Uppercase for Constants**: Constants such as `NEUTRAL_MSG`, `CHANGE_MODEL`, and `SALIR` should be written in uppercase, with words separated by underscores.
+4. **Uppercase for Constants**: Constants such as `NEUTRAL_MSG`, `CHANGE_MODEL`, and `EXIT` should be written in uppercase, with words separated by underscores.
 
 5. **Naming Conventions for Functions, Methods, and Classes**:
    - Functions and methods should use `lower_snake_case` naming. For example, `print_interaction`, `execute`, `get_simple_response`.
