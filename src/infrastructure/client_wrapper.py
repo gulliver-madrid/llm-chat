@@ -90,36 +90,42 @@ class ClientWrapper:
             assert isinstance(openai_chat_msg.content, str)
             content = openai_chat_msg.content
             role = openai_chat_msg.role
+            chat_msg = ChatMessage(role, content)
         else:
-            mistral_messages = [
-                MistralChatMessage(role=msg.role, content=msg.content)
-                for msg in messages
-            ]
-
-            assert model.platform == Platform.Mistral
-            model_name = model.model_name
-
-            try:
-                mistral_chat_msg = self.get_mistral_platform_chat_response(
-                    model_name, mistral_messages
-                )
-            except MistralConnectionException:
-                raise RuntimeError(
-                    "Error de conexión con la API de Mistral. Por favor, revise su conexión a internet."
-                ) from None
-
-            del mistral_messages
-            assert isinstance(mistral_chat_msg.content, str)
-            content = mistral_chat_msg.content
-            role = mistral_chat_msg.role
-        chat_msg = ChatMessage(role, content)
+            chat_msg = self.answer_using_mistral(model, messages)
         if debug:
             print(chat_msg)
             breakpoint()
         complete_messages.append(CompleteMessage(chat_msg, model))
-        return QueryResult(content, complete_messages)
+        return QueryResult(chat_msg.content, complete_messages)
 
-    def get_mistral_platform_chat_response(
+    def answer_using_mistral(
+        self, model: Model, messages: Sequence[ChatMessage]
+    ) -> ChatMessage:
+        mistral_messages = [
+            MistralChatMessage(role=msg.role, content=msg.content) for msg in messages
+        ]
+
+        assert model.platform == Platform.Mistral
+        model_name = model.model_name
+
+        try:
+            mistral_chat_msg = self._get_mistral_platform_chat_response(
+                model_name, mistral_messages
+            )
+        except MistralConnectionException:
+            raise RuntimeError(
+                "Error de conexión con la API de Mistral. Por favor, revise su conexión a internet."
+            ) from None
+
+        del mistral_messages
+        assert isinstance(mistral_chat_msg.content, str)
+        content = mistral_chat_msg.content
+        role = mistral_chat_msg.role
+        chat_msg = ChatMessage(role, content)
+        return chat_msg
+
+    def _get_mistral_platform_chat_response(
         self, model_name: ModelName, messages: list[MistralChatMessage]
     ) -> MistralChatMessage:
         assert (
