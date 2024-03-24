@@ -26,26 +26,29 @@ class CommandNoValid(Exception):
 
 class CommandInterpreter:
 
-    def parse_user_input(self, raw_query: str) -> Action | None:
-        possible_commands = raw_query.strip().split()
-        if not possible_commands:
-            return None
-        match possible_commands[0]:
+    def parse_user_input(self, raw_query: str) -> tuple[Action | None, str]:
+        splitted = raw_query.strip().split()
+        if not splitted:
+            return (None, raw_query)
+        action = None
+        match splitted[0]:
             case "/q" | "/quit" | "/exit":
-                return Action(ActionName.SALIR)
+                action = Action(ActionName.SALIR)
             case "/h" | "/help":
-                return Action(ActionName.HELP)
+                action = Action(ActionName.HELP)
             case "/d" | "/debug":
-                return Action(ActionName.DEBUG)
+                action = Action(ActionName.DEBUG)
             case "/load":
-                return Action(ActionName.LOAD_CONVERSATION)
+                action = Action(ActionName.LOAD_CONVERSATION)
             case "/new":
-                return Action(ActionName.NEW_CONVERSATION)
+                action = Action(ActionName.NEW_CONVERSATION)
             case "/change":
-                return Action(ActionName.CHANGE_MODEL)
+                action = Action(ActionName.CHANGE_MODEL)
             case "/sys" | "/system":
-                return Action(ActionName.SYSTEM_PROMPT)
+                action = Action(ActionName.SYSTEM_PROMPT)
             case other if other.startswith("/"):
                 raise CommandNoValid()
             case _:
-                return None
+                return (None, raw_query)
+        assert action
+        return (action, " ".join(splitted[1:]))
