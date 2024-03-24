@@ -14,15 +14,21 @@ class Case:
     expected_rest_query: str
 
 
-def test_command_interpreter_help() -> None:
+def test_command_interpreter_valid_command() -> None:
     command_interpreter = CommandInterpreter()
     for case in [
         Case("/help", ActionType.HELP, ""),
         Case("/debug hola que tal", ActionType.DEBUG, "hola que tal"),
+        Case("/d hola que tal", ActionType.DEBUG, "hola que tal"),
         Case("/new hola que tal", ActionType.NEW_CONVERSATION, "hola que tal"),
         Case("/load 5555", ActionType.LOAD_CONVERSATION, "5555"),
         Case(
             "/sys Eres un asistente experto.",
+            ActionType.SYSTEM_PROMPT,
+            "Eres un asistente experto.",
+        ),
+        Case(
+            "/system Eres un asistente experto.",
             ActionType.SYSTEM_PROMPT,
             "Eres un asistente experto.",
         ),
@@ -35,5 +41,6 @@ def test_command_interpreter_help() -> None:
 
 def test_command_interpreter_wrong_command() -> None:
     command_interpreter = CommandInterpreter()
-    with pytest.raises(CommandNoValid):
-        command_interpreter.parse_user_input("/helper")
+    for wrong_command in ["/", "/helper", "/quit99"]:
+        with pytest.raises(CommandNoValid):
+            command_interpreter.parse_user_input(wrong_command)
