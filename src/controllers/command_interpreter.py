@@ -29,24 +29,26 @@ class CommandInterpreter:
         if not splitted:
             return (None, raw_query)
         action = None
-        match splitted[0]:
-            case "/q" | "/quit" | "/exit":
+        first = splitted[0]
+        if not first.startswith("/"):
+            return (None, raw_query)
+
+        match first[1:]:
+            case "q" | "quit" | "exit":
                 action = Action(ActionType.SALIR)
-            case "/h" | "/help":
+            case "h" | "help":
                 action = Action(ActionType.HELP)
-            case "/d" | "/debug":
+            case "d" | "debug":
                 action = Action(ActionType.DEBUG)
-            case "/load":
+            case "load":
                 action = Action(ActionType.LOAD_CONVERSATION)
-            case "/new":
+            case "new":
                 action = Action(ActionType.NEW_CONVERSATION)
-            case "/change":
+            case "change":
                 action = Action(ActionType.CHANGE_MODEL)
-            case "/sys" | "/system":
+            case "sys" | "system":
                 action = Action(ActionType.SYSTEM_PROMPT)
-            case other if other.startswith("/"):
-                raise CommandNoValid()
             case _:
-                return (None, raw_query)
+                raise CommandNoValid()
         assert action
         return (action, " ".join(splitted[1:]))

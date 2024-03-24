@@ -63,16 +63,12 @@ class MainEngine:
                     self.select_model()
                     return
                 case ActionType.DEBUG:
-                    # TODO: match exact preffix
                     debug = True
                 case ActionType.LOAD_CONVERSATION:
                     conversation_to_load = rest_query
                 case ActionType.NEW_CONVERSATION:
-                    # raw_query = raw_query.removeprefix("/new").strip()
                     new_conversation = True
                 case ActionType.SYSTEM_PROMPT:
-                    # TODO: match exact preffix
-                    # raw_query = raw_query.removeprefix("/sys").strip()
                     system_prompt = True
 
         if system_prompt:
