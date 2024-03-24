@@ -11,6 +11,7 @@ class ActionName:
     HELP = "HELP"
     NEW_CONVERSATION = "NEW_CONVERSATION"
     LOAD_CONVERSATION = "LOAD_CONVERSATION"
+    SYSTEM_PROMPT = "SYSTEM_PROMPT"
 
 
 @dataclass
@@ -38,6 +39,8 @@ class CommandInterpreter:
                 return Action(ActionName.NEW_CONVERSATION)
             case "/change":
                 return Action(ActionName.CHANGE_MODEL)
+            case "/sys" | "/system":
+                return Action(ActionName.SYSTEM_PROMPT)
             case other if other.startswith("/"):
                 show_error_msg("Comando no válido")
                 return None
