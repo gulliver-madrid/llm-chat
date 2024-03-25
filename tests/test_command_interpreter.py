@@ -35,7 +35,7 @@ def test_command_interpreter_valid_command() -> None:
     ]:
         action, rest_query = command_interpreter.parse_user_input(case.raw_query)
         assert action
-        assert action.name == case.expected_action_name
+        assert action.type == case.expected_action_name
         assert rest_query == case.expected_rest_query
 
 

@@ -15,7 +15,7 @@ class ActionType(Enum):
 
 @dataclass
 class Action:
-    name: ActionType
+    type: ActionType
 
 
 class CommandNoValid(Exception):

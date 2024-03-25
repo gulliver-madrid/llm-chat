@@ -57,7 +57,7 @@ class MainEngine:
         system_prompt = False
         conversation_to_load = None
         if action:
-            match action.name:
+            match action.type:
                 case ActionType.SALIR:
                     raise ExitException()
                 case ActionType.HELP:
@@ -89,10 +89,10 @@ class MainEngine:
             self._prev_messages = self._repository.convert_conversation_into_messages(
                 conversation
             )
-            if action.name == ActionType.LOAD_CONVERSATION:
+            if action.type == ActionType.LOAD_CONVERSATION:
                 self._view.display_conversation(conversation_id, conversation)
             else:
-                assert action.name == ActionType.LOAD_MESSAGES
+                assert action.type == ActionType.LOAD_MESSAGES
                 self._view.display_messages(
                     conversation_id,
                     [complete_chat.chat_msg for complete_chat in self._prev_messages],
