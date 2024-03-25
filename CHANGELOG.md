@@ -2,6 +2,12 @@
 
 (work in progress, not totally updated)
 
+## [Unreleased]
+
+### Added
+
+- Add system prompt customization.
+
 ## [0.6.0]
 
 ### Changed
