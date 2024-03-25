@@ -5,7 +5,13 @@ from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
 from mistralai.exceptions import MistralConnectionException
 from openai import OpenAI
 
-from src.models.shared import ChatMessage, CompleteMessage, Model, Platform
+from src.models.shared import (
+    ChatMessage,
+    CompleteMessage,
+    Model,
+    Platform,
+    extract_chat_messages,
+)
 
 
 __all__ = ["QueryResult", "ClientWrapper"]
@@ -46,9 +52,7 @@ class ClientWrapper:
             CompleteMessage(ChatMessage(role="user", content=query))
         )
         # type annotated here for safety because MistralClient define messages type as list[Any]
-        messages: list[ChatMessage] = [
-            complete_msg.chat_msg for complete_msg in complete_messages
-        ]
+        messages: list[ChatMessage] = extract_chat_messages(complete_messages)
         match model.platform:
             case Platform.OpenAI:
                 chat_msg = self._answer_using_openai(model, messages)
