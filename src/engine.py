@@ -34,10 +34,11 @@ class MainEngine:
         self.client_wrapper = client_wrapper
         self.view = View()
         self._prev_messages: list[CompleteMessage] | None = None
+        self._command_interpreter = CommandInterpreter()
 
     def process_raw_query(self, raw_query: str) -> None:
         debug = False
-        action = CommandInterpreter.parse_user_input(raw_query)
+        action = self._command_interpreter.parse_user_input(raw_query)
         new_conversation = False
         system_prompt = False
         conversation_to_load = None
