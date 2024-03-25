@@ -162,13 +162,27 @@ def convert_text_to_conversation_object(
 
 def create_role_tag(complete_message: CompleteMessage) -> str:
     message = complete_message.chat_msg
-    optional_model_info = ""
+    tag_identifier = f"ROLE {message.role.upper()}"
     if model := complete_message.model:
-        model_name: ModelName = model.model_name
-        optional_model_info = f" model={model_name}"
         assert message.role == "assistant"
-    return f"[ROLE {message.role.upper()}{optional_model_info}]"
+        return create_tag(tag_identifier, ("model", model.model_name))
+    return create_tag(tag_identifier)
 
 
-def create_meta_tag(tag_name: str, value: object) -> str:
-    return f"[META {tag_name}={value}]"
+def create_meta_tag(key: str, value: object) -> str:
+    return create_tag_with_property(TagType.META, key, value)
+
+
+def create_tag_with_property(tag_type: TagType, key: str, value: object) -> str:
+    return create_tag(tag_type.value.upper(), (key, value))
+
+
+def create_tag(tag_identifier: str, property: tuple[str, object] | None = None) -> str:
+    assert tag_identifier.isupper()
+    parts = [tag_identifier]
+    if property:
+        key, value = property
+        extra = f"{key}={value}"
+        parts.append(extra)
+    inner = " ".join(parts)
+    return f"[{inner}]"
