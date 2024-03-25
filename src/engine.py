@@ -21,7 +21,7 @@ from src.models.placeholders import (
     build_queries,
     find_unique_placeholders,
 )
-from src.models.shared import CompleteMessage, Model
+from src.models.shared import CompleteMessage, Model, extract_chat_messages
 from src.view import View
 from src.views import print_interaction
 
@@ -95,7 +95,7 @@ class MainEngine:
                 assert action.type == ActionType.LOAD_MESSAGES
                 self._view.display_messages(
                     conversation_id,
-                    [complete_chat.chat_msg for complete_chat in self._prev_messages],
+                    extract_chat_messages(self._prev_messages),
                 )
             return
 

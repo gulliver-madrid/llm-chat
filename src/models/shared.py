@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import NewType
+from typing import NewType, Sequence
 
 __all__ = ["ModelName", "Model", "ChatMessage", "CompleteMessage"]
 
@@ -28,3 +28,9 @@ class Model:
 class CompleteMessage:
     chat_msg: ChatMessage
     model: Model | None = None
+
+
+def extract_chat_messages(
+    complete_messages: Sequence[CompleteMessage],
+) -> list[ChatMessage]:
+    return [complete_chat.chat_msg for complete_chat in complete_messages]
