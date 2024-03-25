@@ -8,6 +8,7 @@ class ActionType(Enum):
     DEBUG = "DEBUG"
     HELP = "HELP"
     NEW_CONVERSATION = "NEW_CONVERSATION"
+    CONTINUE_CONVERSATION = "CONTINUE_CONVERSATION"
     LOAD_CONVERSATION = "LOAD_CONVERSATION"
     LOAD_MESSAGES = "LOAD_MESSAGES"
     SYSTEM_PROMPT = "SYSTEM_PROMPT"
@@ -25,14 +26,14 @@ class CommandNoValid(Exception):
 
 class CommandInterpreter:
 
-    def parse_user_input(self, raw_query: str) -> tuple[Action | None, str]:
+    def parse_user_input(self, raw_query: str) -> tuple[Action, str]:
         splitted = raw_query.strip().split()
         if not splitted:
-            return (None, raw_query)
+            return (Action(ActionType.CONTINUE_CONVERSATION), raw_query)
         action = None
         first = splitted[0]
         if not first.startswith("/"):
-            return (None, raw_query)
+            return (Action(ActionType.CONTINUE_CONVERSATION), raw_query)
 
         match first[1:]:
             case "q" | "quit" | "exit":
