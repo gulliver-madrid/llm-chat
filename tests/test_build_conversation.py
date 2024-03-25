@@ -5,6 +5,7 @@ from src.infrastructure.repository import (
     create_conversation_texts,
 )
 from src.models.shared import ChatMessage, ModelName, CompleteMessage, Model
+from tests.objects import TEXT_1
 
 
 class TestCreateConversationTexts(unittest.TestCase):
@@ -24,24 +25,7 @@ class TestCreateConversationTexts(unittest.TestCase):
 
     def test_create_conversation_texts(self) -> None:
         conversation_id = cast_string_to_conversation_id("0001")
-        expected_conversation_text = """\
-[META id=0001]
-
-[META schema_version=0.2]
-[META number_of_messages=4]
-[META current_time=2024-03-16 14:50:15]
-
-[ROLE USER]
-Hello
-
-[ROLE ASSISTANT model=model_1]
-Hi
-
-[ROLE USER]
-How are you?
-
-[ROLE ASSISTANT model=model_2]
-I'm fine."""
+        expected_conversation_text = TEXT_1
         result = create_conversation_texts(
             self.complete_messages, conversation_id, "2024-03-16 14:50:15"
         )
