@@ -156,19 +156,18 @@ class MainEngine:
     def _define_final_queries(
         self, rest_query: str, placeholders: list[Placeholder]
     ) -> list[str] | None:
-        if placeholders:
-            user_substitutions = self._view.get_raw_substitutions_from_user(
-                placeholders
-            )
-            try:
-                queries = build_queries(rest_query, user_substitutions)
-            except QueryBuildException as err:
-                show_error_msg(str(err))
-                return None
-            self._view.write_object("Placeholders sustituidos exitosamente")
+        if not placeholders:
+            return [rest_query]
+
+        user_substitutions = self._view.get_raw_substitutions_from_user(placeholders)
+        try:
+            queries = build_queries(rest_query, user_substitutions)
+        except QueryBuildException as err:
+            show_error_msg(str(err))
+            return None
         else:
-            queries = [rest_query]
-        return queries
+            self._view.write_object("Placeholders sustituidos exitosamente")
+            return queries
 
     def select_model(self) -> None:
         self._model = self._select_model_controler.select_model()
