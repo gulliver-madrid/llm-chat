@@ -123,6 +123,10 @@ class MainEngine:
             return
         if new_conversation:
             self._prev_messages = None
+        self.answer_queries(queries, debug)
+
+    def answer_queries(self, queries: Sequence[str], debug: bool = False) -> None:
+        number_of_queries = len(queries)
         messages = None
         for i, query in enumerate(queries):
             text = self._define_processing_query_text(
