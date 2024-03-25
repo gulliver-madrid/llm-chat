@@ -56,25 +56,27 @@ class MainEngine:
         new_conversation = False
         system_prompt = False
         conversation_to_load = None
-        if action:
-            match action.type:
-                case ActionType.SALIR:
-                    raise ExitException()
-                case ActionType.HELP:
-                    self._view.show_help()
-                    get_input(PRESS_ENTER_TO_CONTINUE)
-                    return
-                case ActionType.CHANGE_MODEL:
-                    self.select_model()
-                    return
-                case ActionType.DEBUG:
-                    debug = True
-                case ActionType.LOAD_CONVERSATION | ActionType.LOAD_MESSAGES:
-                    conversation_to_load = rest_query
-                case ActionType.NEW_CONVERSATION:
-                    new_conversation = True
-                case ActionType.SYSTEM_PROMPT:
-                    system_prompt = True
+
+        match action.type:
+            case ActionType.SALIR:
+                raise ExitException()
+            case ActionType.HELP:
+                self._view.show_help()
+                get_input(PRESS_ENTER_TO_CONTINUE)
+                return
+            case ActionType.CHANGE_MODEL:
+                self.select_model()
+                return
+            case ActionType.DEBUG:
+                debug = True
+            case ActionType.LOAD_CONVERSATION | ActionType.LOAD_MESSAGES:
+                conversation_to_load = rest_query
+            case ActionType.NEW_CONVERSATION:
+                new_conversation = True
+            case ActionType.CONTINUE_CONVERSATION:
+                pass
+            case ActionType.SYSTEM_PROMPT:
+                system_prompt = True
 
         if system_prompt:
             self._prev_messages = self._client_wrapper.define_system_prompt(rest_query)
