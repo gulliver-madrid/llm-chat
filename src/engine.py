@@ -89,14 +89,16 @@ class MainEngine:
             self._prev_messages = self._repository.convert_conversation_into_messages(
                 conversation
             )
-            if action.type == ActionType.LOAD_CONVERSATION:
-                self._view.display_conversation(conversation_id, conversation)
-            else:
-                assert action.type == ActionType.LOAD_MESSAGES
-                self._view.display_messages(
-                    conversation_id,
-                    extract_chat_messages(self._prev_messages),
-                )
+            match action.type:
+                case ActionType.LOAD_CONVERSATION:
+                    self._view.display_conversation(conversation_id, conversation)
+                case ActionType.LOAD_MESSAGES:
+                    self._view.display_messages(
+                        conversation_id,
+                        extract_chat_messages(self._prev_messages),
+                    )
+                case _:
+                    raise ValueError(action.type)
             return
 
         if not rest_query:
