@@ -87,13 +87,13 @@ class MainEngine:
             conversation_id = cast_string_to_conversation_id(conversation_to_load)
             del conversation_to_load
             conversation = self._repository.load_conversation(conversation_id)
+            self._prev_messages = self._repository.convert_conversation_into_messages(
+                conversation
+            )
             if action.name == ActionType.LOAD_CONVERSATION:
                 self._view.display_conversation(conversation_id, conversation)
             else:
                 assert action.name == ActionType.LOAD_MESSAGES
-                self._prev_messages = (
-                    self._repository.convert_conversation_into_messages(conversation)
-                )
                 self._view.display_messages(
                     conversation_id,
                     [complete_chat.chat_msg for complete_chat in self._prev_messages],
