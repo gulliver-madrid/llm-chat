@@ -2,14 +2,14 @@ import os
 from typing import Final, Sequence
 
 from src.engine import ExitException, MainEngine
-from src.infrastructure.client_wrapper import ClientWrapper, Model
 from src.controllers.select_model import SelectModelController
+from src.infrastructure.client_wrapper import ClientWrapper
 from src.io_helpers import (
     display_neutral_msg,
     get_input,
 )
 from src.models.model_choice import MISTRAL_MODEL_PREFIX
-from src.models.shared import ModelName, Platform
+from src.models.shared import ModelName, Model, Platform
 
 PROGRAM_PROMPT = "Introduce tu consulta. Introduce `end` como único contenido de una línea cuando hayas terminado. Para obtener ayuda, introduce únicamente `/help` y pulsa Enter."
 

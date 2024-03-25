@@ -3,9 +3,8 @@ import re
 from typing import NewType, Sequence, cast
 
 from src.infrastructure.ahora import get_current_time
-from src.infrastructure.client_wrapper import CompleteMessage, ChatMessage
 from src.models.parsed_line import ParsedLine, TagType
-from src.models.shared import ModelName
+from src.models.shared import ChatMessage, CompleteMessage, ModelName
 
 
 NUMBER_OF_DIGITS = 4
