@@ -11,6 +11,7 @@ from src.io_helpers import (
     show_error_msg,
 )
 from src.controllers.command_interpreter import (
+    Action,
     ActionType,
     CommandInterpreter,
     CommandNoValid,
@@ -46,13 +47,15 @@ class MainEngine:
         self._command_interpreter = CommandInterpreter()
 
     def process_raw_query(self, raw_query: str) -> None:
-        debug = False
         try:
             action, rest_query = self._command_interpreter.parse_user_input(raw_query)
         except CommandNoValid as err:
             show_error_msg(str(err))
             return
-        del raw_query
+        self.process_action(action, rest_query)
+
+    def process_action(self, action: Action, rest_query: str) -> None:
+        debug = False
         new_conversation = False
         system_prompt = False
         conversation_to_load = None
