@@ -5,28 +5,10 @@ from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
 from mistralai.exceptions import MistralConnectionException
 from openai import OpenAI
 
-from src.models.shared import ModelName, Platform
+from src.models.shared import ChatMessage, CompleteMessage, Model, Platform
 
 
-__all__ = ["QueryResult", "ClientWrapper", "CompleteMessage", "ChatMessage"]
-
-
-@dataclass(frozen=True)
-class ChatMessage:
-    role: str
-    content: str
-
-
-@dataclass(frozen=True)
-class Model:
-    platform: Platform | None
-    model_name: ModelName
-
-
-@dataclass(frozen=True)
-class CompleteMessage:
-    chat_msg: ChatMessage
-    model: Model | None = None
+__all__ = ["QueryResult", "ClientWrapper"]
 
 
 @dataclass(frozen=True)
