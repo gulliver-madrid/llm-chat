@@ -5,7 +5,8 @@ from typing import NewType, Sequence, cast
 
 from src.infrastructure.ahora import get_current_time
 from src.models.parsed_line import ParsedLine, TagType
-from src.models.shared import ChatMessage, CompleteMessage, ModelName
+from src.models.shared import ChatMessage, CompleteMessage, Model, ModelName
+from src.models_data import get_models
 
 
 NUMBER_OF_DIGITS = 4
@@ -84,7 +85,9 @@ class ConversationBuilder:
         return "\n".join(self._texts)
 
 
-def convert_conversation_into_messages(text: str) -> list[CompleteMessage]:
+def convert_conversation_into_messages(
+    text: str, *, preserve_model: bool = False, check_model_exists: bool = True
+) -> list[CompleteMessage]:
     lines = text.split("\n")
     role_tags_indexes: list[int] = []
     for i, line in enumerate(lines):
@@ -105,15 +108,68 @@ def convert_conversation_into_messages(text: str) -> list[CompleteMessage]:
         this_role_text = "\n".join(this_role_lines).strip()
         role_info = ParsedLine(lines[role_tags_indexes[i]]).get_role_info()
         assert role_info
-        role = role_info.role
-        assert isinstance(role, str)
         chat_message = ChatMessage(
-            role=role,
+            role=role_info.role,
             content=this_role_text,
         )
-        complete_messages.append(CompleteMessage(chat_msg=chat_message, model=None))
+        model_name = role_info.model_name if preserve_model else None
+        found_model = None
+        if model_name:
+            models = get_models()
+            for model in models:
+                if model_name == model.model_name:
+                    found_model = model
+                    break
+            else:
+                if check_model_exists:
+                    raise ValueError(f"Model not found: {model_name}")
+                else:
+                    found_model = Model(None, model_name)
+
+        complete_messages.append(
+            CompleteMessage(chat_msg=chat_message, model=found_model)
+        )
 
     return complete_messages
+
+
+def convert_text_to_conversation_object(
+    text: str, *, preserve_model: bool = False, check_model_exists: bool = True
+) -> Conversation:
+    conversation_id = None
+    number_of_messages = None
+    current_time = None
+
+    lines = text.split("\n")
+    for line in lines:
+        parsed = ParsedLine(line)
+        if parsed.get_tag_type() == TagType.META:
+            key, value = parsed.get_property()
+            if key == "id":
+                assert not conversation_id
+                conversation_id = ConversationId(value)
+            elif key == "schema_version":
+                assert value == SCHEMA_VERSION
+            elif key == "number_of_messages":
+                assert number_of_messages is None
+                assert value.isdigit()
+                number_of_messages = int(value)
+            elif key == "current_time":
+                assert current_time is None
+                current_time = value
+
+    assert conversation_id
+    assert number_of_messages
+    assert current_time
+    return Conversation(
+        conversation_id,
+        SCHEMA_VERSION,
+        number_of_messages,
+        current_time,
+        convert_conversation_into_messages(
+            text, preserve_model=preserve_model, check_model_exists=check_model_exists
+        ),
+    )
 
 
 def create_conversation_texts(
