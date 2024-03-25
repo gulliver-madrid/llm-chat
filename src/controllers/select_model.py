@@ -2,7 +2,7 @@ from typing import Sequence
 
 from rich import print
 
-from src.infrastructure.client_wrapper import Model
+
 from src.io_helpers import (
     BLUE_VIOLET_COLOR,
     BOLD_STYLE,
@@ -13,7 +13,7 @@ from src.io_helpers import (
     show_error_msg,
 )
 from src.models.model_choice import ModelChoiceParser
-from src.models.shared import ModelName
+from src.models.shared import ModelName, Model
 
 
 class SelectModelController:

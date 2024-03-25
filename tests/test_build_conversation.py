@@ -1,10 +1,10 @@
 import unittest
-from src.infrastructure.client_wrapper import ChatMessage, CompleteMessage, Model
+
 from src.infrastructure.repository import (
     cast_string_to_conversation_id,
     create_conversation_texts,
 )
-from src.models.shared import ModelName
+from src.models.shared import ChatMessage, ModelName, CompleteMessage, Model
 
 
 class TestCreateConversationTexts(unittest.TestCase):

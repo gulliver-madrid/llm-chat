@@ -1,6 +1,6 @@
 from typing import NoReturn, Sequence
 
-from src.infrastructure.client_wrapper import Model
+from src.models.shared import Model
 
 
 MISTRAL_MODEL_PREFIX = "mistral"
