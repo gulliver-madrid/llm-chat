@@ -170,5 +170,9 @@ def create_role_tag(complete_message: CompleteMessage) -> str:
     return f"[ROLE {message.role.upper()}{optional_model_info}]"
 
 
-def create_meta_tag(tag_name: str, value: object) -> str:
-    return f"[META {tag_name}={value}]"
+def create_meta_tag(key: str, value: object) -> str:
+    return create_tag_with_property(TagType.META, key, value)
+
+
+def create_tag_with_property(tag_type: TagType, key: str, value: object) -> str:
+    return f"[{tag_type.value.upper()} {key}={value}]"
