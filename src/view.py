@@ -76,3 +76,16 @@ class View:
             f"### Estos son los mensajes de la conversacion con id {conversation_id}"
         )
         self.write_object(prev_messages)
+
+    def display_processing_query_text(self, *, current: int, total: int) -> None:
+        text = define_processing_query_text(current=current, total=total)
+        self.write_object(text)
+
+
+def define_processing_query_text(*, current: int, total: int) -> str:
+    assert total >= current
+    text = f"\n...procesando consulta"
+    if total > 1:
+        extra = f"número {current } de {total}"
+        text = " ".join([text, extra])
+    return text
