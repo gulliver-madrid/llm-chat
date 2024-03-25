@@ -1,6 +1,6 @@
 import unittest
 
-from src.infrastructure.repository import (
+from src.models.serialization import (
     cast_string_to_conversation_id,
     create_conversation_texts,
 )

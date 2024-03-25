@@ -4,27 +4,27 @@ from src.infrastructure.client_wrapper import (
     ClientWrapper,
     QueryResult,
 )
-from src.controllers.select_model import SelectModelController
-from src.infrastructure.repository import (
-    ChatRepository,
-    cast_string_to_conversation_id,
-    convert_conversation_into_messages,
-)
-from src.io_helpers import (
-    get_input,
-    show_error_msg,
-)
 from src.controllers.command_interpreter import (
     Action,
     ActionType,
     CommandInterpreter,
     CommandNoValid,
 )
+from src.controllers.select_model import SelectModelController
+from src.infrastructure.repository import ChatRepository
+from src.io_helpers import (
+    get_input,
+    show_error_msg,
+)
 from src.models.placeholders import (
     Placeholder,
     QueryBuildException,
     build_queries,
     find_unique_placeholders,
+)
+from src.models.serialization import (
+    cast_string_to_conversation_id,
+    convert_conversation_text_into_messages,
 )
 from src.models.shared import CompleteMessage, Model, extract_chat_messages
 from src.view import View
@@ -95,7 +95,7 @@ class MainEngine:
             conversation_id = cast_string_to_conversation_id(conversation_to_load)
             del conversation_to_load
             conversation = self._repository.load_conversation(conversation_id)
-            self._prev_messages = convert_conversation_into_messages(conversation)
+            self._prev_messages = convert_conversation_text_into_messages(conversation)
             match action.type:
                 case ActionType.LOAD_CONVERSATION:
                     self._view.display_conversation(conversation_id, conversation)

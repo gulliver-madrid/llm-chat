@@ -1,9 +1,9 @@
-from src.infrastructure.repository import (
-    ConversationId,
-    convert_conversation_into_messages,
-    convert_text_to_conversation_object,
-)
 from src.models.parsed_line import ParsedLine, TagType
+from src.models.serialization import (
+    convert_conversation_text_into_messages,
+    convert_text_to_conversation_object,
+    ConversationId,
+)
 from src.models.shared import ChatMessage, extract_chat_messages
 from tests.objects import COMPLETE_MESSAGES_1, COMPLETE_MESSAGES_2, TEXT_1, TEXT_2
 
@@ -47,7 +47,7 @@ def test_load_conversation_from_text_2() -> None:
 
 
 def test_load_messages_from_text() -> None:
-    result = convert_conversation_into_messages(TEXT_1)
+    result = convert_conversation_text_into_messages(TEXT_1)
     for complete_msg, expected_chat_msg in zip(
         result, extract_chat_messages(COMPLETE_MESSAGES_1)
     ):
