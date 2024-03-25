@@ -4,27 +4,27 @@ from src.infrastructure.client_wrapper import (
     ClientWrapper,
     QueryResult,
 )
-from src.controllers.select_model import SelectModelController
-from src.infrastructure.repository import (
-    Repository,
-    cast_string_to_conversation_id,
-    convert_conversation_into_messages,
-)
-from src.io_helpers import (
-    get_input,
-    show_error_msg,
-)
 from src.controllers.command_interpreter import (
     Action,
     ActionType,
     CommandInterpreter,
     CommandNoValid,
 )
+from src.controllers.select_model import SelectModelController
+from src.infrastructure.repository import Repository
+from src.io_helpers import (
+    get_input,
+    show_error_msg,
+)
 from src.models.placeholders import (
     Placeholder,
     QueryBuildException,
     build_queries,
     find_unique_placeholders,
+)
+from src.models.serialization import (
+    cast_string_to_conversation_id,
+    convert_conversation_into_messages,
 )
 from src.models.shared import CompleteMessage, Model, extract_chat_messages
 from src.view import View

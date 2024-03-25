@@ -4,13 +4,9 @@ from rich.markdown import Markdown
 
 from typing import Mapping, Sequence
 
-from src.infrastructure.repository import ConversationId
-from src.io_helpers import (
-    get_input,
-)
-from src.models.placeholders import (
-    Placeholder,
-)
+from src.io_helpers import get_input
+from src.models.placeholders import Placeholder
+from src.models.serialization import ConversationId
 from src.models.shared import ChatMessage
 
 HELP_TEXT = """
