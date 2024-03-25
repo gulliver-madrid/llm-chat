@@ -1,6 +1,6 @@
-from src.infrastructure.client_wrapper import ChatMessage
 from src.models.parsed_line import ParsedLine, TagType
 from src.infrastructure.repository import Repository
+from src.models.shared import ChatMessage
 
 
 def create_chat_msg(role: str, content: str) -> ChatMessage:

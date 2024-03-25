@@ -2,8 +2,6 @@ from typing import Sequence
 
 from src.infrastructure.client_wrapper import (
     ClientWrapper,
-    CompleteMessage,
-    Model,
     QueryResult,
 )
 from src.controllers.select_model import SelectModelController
@@ -23,6 +21,7 @@ from src.models.placeholders import (
     build_queries,
     find_unique_placeholders,
 )
+from src.models.shared import CompleteMessage, Model
 from src.view import View
 from src.views import print_interaction
 
