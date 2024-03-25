@@ -25,35 +25,6 @@ class ChatRepository:
         )
         self._save_conversation(conversation_id, conversation)
 
-    def convert_conversation_into_messages(self, text: str) -> list[CompleteMessage]:
-        lines = text.split("\n")
-        role_tags_indexes: list[int] = []
-        for i, line in enumerate(lines):
-            parsed = ParsedLine(line)
-            if parsed.get_tag_type() == TagType.ROLE:
-                role_tags_indexes.append(i)
-
-        complete_messages: list[CompleteMessage] = []
-        role_tags_count = len(role_tags_indexes)
-        for i in range(role_tags_count):
-            start = role_tags_indexes[i] + 1
-            if i < role_tags_count - 1:
-                end = role_tags_indexes[i + 1]
-                this_role_lines = lines[start:end]
-            else:
-                assert i == role_tags_count - 1
-                this_role_lines = lines[start:]
-            this_role_text = "\n".join(this_role_lines).strip()
-            role = ParsedLine(lines[role_tags_indexes[i]]).get_role()
-            assert isinstance(role, str)
-            chat_message = ChatMessage(
-                role=role,
-                content=this_role_text,
-            )
-            complete_messages.append(CompleteMessage(chat_msg=chat_message, model=None))
-
-        return complete_messages
-
     def _get_new_conversation_id(self) -> ConversationId:
         max_number = find_max_file_number(self._data_dir)
         new_number = max_number + 1 if max_number is not None else 0
@@ -101,6 +72,36 @@ class ConversationBuilder:
 
     def build(self) -> str:
         return "\n".join(self._texts)
+
+
+def convert_conversation_into_messages(text: str) -> list[CompleteMessage]:
+    lines = text.split("\n")
+    role_tags_indexes: list[int] = []
+    for i, line in enumerate(lines):
+        parsed = ParsedLine(line)
+        if parsed.get_tag_type() == TagType.ROLE:
+            role_tags_indexes.append(i)
+
+    complete_messages: list[CompleteMessage] = []
+    role_tags_count = len(role_tags_indexes)
+    for i in range(role_tags_count):
+        start = role_tags_indexes[i] + 1
+        if i < role_tags_count - 1:
+            end = role_tags_indexes[i + 1]
+            this_role_lines = lines[start:end]
+        else:
+            assert i == role_tags_count - 1
+            this_role_lines = lines[start:]
+        this_role_text = "\n".join(this_role_lines).strip()
+        role = ParsedLine(lines[role_tags_indexes[i]]).get_role()
+        assert isinstance(role, str)
+        chat_message = ChatMessage(
+            role=role,
+            content=this_role_text,
+        )
+        complete_messages.append(CompleteMessage(chat_msg=chat_message, model=None))
+
+    return complete_messages
 
 
 def create_conversation_texts(
