@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pathlib import Path
 import re
 from typing import NewType, Sequence, cast
@@ -11,6 +12,15 @@ NUMBER_OF_DIGITS = 4
 SCHEMA_VERSION = "0.2"
 
 ConversationId = NewType("ConversationId", str)
+
+
+@dataclass(frozen=True)
+class Conversation:
+    id: ConversationId
+    schema_version: str
+    number_of_messages: int
+    current_time: str
+    messages: Sequence[CompleteMessage]
 
 
 class ChatRepository:
