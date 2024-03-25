@@ -9,6 +9,7 @@ class ActionType(Enum):
     HELP = "HELP"
     NEW_CONVERSATION = "NEW_CONVERSATION"
     LOAD_CONVERSATION = "LOAD_CONVERSATION"
+    LOAD_MESSAGES = "LOAD_MESSAGES"
     SYSTEM_PROMPT = "SYSTEM_PROMPT"
 
 
@@ -42,6 +43,8 @@ class CommandInterpreter:
                 action = Action(ActionType.DEBUG)
             case "load":
                 action = Action(ActionType.LOAD_CONVERSATION)
+            case "load_msgs":
+                action = Action(ActionType.LOAD_MESSAGES)
             case "new":
                 action = Action(ActionType.NEW_CONVERSATION)
             case "change":

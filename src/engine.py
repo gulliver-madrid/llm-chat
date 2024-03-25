@@ -70,7 +70,7 @@ class MainEngine:
                     return
                 case ActionType.DEBUG:
                     debug = True
-                case ActionType.LOAD_CONVERSATION:
+                case ActionType.LOAD_CONVERSATION | ActionType.LOAD_MESSAGES:
                     conversation_to_load = rest_query
                 case ActionType.NEW_CONVERSATION:
                     new_conversation = True
@@ -83,15 +83,21 @@ class MainEngine:
             return
 
         if conversation_to_load:
+            assert action
             conversation_id = cast_string_to_conversation_id(conversation_to_load)
             del conversation_to_load
             conversation = self._repository.load_conversation(conversation_id)
-            self._prev_messages = self._repository.convert_conversation_into_messages(
-                conversation
-            )
-            self._view.write_conversation(
-                conversation_id, conversation, self._prev_messages
-            )
+            if action.name == ActionType.LOAD_CONVERSATION:
+                self._view.display_conversation(conversation_id, conversation)
+            else:
+                assert action.name == ActionType.LOAD_MESSAGES
+                self._prev_messages = (
+                    self._repository.convert_conversation_into_messages(conversation)
+                )
+                self._view.display_messages(
+                    conversation_id,
+                    [complete_chat.chat_msg for complete_chat in self._prev_messages],
+                )
             return
 
         if not rest_query:
