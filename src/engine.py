@@ -31,8 +31,8 @@ class MainEngine:
         self._models = models
         self._select_model_controler = SelectModelController(models)
         self._repository = Repository()
-        self.client_wrapper = client_wrapper
-        self.view = View()
+        self._client_wrapper = client_wrapper
+        self._view = View()
         self._prev_messages: list[CompleteMessage] | None = None
         self._command_interpreter = CommandInterpreter()
 
@@ -47,7 +47,7 @@ class MainEngine:
                 case ActionName.SALIR:
                     raise ExitException()
                 case ActionName.HELP:
-                    self.view.show_help()
+                    self._view.show_help()
                     get_input(PRESS_ENTER_TO_CONTINUE)
                     return
                 case ActionName.CHANGE_MODEL:
@@ -71,8 +71,8 @@ class MainEngine:
                     raise RuntimeError(f"Acción no válida: {action}")
 
         if system_prompt:
-            self._prev_messages = self.client_wrapper.define_system_prompt(raw_query)
-            self.view.write_object("System prompt established")
+            self._prev_messages = self._client_wrapper.define_system_prompt(raw_query)
+            self._view.write_object("System prompt established")
             return
 
         if conversation_to_load:
@@ -81,14 +81,14 @@ class MainEngine:
             self._prev_messages = self._repository.load_conversation_from_text(
                 conversation
             )
-            self.view.write_object(
+            self._view.write_object(
                 f"### Esta es la conversacion con id {conversation_to_load}"
             )
-            self.view.write_object(conversation)
-            self.view.write_object(
+            self._view.write_object(conversation)
+            self._view.write_object(
                 f"### Estos son los mensajes de la conversacion con id {conversation_to_load}"
             )
-            self.view.write_object(self._prev_messages)
+            self._view.write_object(self._prev_messages)
             return
 
         if not raw_query:
@@ -100,20 +100,22 @@ class MainEngine:
         placeholders = find_unique_placeholders(raw_query)
 
         if placeholders:
-            user_substitutions = self.view.get_raw_substitutions_from_user(placeholders)
+            user_substitutions = self._view.get_raw_substitutions_from_user(
+                placeholders
+            )
             try:
                 queries = build_queries(raw_query, user_substitutions)
             except QueryBuildException as err:
                 show_error_msg(str(err))
                 return
-            self.view.write_object("Placeholders sustituidos exitosamente")
+            self._view.write_object("Placeholders sustituidos exitosamente")
         else:
             queries = [raw_query]
         del raw_query
         number_of_queries = len(queries)
         if (
             number_of_queries > QUERY_NUMBER_LIMIT_WARNING
-            and not self.view.confirm_launching_many_queries(number_of_queries)
+            and not self._view.confirm_launching_many_queries(number_of_queries)
         ):
             return
         if new_conversation:
@@ -125,9 +127,9 @@ class MainEngine:
                 extra = f"número {i + 1} de {number_of_queries}"
                 text = " ".join([text, extra])
 
-            self.view.write_object(text)
+            self._view.write_object(text)
 
-            query_result = self.client_wrapper.get_simple_response(
+            query_result = self._client_wrapper.get_simple_response(
                 self._model, query, self._prev_messages, debug
             )
             print_interaction(self._model.model_name, query, query_result.content)
