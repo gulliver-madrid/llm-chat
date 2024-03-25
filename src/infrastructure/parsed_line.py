@@ -22,12 +22,16 @@ class RoleInfo:
 tag_types: Final[Mapping[str, TagType]] = dict(META=TagType.META, ROLE=TagType.ROLE)
 
 
+@dataclass
 class ParsedLine:
-    def __init__(self, line: str):
-        self.line = line
-        assert "\n" not in line
+    line: str
+
+    def __post_init__(
+        self,
+    ) -> None:
+        assert "\n" not in self.line
         pattern = re.compile(r"^\[(META|ROLE) .*\]$")
-        self.match = pattern.match(line)
+        self.match = pattern.match(self.line)
 
     def is_tag(self) -> bool:
         return bool(self.match)
@@ -37,6 +41,18 @@ class ParsedLine:
             return None
         assert self.match
         return tag_types[self.match.groups()[0]]
+
+    def get_property(self) -> tuple[str, str]:
+        assert self.is_tag()
+        pattern = re.compile(r"^\[(META|ROLE)( [A-Z]+)? (.*)\]$")
+        match = pattern.match(self.line)
+        assert match, self
+        second = match.groups()[2]
+        second = second.strip()
+        property_match = re.match(r"([a-z_]+)=([ .\-:_a-z0-9]+)", second)
+        assert property_match
+        groups = property_match.groups()
+        return (groups[0], groups[1])
 
     def get_role_info(self) -> RoleInfo | None:
         if self.get_tag_type() is not TagType.ROLE:
