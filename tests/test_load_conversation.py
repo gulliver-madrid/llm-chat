@@ -1,5 +1,5 @@
 from src.models.parsed_line import ParsedLine, TagType
-from src.infrastructure.repository import Repository
+from src.infrastructure.repository import convert_conversation_into_messages
 from src.models.shared import ChatMessage
 
 
@@ -35,8 +35,7 @@ expected_messages = [
 
 
 def test_load_conversation_from_text() -> None:
-    repository = Repository()
-    result = repository.convert_conversation_into_messages(TEXT_FROM_FILE)
+    result = convert_conversation_into_messages(TEXT_FROM_FILE)
     for complete_msg, expected_chat_msg in zip(result, expected_messages):
         assert complete_msg.chat_msg.role == expected_chat_msg.role
         assert complete_msg.chat_msg.content == expected_chat_msg.content
