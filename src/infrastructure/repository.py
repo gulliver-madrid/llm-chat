@@ -113,24 +113,29 @@ def convert_conversation_into_messages(
             content=this_role_text,
         )
         model_name = role_info.model_name if preserve_model else None
-        found_model = None
+        model = None
         if model_name:
-            models = get_models()
-            for model in models:
-                if model_name == model.model_name:
-                    found_model = model
-                    break
-            else:
-                if check_model_exists:
-                    raise ValueError(f"Model not found: {model_name}")
-                else:
-                    found_model = Model(None, model_name)
+            model = determine_model(model_name, check_existence=check_model_exists)
 
-        complete_messages.append(
-            CompleteMessage(chat_msg=chat_message, model=found_model)
-        )
+        complete_messages.append(CompleteMessage(chat_msg=chat_message, model=model))
 
     return complete_messages
+
+
+def determine_model(
+    model_name: ModelName, *, check_existence: bool = True
+) -> Model | None:
+    models = get_models()
+    for model in models:
+        if model_name == model.model_name:
+            found_model = model
+            break
+    else:
+        if check_existence:
+            raise ValueError(f"Model not found: {model_name}")
+        else:
+            found_model = Model(None, model_name)
+    return found_model
 
 
 def convert_text_to_conversation_object(
