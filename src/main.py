@@ -1,5 +1,5 @@
 import os
-from typing import Final, Sequence
+from typing import Sequence
 
 from src.engine import ExitException, MainEngine
 from src.controllers.select_model import SelectModelController
@@ -8,8 +8,8 @@ from src.io_helpers import (
     display_neutral_msg,
     get_input,
 )
-from src.models.model_choice import MISTRAL_MODEL_PREFIX
-from src.models.shared import ModelName, Model, Platform
+from src.models.shared import Model
+from src.models_data import get_models
 
 PROGRAM_PROMPT = "Introduce tu consulta. Introduce `end` como único contenido de una línea cuando hayas terminado. Para obtener ayuda, introduce únicamente `/help` y pulsa Enter."
 
@@ -41,16 +41,7 @@ class Main:
 
 
 def main() -> None:
-    mistral_models: Final[Sequence[str]] = ["tiny", "small", "medium", "large-2402"]
-    openai_models: Final[Sequence[str]] = ["gpt-3.5-turbo", "gpt-4-1106-preview"]
-
-    main_instance = Main(
-        [
-            Model(Platform.Mistral, ModelName(MISTRAL_MODEL_PREFIX + "-" + model))
-            for model in mistral_models
-        ]
-        + [Model(Platform.OpenAI, ModelName(model)) for model in openai_models]
-    )
+    main_instance = Main(get_models())
     try:
         main_instance.execute()
     except ExitException:
