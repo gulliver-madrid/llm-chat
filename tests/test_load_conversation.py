@@ -1,42 +1,18 @@
 from src.models.parsed_line import ParsedLine, TagType
 from src.infrastructure.repository import convert_conversation_into_messages
-from src.models.shared import ChatMessage
+from src.models.shared import ChatMessage, extract_chat_messages
+from tests.objects import COMPLETE_MESSAGES_1, TEXT_1
 
 
 def create_chat_msg(role: str, content: str) -> ChatMessage:
     return ChatMessage(role=role, content=content)
 
 
-TEXT_FROM_FILE = """\
-[META id=0001]
-
-[META schema_version=0.2]
-[META number_of_messages=4]
-[META current_time=2024-03-16 14:50:15]
-
-[ROLE USER]
-Hello
-
-[ROLE ASSISTANT model=model_1]
-Hi
-
-[ROLE USER]
-How are you?
-
-[ROLE ASSISTANT model=model_2]
-I'm fine."""
-
-expected_messages = [
-    ChatMessage(role="user", content="Hello"),
-    ChatMessage(role="assistant", content="Hi"),
-    ChatMessage(role="user", content="How are you?"),
-    ChatMessage(role="assistant", content="I'm fine."),
-]
-
-
-def test_load_conversation_from_text() -> None:
-    result = convert_conversation_into_messages(TEXT_FROM_FILE)
-    for complete_msg, expected_chat_msg in zip(result, expected_messages):
+def test_load_messages_from_text() -> None:
+    result = convert_conversation_into_messages(TEXT_1)
+    for complete_msg, expected_chat_msg in zip(
+        result, extract_chat_messages(COMPLETE_MESSAGES_1)
+    ):
         assert complete_msg.chat_msg.role == expected_chat_msg.role
         assert complete_msg.chat_msg.content == expected_chat_msg.content
 
