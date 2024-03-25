@@ -93,7 +93,9 @@ def convert_conversation_into_messages(text: str) -> list[CompleteMessage]:
             assert i == role_tags_count - 1
             this_role_lines = lines[start:]
         this_role_text = "\n".join(this_role_lines).strip()
-        role = ParsedLine(lines[role_tags_indexes[i]]).get_role()
+        role_info = ParsedLine(lines[role_tags_indexes[i]]).get_role_info()
+        assert role_info
+        role = role_info.role
         assert isinstance(role, str)
         chat_message = ChatMessage(
             role=role,
