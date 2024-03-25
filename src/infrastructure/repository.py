@@ -26,7 +26,7 @@ class Repository:
         )
         self._save_conversation(conversation_id, conversation)
 
-    def load_conversation_from_text(self, text: str) -> list[CompleteMessage]:
+    def convert_conversation_into_messages(self, text: str) -> list[CompleteMessage]:
         lines = text.split("\n")
         role_tags_indexes: list[int] = []
         for i, line in enumerate(lines):
