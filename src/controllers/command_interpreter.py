@@ -5,6 +5,7 @@ from enum import Enum
 class ActionType(Enum):
     EXIT = "EXIT"
     CHANGE_MODEL = "CHANGE_MODEL"
+    SHOW_MODEL = "SHOW_MODEL"
     DEBUG = "DEBUG"
     HELP = "HELP"
     NEW_CONVERSATION = "NEW_CONVERSATION"
@@ -50,6 +51,8 @@ class CommandInterpreter:
                 action = Action(ActionType.NEW_CONVERSATION)
             case "change":
                 action = Action(ActionType.CHANGE_MODEL)
+            case "show":
+                action = Action(ActionType.SHOW_MODEL)
             case "sys" | "system":
                 action = Action(ActionType.SYSTEM_PROMPT)
             case _:
