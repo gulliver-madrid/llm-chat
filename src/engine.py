@@ -41,6 +41,8 @@ PRESS_ENTER_TO_CONTINUE = "Pulsa Enter para continuar"
 
 
 class MainEngine:
+    _model: Model
+
     def __init__(self, models: Sequence[Model], client_wrapper: ClientWrapper) -> None:
         self._models = models
         self._select_model_controler = SelectModelController(models)
@@ -82,6 +84,11 @@ class MainEngine:
                 new_conversation = True
             case ActionType.CONTINUE_CONVERSATION:
                 pass
+            case ActionType.SHOW_MODEL:
+                self._view.display_neutral_msg(
+                    f"El modelo actual es {self._model.model_name}"
+                )
+                return
             case ActionType.SYSTEM_PROMPT:
                 system_prompt = True
 

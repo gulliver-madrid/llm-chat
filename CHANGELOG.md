@@ -7,6 +7,7 @@
 ### Added
 
 - Add system prompt customization.
+- Add `/show` command to display current model name.
 
 ## [0.6.0]
 
