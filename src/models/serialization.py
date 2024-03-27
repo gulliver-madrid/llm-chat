@@ -116,8 +116,8 @@ def create_conversation_texts(
 
 
 def cast_string_to_conversation_id(string: str) -> ConversationId:
-    assert string.isdigit()
-    assert len(string) == NUMBER_OF_DIGITS
+    if not string.isdigit() or len(string) != NUMBER_OF_DIGITS:
+        raise ValueError(f'"{string} "no pudo convertirse en un ConversationId')
     return cast(ConversationId, string)
 
 
