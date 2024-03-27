@@ -113,6 +113,7 @@ class MainEngine:
                     )
                 case _:
                     raise ValueError(action.type)
+            self._view.display_neutral_msg("La conversación ha sido cargada")
             return
 
         if not rest_query:
