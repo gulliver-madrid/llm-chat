@@ -3,7 +3,7 @@ from enum import Enum
 
 
 class ActionType(Enum):
-    SALIR = "SALIR"
+    EXIT = "EXIT"
     CHANGE_MODEL = "CHANGE_MODEL"
     SHOW_MODEL = "SHOW_MODEL"
     DEBUG = "DEBUG"
@@ -38,7 +38,7 @@ class CommandInterpreter:
 
         match first[1:]:
             case "q" | "quit" | "exit":
-                action = Action(ActionType.SALIR)
+                action = Action(ActionType.EXIT)
             case "h" | "help":
                 action = Action(ActionType.HELP)
             case "d" | "debug":
