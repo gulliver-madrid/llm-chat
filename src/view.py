@@ -19,8 +19,14 @@ Si empiezas el contenido de un placeholder con `/for` y pones las variantes sepa
 
 ### Comandos
 - Para empezar una nueva conversación en lugar de seguir con la actual, usa el comando `/new` al inicio de tu consulta.
-- Puedes iniciar tu consulta con `/d` para activar el modo depuración.
+- Puedes iniciar tu consulta con `/d` o `/debug` para activar el modo depuración.
 - Usa `/show` para ver cuál es el modelo actual.
+- Usa `/change` para cambiar el modelo.
+- Usa `/sys <prompt>` o `/system <prompt>` para establecer un nuevo prompt de sistema. Esto iniciará una nueva conversación.
+- Usa `/load <id>` para cargar una conversación desde el directorio de datos.
+- Usa `/load_msgs <id>` para cargar una conversación desde el directorio de datos obteniendo una vista de los mensajes.
+- Usa `/h` o `/help` para mostrar esta ayuda.
+- Usa `/q`, `/quit` o `/exit` para salir del programa.
 """
 
 
