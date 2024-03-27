@@ -67,7 +67,7 @@ class MainEngine:
         conversation_to_load = None
 
         match action.type:
-            case ActionType.SALIR:
+            case ActionType.EXIT:
                 raise ExitException()
             case ActionType.HELP:
                 self._view.show_help()
