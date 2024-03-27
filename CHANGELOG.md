@@ -8,6 +8,7 @@
 
 - Add system prompt customization.
 - Add `/show` command to display current model name.
+- Add a description of every command in inline help.
 
 ## [0.6.0]
 
