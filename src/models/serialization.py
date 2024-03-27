@@ -133,18 +133,21 @@ def convert_text_to_conversation_object(
         parsed = ParsedLine(line)
         if parsed.get_tag_type() == TagType.META:
             key, value = parsed.get_property()
-            if key == "id":
-                assert not conversation_id
-                conversation_id = ConversationId(value)
-            elif key == "schema_version":
-                assert value == SCHEMA_VERSION
-            elif key == "number_of_messages":
-                assert number_of_messages is None
-                assert value.isdigit()
-                number_of_messages = int(value)
-            elif key == "current_time":
-                assert current_time is None
-                current_time = value
+            match key:
+                case "id":
+                    assert not conversation_id
+                    conversation_id = ConversationId(value)
+                case "schema_version":
+                    assert value == SCHEMA_VERSION
+                case "number_of_messages":
+                    assert number_of_messages is None
+                    assert value.isdigit()
+                    number_of_messages = int(value)
+                case "current_time":
+                    assert current_time is None
+                    current_time = value
+                case _:
+                    raise ValueError(f"Key {key} not recognized")
 
     assert conversation_id
     assert number_of_messages
