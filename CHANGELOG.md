@@ -2,9 +2,11 @@
 
 (work in progress, not totally updated)
 
+
 ## [Unreleased]
-- [BREAKING CHANGES] Cambia el directorio de chats. La transición debería hacerse automáticamente.
-- Encontrar directorios en el directorio de chats genera una warning pero no detiene el programa.
+- [BREAKING CHANGES] Change the chat directory. The transition should happen automatically.
+- Finding directories or files with an invalid chat name in the chat directory generates a warning but does not stop the program.
+
 
 ## [Unreleased]
 
