@@ -1,18 +1,21 @@
 import time
+from typing import NewType
 
 from rich import print
 
-ERROR = "[bright_red]"
-CALL_TO_ACTION = "[bright_cyan]"
-HIGHLIGHT_ROLE = "[light_green]"
-NEUTRAL_MSG = "[dark_goldenrod]"
+StyleTag = NewType("StyleTag", str)
 
-BLUE_VIOLET_COLOR = "[blue_violet]"
+ERROR = StyleTag("[bright_red]")
+CALL_TO_ACTION = StyleTag("[bright_cyan]")
+HIGHLIGHT_ROLE = StyleTag("[light_green]")
+NEUTRAL_MSG = StyleTag("[dark_goldenrod]")
 
-BOLD_STYLE = "[bold]"
+BLUE_VIOLET_COLOR = StyleTag("[blue_violet]")
+
+BOLD_STYLE = StyleTag("[bold]")
 
 
-def end(s: str) -> str:
+def end_style_tag(s: StyleTag) -> str:
     """Create a end tag"""
     assert s[0] == "["
     assert s[-1] == "]"
@@ -35,14 +38,14 @@ def show_error_msg(text: str) -> None:
     time.sleep(1)
 
 
-def apply_tag(s: str, tag: str) -> str:
+def apply_style_tag(s: str, tag: StyleTag) -> str:
     assert tag.startswith("[")
     assert tag.endswith("]")
-    return tag + s + end(tag)
+    return tag + s + end_style_tag(tag)
 
 
 def highlight_role(role_string: str) -> str:
-    return HIGHLIGHT_ROLE + role_string + end(HIGHLIGHT_ROLE)
+    return HIGHLIGHT_ROLE + role_string + end_style_tag(HIGHLIGHT_ROLE)
 
 
 def display_neutral_msg(text: str) -> None:

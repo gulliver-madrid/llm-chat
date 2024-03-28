@@ -8,7 +8,7 @@ from src.io_helpers import (
     BOLD_STYLE,
     CALL_TO_ACTION,
     NEUTRAL_MSG,
-    apply_tag,
+    apply_style_tag,
     get_input,
     show_error_msg,
 )
@@ -34,7 +34,7 @@ class SelectModelController:
             self._show_options()
 
             user_choice = get_input(
-                apply_tag(f"Introduce tu elección (1-{num_options})", BOLD_STYLE)
+                apply_style_tag(f"Introduce tu elección (1-{num_options})", BOLD_STYLE)
             )
             if user_choice:
                 try:
@@ -50,7 +50,7 @@ class SelectModelController:
     def _show_options(self) -> None:
         # Mostrar opciones al usuario
         print(
-            apply_tag(
+            apply_style_tag(
                 "\nPor favor, elige un modelo introduciendo el número correspondiente:",
                 CALL_TO_ACTION,
             )
@@ -65,10 +65,10 @@ class SelectModelController:
 
 
 def create_styled_default_model_explanation(default_model: ModelName) -> str:
-    model_name_styled = apply_tag(f"{default_model}", BLUE_VIOLET_COLOR)
+    model_name_styled = apply_style_tag(f"{default_model}", BLUE_VIOLET_COLOR)
     explanation = (
         "\nPresiona enter sin seleccionar un número para elegir el modelo "
         + model_name_styled
         + " por defecto."
     )
-    return apply_tag(explanation, NEUTRAL_MSG)
+    return apply_style_tag(explanation, NEUTRAL_MSG)
