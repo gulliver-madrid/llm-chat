@@ -9,6 +9,7 @@
 - Add system prompt customization.
 - Add `/show` command to display current model name.
 - Add a description of every command in inline help.
+- Add option to load API keys from `.env` file.
 
 ## [0.6.0]
 
