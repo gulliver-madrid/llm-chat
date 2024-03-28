@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+
 import os
 from typing import Sequence
 
@@ -17,6 +19,7 @@ PROGRAM_PROMPT = "Introduce tu consulta. Introduce `end` como único contenido d
 class Main:
     def __init__(self, models: Sequence[Model]) -> None:
         self._select_model_controler = SelectModelController(models)
+        load_dotenv()
         mistral_api_key = os.environ.get("MISTRAL_API_KEY")
         openai_api_key = os.environ.get("OPENAI_API_KEY")
         self._engine = MainEngine(
