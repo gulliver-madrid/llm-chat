@@ -14,8 +14,24 @@ from src.models.shared import CompleteMessage
 
 class Repository:
     def __init__(self) -> None:
-        self._data_dir = Path(__file__).parent.parent.parent / "data"
-        self._data_dir.mkdir(exist_ok=True)
+        self.__data_dir = Path(__file__).parent.parent.parent / "data"
+        self._chats_dir = self.__data_dir / "chats"
+        self.__data_dir.mkdir(exist_ok=True)
+        self._chats_dir.mkdir(exist_ok=True)
+        chat_files_in_data_dir = list(self.__data_dir.iterdir())
+        for path in chat_files_in_data_dir:
+            if is_chat_file(path):
+                new_id = self._get_new_conversation_id()
+                with open(path, "r", encoding="utf-8") as file:
+                    text = file.read()
+                new_path = self._chats_dir / (new_id + ".chat")
+                assert not new_path.exists(), new_path
+                with open(new_path, "w", encoding="utf-8") as file:
+                    file.write(text)
+                tmp_delete_path_ = path / ".." / ("_delete_" + path.name + ".tmp")
+                path.rename(tmp_delete_path_)
+                assert not path.exists()
+                tmp_delete_path_.unlink()
 
     def save(self, complete_messages: Sequence[CompleteMessage]) -> None:
         conversation_id = self._get_new_conversation_id()
@@ -25,8 +41,8 @@ class Repository:
         self._save_conversation(conversation_id, conversation)
 
     def _get_new_conversation_id(self) -> ConversationId:
-        max_number = find_max_file_number(self._data_dir)
-        new_number = max_number + 1 if max_number is not None else 0
+        max_number = find_max_file_number(self._chats_dir)
+        new_number = (max_number + 1) if max_number is not None else 0
         assert 0 <= new_number < 10**NUMBER_OF_DIGITS
         return cast_string_to_conversation_id(str(new_number).zfill(NUMBER_OF_DIGITS))
 
@@ -44,7 +60,7 @@ class Repository:
         return text
 
     def _build_conversation_filepath(self, conversation_id: ConversationId) -> Path:
-        return self._data_dir / (conversation_id + ".chat")
+        return self._chats_dir / (conversation_id + ".chat")
 
 
 def find_max_file_number(directory_path: Path) -> int | None:
@@ -56,7 +72,9 @@ def find_max_file_number(directory_path: Path) -> int | None:
     max_number = -1
 
     for path in directory_path.iterdir():
-        assert not path.is_dir()
+        if path.is_dir():
+            print(f"Ignorando ruta {path} por ser un directorio")
+            continue
         match = pattern.match(path.name)
         assert match, "Archivo incorrecto: " + str(path)
         number = int(path.stem)
@@ -64,3 +82,11 @@ def find_max_file_number(directory_path: Path) -> int | None:
             max_number = number
 
     return max_number if max_number >= 0 else None
+
+
+def is_chat_file(path: Path) -> bool:
+    assert path.exists()
+    if path.is_dir():
+        return False
+    pattern = re.compile(rf"^(\d{{{NUMBER_OF_DIGITS}}})\.chat$")
+    return pattern.match(path.name) is not None
