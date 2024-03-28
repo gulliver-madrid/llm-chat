@@ -25,13 +25,11 @@ class Repository:
         for path in chat_files_in_data_dir:
             if is_chat_file(path):
                 new_id = self._get_new_conversation_id()
-                with open(path, "r", encoding="utf-8") as file:
-                    text = file.read()
-                new_path = self._chats_dir / (new_id + ".chat")
+                text = self._read_file(path)
+                new_path = self._build_chat_path(new_id)
                 assert not new_path.exists(), new_path
-                with open(new_path, "w", encoding="utf-8") as file:
-                    file.write(text)
-                tmp_delete_path_ = path / ".." / ("_delete_" + path.name + ".tmp")
+                self._write_file(new_path, text)
+                tmp_delete_path_ = create_temporary_delete_path(path)
                 path.rename(tmp_delete_path_)
                 assert not path.exists()
                 tmp_delete_path_.unlink()
@@ -53,16 +51,25 @@ class Repository:
         self, conversation_id: ConversationId, conversation: str
     ) -> None:
         filepath = self._build_conversation_filepath(conversation_id)
-        with open(filepath, "w", encoding="utf-8") as file:
-            file.write(conversation)
+        self._write_file(filepath, conversation)
 
     def load_conversation(self, conversation_id: ConversationId) -> str:
         filepath = self._build_conversation_filepath(conversation_id)
-        with open(filepath, "r", encoding="utf-8") as file:
+        return self._read_file(filepath)
+
+    def _build_conversation_filepath(self, conversation_id: ConversationId) -> Path:
+        return self._build_chat_path(conversation_id)
+
+    def _write_file(self, path: Path, text: str) -> None:
+        with open(path, "w", encoding="utf-8") as file:
+            file.write(text)
+
+    def _read_file(self, path: Path) -> str:
+        with open(path, "r", encoding="utf-8") as file:
             text = file.read()
         return text
 
-    def _build_conversation_filepath(self, conversation_id: ConversationId) -> Path:
+    def _build_chat_path(self, conversation_id: ConversationId) -> Path:
         return self._chats_dir / (conversation_id + "." + CHAT_EXT)
 
 
@@ -91,3 +98,7 @@ def is_chat_file(path: Path) -> bool:
         return False
 
     return CHAT_NAME_PATTERN.match(path.name) is not None
+
+
+def create_temporary_delete_path(path: Path) -> Path:
+    return path.parent / ("_delete_" + path.name + ".tmp")
