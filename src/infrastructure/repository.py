@@ -78,25 +78,29 @@ def find_max_file_number(directory_path: Path) -> int | None:
     assert directory_path.exists()
 
     max_number = -1
-
+    ignored: list[Path] = []
     for path in directory_path.iterdir():
         if path.is_dir():
-            print(f"Ignorando ruta {path} por ser un directorio")
+            ignored.append(path)
             continue
         match = CHAT_NAME_PATTERN.match(path.name)
-        assert match, "Archivo incorrecto: " + str(path)
+        if not match:
+            ignored.append(path)
+            continue
         number = int(path.stem)
         if number > max_number:
             max_number = number
-
-    return max_number if max_number >= 0 else None
+    if ignored:
+        print(f"Se ignoraron {len(ignored)} rutas")
+    if max_number < 0:
+        return None
+    return max_number
 
 
 def is_chat_file(path: Path) -> bool:
     assert path.exists()
     if path.is_dir():
         return False
-
     return CHAT_NAME_PATTERN.match(path.name) is not None
 
 
