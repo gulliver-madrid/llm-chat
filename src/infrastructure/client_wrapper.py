@@ -24,17 +24,14 @@ class QueryResult:
 
 
 class ClientWrapper:
+    _mistralai_client = None
+    _openai_client = None
+
     def __init__(self, *, mistral_api_key: str | None, openai_api_key: str | None):
-        self._mistralai_client = (
-            MistralClient(api_key=mistral_api_key) if mistral_api_key else None
-        )
-        self._openai_client = (
-            OpenAI(
-                api_key=openai_api_key,
-            )
-            if openai_api_key
-            else None
-        )
+        if mistral_api_key:
+            self._mistralai_client = MistralClient(api_key=mistral_api_key)
+        if openai_api_key:
+            self._openai_client = OpenAI(api_key=openai_api_key)
 
     def get_simple_response(
         self,
