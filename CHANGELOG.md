@@ -3,6 +3,10 @@
 (work in progress, not totally updated)
 
 ## [Unreleased]
+- [BREAKING CHANGES] Cambia el directorio de chats. La transición debería hacerse automáticamente.
+- Encontrar directorios en el directorio de chats genera una warning pero no detiene el programa.
+
+## [Unreleased]
 
 ### Added
 
