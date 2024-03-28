@@ -11,6 +11,9 @@ from src.models.serialization import (
 )
 from src.models.shared import CompleteMessage
 
+CHAT_EXT = "chat"
+CHAT_NAME_PATTERN = re.compile(rf"^(\d{{{NUMBER_OF_DIGITS}}})\.{CHAT_EXT}$")
+
 
 class ChatRepository:
     def __init__(self) -> None:
@@ -60,14 +63,12 @@ class ChatRepository:
         return text
 
     def _build_conversation_filepath(self, conversation_id: ConversationId) -> Path:
-        return self._chats_dir / (conversation_id + ".chat")
+        return self._chats_dir / (conversation_id + "." + CHAT_EXT)
 
 
 def find_max_file_number(directory_path: Path) -> int | None:
     assert directory_path.is_dir()
     assert directory_path.exists()
-
-    pattern = re.compile(rf"^(\d{{{NUMBER_OF_DIGITS}}})\.chat$")
 
     max_number = -1
 
@@ -75,7 +76,7 @@ def find_max_file_number(directory_path: Path) -> int | None:
         if path.is_dir():
             print(f"Ignorando ruta {path} por ser un directorio")
             continue
-        match = pattern.match(path.name)
+        match = CHAT_NAME_PATTERN.match(path.name)
         assert match, "Archivo incorrecto: " + str(path)
         number = int(path.stem)
         if number > max_number:
@@ -88,5 +89,5 @@ def is_chat_file(path: Path) -> bool:
     assert path.exists()
     if path.is_dir():
         return False
-    pattern = re.compile(rf"^(\d{{{NUMBER_OF_DIGITS}}})\.chat$")
-    return pattern.match(path.name) is not None
+
+    return CHAT_NAME_PATTERN.match(path.name) is not None
