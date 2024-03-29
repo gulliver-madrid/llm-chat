@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Any, Mapping
+from typing import Any, Mapping, Final
 
 from rich import print
 from dotenv import load_dotenv
@@ -80,48 +80,50 @@ Recuerda que tienes disponible una función para obtener los precios de varios p
 """
 
 
-def main() -> None:
-    load_dotenv()
-    mistral_api_key = os.environ.get("MISTRAL_API_KEY")
-    client = ClientWrapper(mistral_api_key=mistral_api_key)
-    messages = client.define_system_prompt(create_system_prompt())
-    user_query = get_input("Pregunta lo que quieras sobre nuestra tienda")
-    model = Model(Platform.Mistral, models["large"])
-    response = client.get_simple_response(
-        model,
-        user_query,
-        messages,
-        tools=tools,
-        tool_choice="auto",
-    )
-    messages = response.messages
-    last_message = messages[-1]
-    if calls := last_message.chat_msg.tool_calls:
-
-        display_neutral_msg("Realizando consulta de precios...")
-
-        assert isinstance(calls, list)
-        tool_call: Any = calls[0]
-        function_name = tool_call.function.name
-        function_params = json.loads(tool_call.function.arguments)
-        assert function_name == "retrieve_prices_by_name"
-        assert len(function_params) == 1
-        assert "names_in_english" in function_params
-        names_in_english = function_params.get("names_in_english")
-        function_result = retrieve_prices_by_name(names_in_english)
-        chat_message = create_tool_response(function_name, function_result)
-        messages.append(CompleteMessage(chat_message))
+class Main:
+    def execute(self) -> None:
+        load_dotenv()
+        mistral_api_key = os.environ.get("MISTRAL_API_KEY")
+        client = ClientWrapper(mistral_api_key=mistral_api_key)
+        messages: Final = client.define_system_prompt(create_system_prompt())
+        user_query = get_input("Pregunta lo que quieras sobre nuestra tienda")
+        model = Model(Platform.Mistral, models["large"])
         response = client.get_simple_response(
             model,
-            "",
+            user_query,
             messages,
             tools=tools,
-            tool_choice="none",
-            append_query=False,  # because the query was send before
+            tool_choice="auto",
         )
-    print(response.content)
+        messages.clear()
+        messages.extend(response.messages)
+        last_message = messages[-1]
+        if calls := last_message.chat_msg.tool_calls:
 
-    logger.info(response.messages)
+            display_neutral_msg("Realizando consulta de precios...")
+
+            assert isinstance(calls, list)
+            tool_call: Any = calls[0]
+            function_name = tool_call.function.name
+            function_params = json.loads(tool_call.function.arguments)
+            assert function_name == "retrieve_prices_by_name"
+            assert len(function_params) == 1
+            assert "names_in_english" in function_params
+            names_in_english = function_params.get("names_in_english")
+            function_result = retrieve_prices_by_name(names_in_english)
+            chat_message = create_tool_response(function_name, function_result)
+            messages.append(CompleteMessage(chat_message))
+            response = client.get_simple_response(
+                model,
+                "",
+                messages,
+                tools=tools,
+                tool_choice="none",
+                append_query=False,  # because the query was send before
+            )
+        print(response.content)
+
+        logger.info(response.messages)
 
 
 def create_tool_response(function_name: str, function_result: str) -> ChatMessage:
@@ -129,4 +131,5 @@ def create_tool_response(function_name: str, function_result: str) -> ChatMessag
 
 
 if __name__ == "__main__":
-    main()
+    main = Main()
+    main.execute()
