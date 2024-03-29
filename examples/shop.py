@@ -1,6 +1,7 @@
 import os
 from typing import Mapping
 
+from rich import print
 from dotenv import load_dotenv
 
 from examples.shop_data import ProductsData, data
@@ -19,18 +20,21 @@ models: Mapping[str, ModelName] = dict(
 
 def format_products_for_assistant(data: ProductsData) -> str:
     lines: list[str] = []
-    for p in data["products"]:
-        name = p["name"]
-        assert isinstance(name, str)
-        lines.append(f"- {name})")
+    for product in data["products"]:
+        product_name = product["name"]
+        lines.append(
+            f'- {product_name["english"]} (spanish: {product_name["spanish"]})'
+        )
     return "\n".join(lines)
 
 
 def create_system_prompt() -> str:
-    return f"""Eres un asistente virtual en una tienda de ropa. Tu función es proporcionar información precisa y actualizada sobre los productos disponibles, sus precios y cualquier otra cosa que los clientes puedan preguntar. Tu tono debe ser amigable y profesional. Tu objetivo es proporcionar una experiencia positiva al cliente y ayudarlo a encontrar lo que está buscando. Los productos disponibles son estos:
+    return f"""Eres un asistente virtual en una tienda de ropa. Tu misión es proporcionar información precisa y actualizada sobre los productos disponibles, sus precios y cualquier otra cosa que los clientes puedan preguntar. Tu tono debe ser amigable y profesional. Tu objetivo es proporcionar una experiencia positiva al cliente y ayudarlo a encontrar lo que está buscando. Los productos disponibles son estos:
 {format_products_for_assistant(data)}
 
-Si no conoces el precio de un producto, simplemente di que ahora mismo no puedes proporcionar ese precio debido a una incidencia. Si son varios los productos cuyo precio desconoces, no debes dar la explicación para cada producto, sino una única vez para todos ellos."""
+Solo debes proporcionar los precios que conozcas con seguridad por medio de nuestro sistema. Si no conoces el precio de un producto, simplemente di que ahora mismo no puedes proporcionar ese precio debido a una incidencia técnica. Si son varios los productos cuyo precio desconoces, no debes dar la explicación para cada producto, sino una única vez para todos ellos.
+
+Responde en el idioma que use el cliente."""
 
 
 def main() -> None:
@@ -40,7 +44,7 @@ def main() -> None:
     messages = client.define_system_prompt(create_system_prompt())
     user_query = get_input("Pregunta lo que quieras sobre nuestra tienda")
     response = client.get_simple_response(
-        Model(Platform.Mistral, models["medium"]), user_query, messages
+        Model(Platform.Mistral, models["large"]), user_query, messages
     )
     print(response.content)
 
