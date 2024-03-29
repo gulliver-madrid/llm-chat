@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+import time
 from typing import Any, Sequence, cast
+
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
 from mistralai.exceptions import MistralConnectionException
@@ -21,6 +23,21 @@ __all__ = ["QueryResult", "ClientWrapper"]
 class QueryResult:
     content: str
     messages: list[CompleteMessage]
+
+
+prev_times: list[float] = []
+
+
+def prevent_too_many_queries() -> None:
+    # debe fallar si se han hecho 10 consultas en menos de 20 segundos,
+    # para evitar llamadas a la API sin control debido a algun bug
+    prev_times.append(time.time())
+    if len(prev_times) >= 10:
+        if (seconds := (prev_times[-1] - prev_times[0])) < 20:
+            raise RuntimeError(
+                f"Demasiadas consultas a la API: 10 en {seconds} segundos"
+            )
+        prev_times.pop(0)
 
 
 class ClientWrapper:
@@ -49,7 +66,7 @@ class ClientWrapper:
         """
         Retrieves a simple response from the LLM client.
         """
-
+        prevent_too_many_queries()
         complete_messages = list(prev_messages) if prev_messages else []
         if append_query:
             complete_messages.append(
