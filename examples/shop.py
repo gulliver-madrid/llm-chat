@@ -82,23 +82,27 @@ Recuerda que tienes disponible una función para obtener los precios de varios p
 
 
 class Main:
+    def __init__(self) -> None:
+        self.messages: Final[list[CompleteMessage]] = []
+
     def execute(self) -> None:
         load_dotenv()
         mistral_api_key = os.environ.get("MISTRAL_API_KEY")
         client = ClientWrapper(mistral_api_key=mistral_api_key)
-        messages: Final = client.define_system_prompt(create_system_prompt())
+        self.messages.clear()
+        self.messages.extend(client.define_system_prompt(create_system_prompt()))
         user_query = get_input("Pregunta lo que quieras sobre nuestra tienda")
         model = Model(Platform.Mistral, models["large"])
         response = client.get_simple_response(
             model,
             user_query,
-            messages,
+            self.messages,
             tools=tools,
             tool_choice="auto",
         )
-        messages.clear()
-        messages.extend(response.messages)
-        last_message = messages[-1]
+        self.messages.clear()
+        self.messages.extend(response.messages)
+        last_message = self.messages[-1]
         if calls := last_message.chat_msg.tool_calls:
 
             display_neutral_msg("Realizando consulta de precios...")
@@ -113,11 +117,11 @@ class Main:
             names_in_english = function_params.get("names_in_english")
             function_result = retrieve_prices_by_name(names_in_english)
             chat_message = create_tool_response(function_name, function_result)
-            messages.append(CompleteMessage(chat_message))
+            self.messages.append(CompleteMessage(chat_message))
             response = client.get_simple_response(
                 model,
                 "",
-                messages,
+                self.messages,
                 tools=tools,
                 tool_choice="none",
                 append_query=False,  # because the query was send before
