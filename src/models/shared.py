@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import NewType, Sequence
 
@@ -11,6 +11,8 @@ ModelName = NewType("ModelName", str)
 class ChatMessage:
     role: str
     content: str
+    name: str | None = field(kw_only=True, default=None)
+    tool_calls: object = field(kw_only=True, default=None)
 
 
 class Platform(Enum):
