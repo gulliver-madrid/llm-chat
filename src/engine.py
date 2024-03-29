@@ -154,7 +154,7 @@ class MainEngine:
         self, query: str, debug: bool = False
     ) -> QueryResult:
         return self._client_wrapper.get_simple_response(
-            self._model, query, self._prev_messages, debug
+            self._model, query, self._prev_messages, debug=debug
         )
 
     def _cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
