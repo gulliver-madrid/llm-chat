@@ -6,7 +6,7 @@ from rich import print
 from dotenv import load_dotenv
 
 from examples.shop_data import ProductsData, data
-from src.infrastructure.client_wrapper import ClientWrapper
+from src.infrastructure.client_wrapper import ClientWrapper, QueryResult
 from src.io_helpers import display_neutral_msg, get_input
 from src.logging import configure_logger
 from src.models.shared import ChatMessage, CompleteMessage, Model, ModelName, Platform
@@ -81,53 +81,60 @@ Recuerda que tienes disponible una función para obtener los precios de varios p
 
 
 class Main:
+    _client: ClientWrapper
+
     def __init__(self) -> None:
-        self.messages: Final[list[CompleteMessage]] = []
+        self._messages: Final[list[CompleteMessage]] = []
+        self._model = Model(Platform.Mistral, models["large"])
 
     def execute(self) -> None:
         load_dotenv()
         mistral_api_key = os.environ.get("MISTRAL_API_KEY")
-        client = ClientWrapper(mistral_api_key=mistral_api_key)
-        self.messages.clear()
-        self.messages.extend(client.define_system_prompt(create_system_prompt()))
+        self._client = ClientWrapper(mistral_api_key=mistral_api_key)
+        self._messages.clear()
+        self._messages.extend(self._client.define_system_prompt(create_system_prompt()))
         user_query = get_input("Pregunta lo que quieras sobre nuestra tienda")
-        model = Model(Platform.Mistral, models["large"])
-        response = client.get_simple_response(
-            model,
+
+        response = self._client.get_simple_response(
+            self._model,
             user_query,
-            self.messages,
+            self._messages,
             tools=tools,
             tool_choice="auto",
         )
-        self.messages.clear()
-        self.messages.extend(response.messages)
-        last_message = self.messages[-1]
+        self._messages.clear()
+        self._messages.extend(response.messages)
+        last_message = self._messages[-1]
         if calls := last_message.chat_msg.tool_calls:
 
-            display_neutral_msg("Realizando consulta de precios...")
-
-            assert isinstance(calls, list)
-            tool_call: Any = calls[0]
-            function_name = tool_call.function.name
-            function_params = json.loads(tool_call.function.arguments)
-            assert function_name == "retrieve_prices_by_name"
-            assert len(function_params) == 1
-            assert "names_in_english" in function_params
-            names_in_english = function_params.get("names_in_english")
-            function_result = retrieve_prices_by_name(names_in_english)
-            chat_message = create_tool_response(function_name, function_result)
-            self.messages.append(CompleteMessage(chat_message))
-            response = client.get_simple_response(
-                model,
-                "",
-                self.messages,
-                tools=tools,
-                tool_choice="none",
-                append_query=False,  # because the query was send before
-            )
+            response = self._use_price_query_to_answer(calls)
         print(response.content)
-
         logger.info(response.messages)
+
+    def _use_price_query_to_answer(self, calls: object) -> QueryResult:
+        display_neutral_msg("Realizando consulta de precios...")
+
+        assert isinstance(calls, list)
+        tool_call: Any = calls[0]
+        function_name = tool_call.function.name
+        function_params = json.loads(tool_call.function.arguments)
+        assert function_name == "retrieve_prices_by_name"
+        assert len(function_params) == 1
+        assert "names_in_english" in function_params
+        names_in_english = function_params.get("names_in_english")
+        function_result = retrieve_prices_by_name(names_in_english)
+        chat_message = create_tool_response(function_name, function_result)
+        self._messages.append(CompleteMessage(chat_message))
+        response = self._client.get_simple_response(
+            self._model,
+            "",
+            self._messages,
+            tools=tools,
+            tool_choice="none",
+            append_query=False,  # because the query was send before
+        )
+
+        return response
 
 
 def create_tool_response(function_name: str, function_result: str) -> ChatMessage:
