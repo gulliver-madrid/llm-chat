@@ -1,4 +1,5 @@
 import os
+from typing import Mapping
 
 from dotenv import load_dotenv
 
@@ -9,6 +10,11 @@ from src.logging import configure_logger
 from src.models.shared import Model, ModelName, Platform
 
 logger = configure_logger(__name__, __file__)
+
+
+models: Mapping[str, ModelName] = dict(
+    medium=ModelName("mistral-medium"), large=ModelName("mistral-large-2402")
+)
 
 
 def format_products_for_assistant(data: ProductsData) -> str:
@@ -34,7 +40,7 @@ def main() -> None:
     messages = client.define_system_prompt(create_system_prompt())
     user_query = get_input("Pregunta lo que quieras sobre nuestra tienda")
     response = client.get_simple_response(
-        Model(Platform.Mistral, ModelName("mistral-large-2402")), user_query, messages
+        Model(Platform.Mistral, models["medium"]), user_query, messages
     )
     print(response.content)
 
