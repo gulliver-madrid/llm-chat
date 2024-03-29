@@ -20,7 +20,7 @@ models: Mapping[str, ModelName] = dict(
 )
 
 
-def _retrieve_prices_by_name(names_in_english: list[str]) -> dict[str, float | None]:
+def _retrieve_product_prices(names_in_english: list[str]) -> dict[str, float | None]:
     prices: dict[str, float | None] = {}
     for name in names_in_english:
         for product in data["products"]:
@@ -33,15 +33,15 @@ def _retrieve_prices_by_name(names_in_english: list[str]) -> dict[str, float | N
     return prices
 
 
-def retrieve_prices_by_name(names_in_english: list[str]) -> str:
-    return json.dumps(_retrieve_prices_by_name(names_in_english))
+def retrieve_product_prices(names_in_english: list[str]) -> str:
+    return json.dumps(_retrieve_product_prices(names_in_english))
 
 
 tools = [
     {
         "type": "function",
         "function": {
-            "name": "retrieve_prices_by_name",
+            "name": "retrieve_product_prices",
             "description": "Get prices of a list of articles",
             "parameters": {
                 "type": "object",
@@ -119,11 +119,11 @@ class Main:
         tool_call: Any = calls[0]
         function_name = tool_call.function.name
         function_params = json.loads(tool_call.function.arguments)
-        assert function_name == "retrieve_prices_by_name"
+        assert function_name == "retrieve_product_prices"
         assert len(function_params) == 1
         assert "names_in_english" in function_params
         names_in_english = function_params.get("names_in_english")
-        function_result = retrieve_prices_by_name(names_in_english)
+        function_result = retrieve_product_prices(names_in_english)
         chat_message = create_tool_response(function_name, function_result)
         self._messages.append(CompleteMessage(chat_message))
         response = self._client.get_simple_response(
