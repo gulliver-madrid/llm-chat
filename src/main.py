@@ -17,7 +17,7 @@ from src.models.model_choice import ModelName, build_model_name
 from src.models.placeholders import (
     Placeholder,
     QueryBuildException,
-    build_questions,
+    build_queries,
     find_placeholders,
 )
 from src.utils import remove_duplicates
@@ -52,11 +52,11 @@ class Main:
         while True:
             debug = False
 
-            raw_question = get_input(PROGRAM_PROMPT)
+            raw_query = get_input(PROGRAM_PROMPT)
 
-            if not raw_question:
+            if not raw_query:
                 continue
-            action = CommandInterpreter.parse_user_input(raw_question)
+            action = CommandInterpreter.parse_user_input(raw_query)
             if action:
                 match action.name:
                     case ActionName.HELP:
@@ -69,18 +69,18 @@ class Main:
                         model = self.select_model()
                         continue
                     case ActionName.DEBUG:
-                        raw_question = raw_question.removeprefix("/d").strip()
+                        raw_query = raw_query.removeprefix("/d").strip()
                         debug = True
                     case _:
                         raise RuntimeError(f"Acción no válida: {action}")
 
-            if not raw_question:
+            if not raw_query:
                 continue
 
             while (more := input()).lower() != "end":
-                raw_question += "\n" + more
+                raw_query += "\n" + more
 
-            occurrences = find_placeholders(raw_question)
+            occurrences = find_placeholders(raw_query)
 
             if occurrences:
                 unique_placeholders = remove_duplicates(occurrences)
@@ -89,28 +89,26 @@ class Main:
                     unique_placeholders
                 )
                 try:
-                    questions = build_questions(raw_question, user_substitutions)
+                    queries = build_queries(raw_query, user_substitutions)
                 except QueryBuildException as err:
                     show_error_msg(str(err))
                     continue
                 print("Placeholders sustituidos exitosamente")
             else:
-                questions = [raw_question]
-            del raw_question
-            number_of_questions = len(questions)
+                queries = [raw_query]
+            del raw_query
+            number_of_queries = len(queries)
             if (
-                number_of_questions > QUERY_NUMBER_LIMIT_WARNING
-                and not confirm_launching_many_queries(number_of_questions)
+                number_of_queries > QUERY_NUMBER_LIMIT_WARNING
+                and not confirm_launching_many_queries(number_of_queries)
             ):
                 continue
 
-            for i, question in enumerate(questions):
-                print(
-                    "\n...procesando consulta número", i + 1, "de", number_of_questions
-                )
+            for i, query in enumerate(queries):
+                print("\n...procesando consulta número", i + 1, "de", number_of_queries)
 
-                content = client_wrapper.get_simple_response(model, question, debug)
-                print_interaction(model, question, content)
+                content = client_wrapper.get_simple_response(model, query, debug)
+                print_interaction(model, query, content)
 
     def select_model(self) -> ModelName:
         return build_model_name(
@@ -138,10 +136,10 @@ def get_raw_substitutions_from_user(
     unique_placeholders: Sequence[Placeholder],
 ) -> Mapping[Placeholder, str]:
     """
-    Prompts the user to provide values for each unique placeholder found in the question.
+    Prompts the user to provide values for each unique placeholder found in the query.
 
     Args:
-        unique_placeholders: A sequence of unique placeholders found in the question.
+        unique_placeholders: A sequence of unique placeholders found in the query.
 
     Returns:
         A dictionary mapping placeholders to the user-provided values.
