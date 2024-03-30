@@ -131,3 +131,9 @@ class ClientWrapper:
         )
         choices = chat_response.choices
         return choices[0].message
+
+    def define_system_prompt(
+        self,
+        prompt: str,
+    ) -> list[CompleteMessage]:
+        return [CompleteMessage(chat_msg=ChatMessage("system", prompt))]
