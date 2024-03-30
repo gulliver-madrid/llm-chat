@@ -87,8 +87,9 @@ def main() -> None:
     client = ClientWrapper(mistral_api_key=mistral_api_key)
     messages = client.define_system_prompt(create_system_prompt())
     user_query = get_input("Pregunta lo que quieras sobre nuestra tienda")
+    model = Model(Platform.Mistral, models["large"])
     response = client.get_simple_response(
-        Model(Platform.Mistral, models["large"]),
+        model,
         user_query,
         messages,
         tools=tools,
@@ -109,12 +110,10 @@ def main() -> None:
         assert "names_in_english" in function_params
         names_in_english = function_params.get("names_in_english")
         function_result = retrieve_prices_by_name(names_in_english)
-        chat_message = ChatMessage(
-            role="tool", name=function_name, content=function_result
-        )
+        chat_message = create_tool_response(function_name, function_result)
         messages.append(CompleteMessage(chat_message))
         response = client.get_simple_response(
-            Model(Platform.Mistral, models["large"]),
+            model,
             "",
             messages,
             tools=tools,
@@ -124,6 +123,10 @@ def main() -> None:
     print(response.content)
 
     logger.info(response.messages)
+
+
+def create_tool_response(function_name: str, function_result: str) -> ChatMessage:
+    return ChatMessage(role="tool", name=function_name, content=function_result)
 
 
 if __name__ == "__main__":
