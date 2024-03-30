@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pprint import pformat
 import time
 from typing import Any, Sequence, cast
 
@@ -7,6 +8,7 @@ from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
 from mistralai.exceptions import MistralConnectionException
 from openai import OpenAI
 
+from src.logging import configure_logger
 from src.models.shared import (
     ChatMessage,
     CompleteMessage,
@@ -17,6 +19,8 @@ from src.models.shared import (
 
 
 __all__ = ["QueryResult", "ClientWrapper"]
+
+logger = configure_logger(__name__, __file__)
 
 
 @dataclass(frozen=True)
@@ -134,6 +138,7 @@ class ClientWrapper:
         assert (
             self._mistralai_client
         ), "Mistral AI client not defined. Did you forget to provide an api key for Mistral API?"
+        logger.info(f"{tool_choice=}")
         try:
             chat_response = self._mistralai_client.chat(
                 model=model.model_name,
@@ -146,8 +151,13 @@ class ClientWrapper:
                 "Error de conexión con la API de Mistral. Por favor, revise su conexión a internet."
             ) from None
         choices = chat_response.choices
+        assert len(choices) == 1
         mistral_chat_msg = choices[0].message
         assert isinstance(mistral_chat_msg.content, str)
+
+        logger.info("mistral_chat_msg:")
+        logger.info(pformat(mistral_chat_msg))
+
         return ChatMessage(
             mistral_chat_msg.role,
             mistral_chat_msg.content,
