@@ -153,7 +153,7 @@ class MainEngine:
     def _get_simple_response_from_model(
         self, query: str, debug: bool = False
     ) -> QueryResult:
-        return self._client_wrapper.get_simple_response(
+        return self._client_wrapper.get_simple_response_to_query(
             self._model, query, self._prev_messages, debug=debug
         )
 
