@@ -1,6 +1,7 @@
 import json
 import os
-from typing import Any, Mapping, Final
+from pprint import pformat
+from typing import Any, Final, Mapping
 
 from rich import print
 from dotenv import load_dotenv
@@ -69,14 +70,14 @@ def format_products_for_assistant(data: ProductsData) -> str:
 
 
 def create_system_prompt() -> str:
-    return f"""Eres un asistente virtual en una tienda de ropa. Tu misión es proporcionar información precisa y actualizada sobre los productos disponibles, sus precios y cualquier otra cosa que los clientes puedan preguntar. Tu tono debe ser amigable y profesional. Tu objetivo es proporcionar una experiencia positiva al cliente y ayudarlo a encontrar lo que está buscando. Los productos disponibles son estos:
-{format_products_for_assistant(data)}
+    return f"""You are a virtual assistant in a clothing store. Your role is to provide accurate and up-to-date information about the available products, their prices, and anything else the customers may ask. Your tone should be friendly and professional. Your goal is to provide a positive customer experience and help them find what they are looking for. The available products are these:
+{format_products_for_assistant(data)}.
 
-Solo debes proporcionar los precios que puedas obtener con seguridad por medio de nuestro sistema. Si no conoces el precio de un producto, simplemente di que ahora mismo no puedes proporcionar ese precio debido a una incidencia técnica. Si son varios los productos cuyo precio desconoces, no debes dar la explicación para cada producto, sino una única vez para todos ellos.
+You should only provide the prices you can securely obtain through our system.
 
-Responde en el idioma que use el cliente.
+If you are asked the price of one or more products, you must use the provided tool (the `retrieve_product_prices` function). If you cannot obtain the price of a product, simply say that you cannot provide that information at the moment due to a technical issue. If there are multiple products whose price cannot be obtained, you should not give the explanation for each product, but only once for all of them.
 
-Recuerda que tienes disponible una función para obtener los precios de varios productos.
+Always respond in the language used by the customer.
 """
 
 
@@ -109,7 +110,8 @@ class Main:
 
             response = self._use_price_query_to_answer(calls)
         print(response.content)
-        logger.info(response.messages)
+        print()
+        logger.info(pformat(self._messages))
 
     def _use_price_query_to_answer(self, calls: object) -> QueryResult:
         display_neutral_msg("Realizando consulta de precios...")
