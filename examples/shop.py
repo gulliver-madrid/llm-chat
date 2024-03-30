@@ -126,8 +126,8 @@ class Main:
         assert "names_in_english" in function_params
         names_in_english = function_params.get("names_in_english")
         function_result = retrieve_product_prices(names_in_english)
-        chat_message = create_tool_response(function_name, function_result)
-        self._messages.append(CompleteMessage(chat_message))
+        tool_response_message = create_tool_response(function_name, function_result)
+        self._messages.append(CompleteMessage(tool_response_message))
         response = self._client.get_simple_response(
             self._model,
             "",
