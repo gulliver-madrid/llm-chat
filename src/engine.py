@@ -39,6 +39,7 @@ class MainEngine:
         debug = False
         action = CommandInterpreter.parse_user_input(raw_query)
         new_conversation = False
+        system_prompt = False
         conversation_to_load = None
         if action:
             match action.name:
@@ -52,6 +53,7 @@ class MainEngine:
                     self.select_model()
                     return
                 case ActionName.DEBUG:
+                    # TODO: match exact preffix
                     raw_query = raw_query.removeprefix("/d").strip()
                     debug = True
                 case ActionName.LOAD_CONVERSATION:
@@ -60,8 +62,17 @@ class MainEngine:
                 case ActionName.NEW_CONVERSATION:
                     raw_query = raw_query.removeprefix("/new").strip()
                     new_conversation = True
+                case ActionName.SYSTEM_PROMPT:
+                    # TODO: match exact preffix
+                    raw_query = raw_query.removeprefix("/sys").strip()
+                    system_prompt = True
                 case _:
                     raise RuntimeError(f"Acción no válida: {action}")
+
+        if system_prompt:
+            self._prev_messages = self.client_wrapper.define_system_prompt(raw_query)
+            self.view.write_object("System prompt established")
+            return
 
         if conversation_to_load:
             conversation_id = cast_string_to_conversation_id(conversation_to_load)
