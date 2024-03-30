@@ -1,7 +1,9 @@
+from dataclasses import dataclass
 import json
 import os
 from pprint import pformat
-from typing import Any, Final, Mapping
+import re
+from typing import Any, Final, Mapping, cast
 
 from rich import print
 from dotenv import load_dotenv
@@ -14,6 +16,17 @@ from src.logging import configure_logger
 from src.models.shared import CompleteMessage, Model, ModelName, Platform
 
 logger = configure_logger(__name__, __file__)
+
+
+@dataclass(frozen=True)
+class Function:
+    name: str
+    arguments: str
+
+
+@dataclass(frozen=True)
+class ToolCall:
+    function: Function
 
 
 models: Mapping[str, ModelName] = dict(
@@ -97,7 +110,7 @@ class Main:
         self._messages.extend(self._client.define_system_prompt(create_system_prompt()))
         user_query = get_input("Pregunta lo que quieras sobre nuestra tienda")
 
-        response = self._client.get_simple_response(
+        response = self._client.get_simple_response_to_query(
             self._model,
             user_query,
             self._messages,
@@ -107,34 +120,62 @@ class Main:
         self._messages.clear()
         self._messages.extend(response.messages)
         last_message = self._messages[-1]
-        if calls := last_message.chat_msg.tool_calls:
 
-            response = self._use_price_query_to_answer(calls)
+        tool_calls: list[ToolCall] | None = cast(Any, last_message.chat_msg.tool_calls)
+
+        if not tool_calls:
+            tool_calls = self._parse_tool_calls_from_content(last_message)
+
+        if tool_calls:
+            response = self._use_price_query_to_answer(tool_calls)
+
         print(response.content)
-        print()
+
+        logger.info("self._messages:")
         logger.info(pformat(self._messages))
 
-    def _use_price_query_to_answer(self, calls: object) -> QueryResult:
-        display_neutral_msg("Realizando consulta de precios...")
+    def _parse_tool_calls_from_content(
+        self, last_message: CompleteMessage
+    ) -> list[ToolCall]:
+        tool_calls: list[ToolCall] = []
+        logger.info("last_message.chat_msg.content:")
+        logger.info(last_message.chat_msg.content)
 
-        assert isinstance(calls, list)
-        tool_call: Any = calls[0]
-        function_name = tool_call.function.name
-        function_params = json.loads(tool_call.function.arguments)
-        assert function_name == "retrieve_product_prices"
-        assert len(function_params) == 1
-        assert "names_in_english" in function_params
-        names_in_english = function_params.get("names_in_english")
-        function_result = retrieve_product_prices(names_in_english)
-        tool_response_message = create_tool_response(function_name, function_result)
-        self._messages.append(CompleteMessage(tool_response_message))
+        # Greedily match text enclosed by [{ and }], delimiters included
+        pattern = r"(\[\{.+\}\])"
+
+        # Use re.DOTALL so that '.' also matches newline characters
+        resultado = re.search(pattern, last_message.chat_msg.content, re.DOTALL)
+        if resultado:
+            found = resultado.group(1)
+            index = resultado.start(1)
+            print(last_message.chat_msg.content[:index])
+            parsed = json.loads(found)
+            for item in parsed:
+                name = item["name"]
+                assert isinstance(name, str)
+                args_parsed = item["arguments"]
+                args = json.dumps(args_parsed)
+                tool_calls.append(ToolCall(Function(name, args)))
+        return tool_calls
+
+    def _use_price_query_to_answer(self, tool_calls: list[ToolCall]) -> QueryResult:
+        display_neutral_msg("Realizando consulta de precios...")
+        for tool_call in tool_calls:
+            function_name = tool_call.function.name
+            function_params = json.loads(tool_call.function.arguments)
+            assert function_name == "retrieve_product_prices"
+            assert len(function_params) == 1
+            assert "names_in_english" in function_params
+            names_in_english = function_params.get("names_in_english")
+            function_result = retrieve_product_prices(names_in_english)
+            tool_response_message = create_tool_response(function_name, function_result)
+            self._messages.append(CompleteMessage(tool_response_message))
         response = self._client.get_simple_response(
             self._model,
-            "",
             self._messages,
             tools=tools,
             tool_choice="none",
-            append_query=False,  # because the query was send before
         )
 
         return response

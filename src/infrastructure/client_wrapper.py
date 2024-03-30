@@ -20,6 +20,7 @@ from src.models.shared import (
 
 __all__ = ["QueryResult", "ClientWrapper"]
 
+
 logger = configure_logger(__name__, __file__)
 
 
@@ -56,7 +57,7 @@ class ClientWrapper:
         if openai_api_key:
             self._openai_client = OpenAI(api_key=openai_api_key)
 
-    def get_simple_response(
+    def get_simple_response_to_query(
         self,
         model: Model,
         query: str,
@@ -65,17 +66,33 @@ class ClientWrapper:
         debug: bool = False,
         tools: list[dict[str, Any]] | None = None,
         tool_choice: str = "none",
-        append_query: bool = True,
+    ) -> QueryResult:
+        """
+        Retrieves a simple response from the LLM client.
+        """
+
+        complete_messages = list(prev_messages) if prev_messages else []
+
+        complete_messages.append(
+            CompleteMessage(ChatMessage(role="user", content=query))
+        )
+        return self.get_simple_response(
+            model, complete_messages, debug=debug, tools=tools, tool_choice=tool_choice
+        )
+
+    def get_simple_response(
+        self,
+        model: Model,
+        complete_messages: list[CompleteMessage],
+        *,
+        debug: bool = False,
+        tools: list[dict[str, Any]] | None = None,
+        tool_choice: str = "none",
     ) -> QueryResult:
         """
         Retrieves a simple response from the LLM client.
         """
         prevent_too_many_queries()
-        complete_messages = list(prev_messages) if prev_messages else []
-        if append_query:
-            complete_messages.append(
-                CompleteMessage(ChatMessage(role="user", content=query))
-            )
         # type annotated here for safety because MistralClient define messages type as list[Any]
         messages: list[ChatMessage] = extract_chat_messages(complete_messages)
         match model.platform:
