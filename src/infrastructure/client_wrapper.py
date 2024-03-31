@@ -24,6 +24,30 @@ __all__ = ["QueryResult", "ClientWrapper"]
 logger = configure_logger(__name__, __file__)
 
 
+class LLMChatException(Exception):
+    def __init__(self, reason: str):
+        super().__init__(reason)
+
+
+class ClientNotDefined(LLMChatException):
+    def __init__(self, client_name: str, api_name: str):
+        super().__init__(
+            f"{client_name} client not defined. Did you forget to provide an api key for {api_name} API?"
+        )
+
+
+class TooManyRequests(LLMChatException):
+    def __init__(self, total: int, seconds: float):
+        super().__init__(f"Too many API requests: {total} in {seconds} seconds")
+
+
+class APIConnectionError(LLMChatException):
+    def __init__(self, api_name: str):
+        super().__init__(
+            f"Connection error with the {api_name} API. Please check your internet connection."
+        )
+
+
 @dataclass(frozen=True)
 class QueryResult:
     content: str
@@ -39,9 +63,7 @@ def prevent_too_many_queries() -> None:
     prev_times.append(time.time())
     if len(prev_times) >= 10:
         if (seconds := (prev_times[-1] - prev_times[0])) < 20:
-            raise RuntimeError(
-                f"Demasiadas consultas a la API: 10 en {seconds} segundos"
-            )
+            raise TooManyRequests(10, seconds)
         prev_times.pop(0)
 
 
@@ -114,9 +136,10 @@ class ClientWrapper:
     def _answer_using_openai(
         self, model: Model, messages: Sequence[ChatMessage]
     ) -> ChatMessage:
-        assert (
-            self._openai_client
-        ), "OpenAI client not defined. Did you forget to provide an api key for OpenAI API?"
+
+        if not self._openai_client:
+            raise ClientNotDefined("OpenAI", "OpenAI")
+
         openai_messages: Any = [
             {
                 "role": msg.role,
@@ -143,6 +166,10 @@ class ClientWrapper:
         tool_choice: str = "none",
     ) -> ChatMessage:
         assert model.platform == Platform.Mistral
+
+        if not self._mistralai_client:
+            raise ClientNotDefined("Mistral AI", "Mistral")
+
         mistral_messages = [
             MistralChatMessage(
                 role=msg.role,
@@ -152,9 +179,6 @@ class ClientWrapper:
             )
             for msg in messages
         ]
-        assert (
-            self._mistralai_client
-        ), "Mistral AI client not defined. Did you forget to provide an api key for Mistral API?"
         logger.info(f"{tool_choice=}")
         try:
             chat_response = self._mistralai_client.chat(
@@ -164,9 +188,7 @@ class ClientWrapper:
                 tool_choice=tool_choice,
             )
         except MistralConnectionException:
-            raise RuntimeError(
-                "Error de conexión con la API de Mistral. Por favor, revise su conexión a internet."
-            ) from None
+            raise APIConnectionError("Mistral") from None
         choices = chat_response.choices
         assert len(choices) == 1
         mistral_chat_msg = choices[0].message
