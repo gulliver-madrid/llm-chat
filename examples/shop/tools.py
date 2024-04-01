@@ -2,7 +2,7 @@ from collections.abc import Sequence
 import json
 from typing import Final
 
-from examples.shop_data import ShopRepository
+from examples.shop.repository import ShopRepository
 
 
 class ToolsManager:
