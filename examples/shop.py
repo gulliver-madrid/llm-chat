@@ -10,8 +10,12 @@ from dotenv import load_dotenv
 
 from examples.shop_data import ProductsData, data
 from src.domain import ChatMessage
-from src.infrastructure.client_wrapper import ClientWrapper, QueryResult
-from src.io_helpers import display_neutral_msg, get_input
+from src.infrastructure.client_wrapper import (
+    ClientWrapper,
+    QueryResult,
+)
+from src.infrastructure.exceptions import LLMChatException
+from src.io_helpers import display_neutral_msg, get_input, show_error_msg
 from src.logging import configure_logger
 from src.models.shared import CompleteMessage, Model, ModelName, Platform
 
@@ -195,4 +199,8 @@ def create_tool_response(function_name: str, function_result: str) -> ChatMessag
 
 if __name__ == "__main__":
     main = Main()
-    main.execute()
+    try:
+        main.execute()
+    except LLMChatException as err:
+        show_error_msg(str(err))
+        print()
