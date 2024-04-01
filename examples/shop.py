@@ -9,7 +9,7 @@ from typing import Any, Final, TypeGuard, TypedDict, cast
 from rich import print
 from dotenv import load_dotenv
 
-from examples.shop_data import ProductsData, get_products_data
+from examples.shop_data import ShopRepository
 from src.infrastructure.client_wrapper import (
     ClientWrapper,
     QueryResult,
@@ -77,26 +77,29 @@ class ToolCall:
 models: Final[Mapping[str, ModelName]] = dict(
     medium=ModelName("mistral-medium"), large=ModelName("mistral-large-2402")
 )
-products: Final[ProductsData] = get_products_data()
 
 
-def _retrieve_product_prices(
-    product_refs: Sequence[str],
-) -> dict[str, float | None]:
-    prices: dict[str, float | None] = {}
-    for ref in product_refs:
-        for product in products:
-            if product["ref"] == ref:
-                prices[ref] = product["price"]
-                break
-        else:
-            prices[ref] = None
-    assert len(prices) == len(product_refs)
-    return prices
+class ToolsManager:
+    def __init__(self, repository: ShopRepository):
+        self.repository = repository
 
+    def retrieve_product_prices(self, product_refs: Sequence[str]) -> str:
+        return json.dumps(self._retrieve_product_prices(product_refs))
 
-def retrieve_product_prices(product_refs: Sequence[str]) -> str:
-    return json.dumps(_retrieve_product_prices(product_refs))
+    def _retrieve_product_prices(
+        self,
+        product_refs: Sequence[str],
+    ) -> dict[str, float | None]:
+        prices: dict[str, float | None] = {}
+        for ref in product_refs:
+            for product in self.repository.products:
+                if product["ref"] == ref:
+                    prices[ref] = product["price"]
+                    break
+            else:
+                prices[ref] = None
+        assert len(prices) == len(product_refs)
+        return prices
 
 
 tools = [
@@ -121,50 +124,23 @@ tools = [
 ]
 
 
-def format_products_for_assistant() -> str:
-    lines: list[str] = []
-    for product in products:
-        product_name = product["name"]
-        ref = product["ref"]
-        english = product_name["english"]
-        spanish = product_name["spanish"]
-        lines.append(f"- {ref} {english} (spanish: {spanish})")
-    return "\n".join(lines)
-
-
-def create_system_prompt() -> str:
-    return f"""You are a virtual assistant in a clothing store. Your role is to provide accurate and up-to-date information about the available products, their prices, and anything else the customers may ask.
-
-You should be aware of the language used by the customer. This should be either english or spanish, and you should use the same language.
-
-# Rules
-
-1. Always start by greeting the customer
-
-2. ALWAYS respond in the language used by the customer. If the customer speak spanish, you should respond in spanish.
-
-3. Your tone should be friendly and professional.
-
-4. Your goal is to provide a positive customer experience and help them find what they are looking for. The available products are these:
-{format_products_for_assistant()}.
-
-5. You should only provide the prices you can securely obtain through our system. If you are asked the price of one or more products, you must use the provided tool (the `retrieve_product_prices` function). If you cannot obtain the price of a product, simply say that you cannot provide that information at the moment due to a technical issue. If there are multiple products whose price cannot be obtained, you should not give the explanation for each product, but only once for all of them.
-"""
-
-
 class Main:
     _client: ClientWrapper
 
     def __init__(self) -> None:
         self._messages: Final[list[CompleteMessage]] = []
         self._model = Model(Platform.Mistral, models["large"])
+        self._repository = ShopRepository()
+        self._tools_manager = ToolsManager(self._repository)
 
     def execute(self) -> None:
         load_dotenv()
         mistral_api_key = os.environ.get("MISTRAL_API_KEY")
         self._client = ClientWrapper(mistral_api_key=mistral_api_key)
         self._messages.clear()
-        self._messages.extend(self._client.define_system_prompt(create_system_prompt()))
+        self._messages.extend(
+            self._client.define_system_prompt(self._create_system_prompt())
+        )
         user_query = get_input("Pregunta lo que quieras sobre nuestra tienda")
 
         response = self._client.get_simple_response_to_query(
@@ -232,7 +208,9 @@ class Main:
                     assert "product_refs" in function_params
                     product_refs = function_params.get("product_refs")
                     assert is_str_sequence(product_refs)
-                    function_result = retrieve_product_prices(product_refs)
+                    function_result = self._tools_manager.retrieve_product_prices(
+                        product_refs
+                    )
                     tool_response_message = create_tool_response(
                         function_name, function_result
                     )
@@ -245,6 +223,35 @@ class Main:
             tools=tools,
             tool_choice="none",
         )
+
+    def _create_system_prompt(self) -> str:
+        return f"""You are a virtual assistant in a clothing store. Your role is to provide accurate and up-to-date information about the available products, their prices, and anything else the customers may ask.
+
+    You should be aware of the language used by the customer. This should be either english or spanish, and you should use the same language.
+
+    # Rules
+
+    1. Always start by greeting the customer
+
+    2. ALWAYS respond in the language used by the customer. If the customer speak spanish, you should respond in spanish.
+
+    3. Your tone should be friendly and professional.
+
+    4. Your goal is to provide a positive customer experience and help them find what they are looking for. The available products are these:
+    {self._format_products_for_assistant()}.
+
+    5. You should only provide the prices you can securely obtain through our system. If you are asked the price of one or more products, you must use the provided tool (the `retrieve_product_prices` function). If you cannot obtain the price of a product, simply say that you cannot provide that information at the moment due to a technical issue. If there are multiple products whose price cannot be obtained, you should not give the explanation for each product, but only once for all of them.
+    """
+
+    def _format_products_for_assistant(self) -> str:
+        lines: list[str] = []
+        for product in self._repository.products:
+            product_name = product["name"]
+            ref = product["ref"]
+            english = product_name["english"]
+            spanish = product_name["spanish"]
+            lines.append(f"- {ref} {english} (spanish: {spanish})")
+        return "\n".join(lines)
 
 
 def create_tool_response(function_name: str, function_result: str) -> ChatMessage:
