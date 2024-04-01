@@ -40,6 +40,9 @@ Puedes iniciar tu consulta con `/d` para activar el modo depuración.
 """
 
 
+class ExitException(Exception): ...
+
+
 class Main:
     def __init__(self, models: Sequence[Model]) -> None:
         self._models = models
@@ -68,7 +71,7 @@ class Main:
             if action:
                 match action.name:
                     case ActionName.SALIR:
-                        break
+                        raise ExitException()
                     case ActionName.HELP:
                         show_help()
                         get_input(PRESS_ENTER_TO_CONTINUE)
@@ -195,7 +198,10 @@ def main() -> None:
         ]
         + [Model(Platform.OpenAI, ModelName(model)) for model in openai_models]
     )
-    main_instance.execute()
+    try:
+        main_instance.execute()
+    except ExitException:
+        pass
     display_neutral_msg("Saliendo")
 
 
