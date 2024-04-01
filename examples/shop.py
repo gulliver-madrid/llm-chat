@@ -43,21 +43,21 @@ models: Mapping[str, ModelName] = dict(
 )
 
 
-def _retrieve_product_prices(names_in_english: list[str]) -> dict[str, float | None]:
+def _retrieve_product_prices(product_names: list[str]) -> dict[str, float | None]:
     prices: dict[str, float | None] = {}
-    for name in names_in_english:
+    for name in product_names:
         for product in data["products"]:
             if product["name"]["english"] == name:
                 prices[name] = product["price"]
                 break
         else:
             prices[name] = None
-    assert len(prices) == len(names_in_english)
+    assert len(prices) == len(product_names)
     return prices
 
 
-def retrieve_product_prices(names_in_english: list[str]) -> str:
-    return json.dumps(_retrieve_product_prices(names_in_english))
+def retrieve_product_prices(product_names: list[str]) -> str:
+    return json.dumps(_retrieve_product_prices(product_names))
 
 
 tools = [
@@ -69,13 +69,13 @@ tools = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "names_in_english": {
+                    "product_names": {
                         "type": "array",
                         "items": {"type": "string"},
-                        "description": "Names of the products which prices do you want",
+                        "description": "Names (in english) of the products which prices do you want",
                     }
                 },
-                "required": ["names_in_english"],
+                "required": ["product_names"],
             },
         },
     }
@@ -187,12 +187,12 @@ class Main:
             match function_name:
                 case "retrieve_product_prices":
                     assert len(function_params) == 1, function_params
-                    assert "names_in_english" in function_params
-                    names_in_english = function_params.get("names_in_english")
-                    assert isinstance(names_in_english, list)
-                    cast(list[str], names_in_english)
+                    assert "product_names" in function_params
+                    product_names = function_params.get("product_names")
+                    assert isinstance(product_names, list)
+                    cast(list[str], product_names)
                     function_result = retrieve_product_prices(
-                        names_in_english  # pyright: ignore [reportUnknownArgumentType]
+                        product_names  # pyright: ignore [reportUnknownArgumentType]
                     )
                     tool_response_message = create_tool_response(
                         function_name, function_result
