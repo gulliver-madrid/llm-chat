@@ -8,7 +8,7 @@ from typing import Any, Final, Mapping, cast
 from rich import print
 from dotenv import load_dotenv
 
-from examples.shop_data import ProductsData, data
+from examples.shop_data import ProductsData, get_products_data
 from src.infrastructure.client_wrapper import (
     ClientWrapper,
     QueryResult,
@@ -37,15 +37,16 @@ class ToolCall:
     function: Function
 
 
-models: Mapping[str, ModelName] = dict(
+models: Final[Mapping[str, ModelName]] = dict(
     medium=ModelName("mistral-medium"), large=ModelName("mistral-large-2402")
 )
+products: Final[ProductsData] = get_products_data()
 
 
 def _retrieve_product_prices(product_names: list[str]) -> dict[str, float | None]:
     prices: dict[str, float | None] = {}
     for name in product_names:
-        for product in data["products"]:
+        for product in products:
             if product["name"]["english"] == name:
                 prices[name] = product["price"]
                 break
@@ -81,9 +82,9 @@ tools = [
 ]
 
 
-def format_products_for_assistant(data: ProductsData) -> str:
+def format_products_for_assistant() -> str:
     lines: list[str] = []
-    for product in data["products"]:
+    for product in products:
         product_name = product["name"]
         lines.append(
             f'- {product_name["english"]} (spanish: {product_name["spanish"]})'
@@ -105,7 +106,7 @@ You should be aware of the language used by the customer. This should be either 
 3. Your tone should be friendly and professional.
 
 4. Your goal is to provide a positive customer experience and help them find what they are looking for. The available products are these:
-{format_products_for_assistant(data)}.
+{format_products_for_assistant()}.
 
 5. You should only provide the prices you can securely obtain through our system. If you are asked the price of one or more products, you must use the provided tool (the `retrieve_product_prices` function). If you cannot obtain the price of a product, simply say that you cannot provide that information at the moment due to a technical issue. If there are multiple products whose price cannot be obtained, you should not give the explanation for each product, but only once for all of them.
 """
