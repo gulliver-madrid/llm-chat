@@ -1,9 +1,10 @@
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 import json
 import os
 from pprint import pformat
 import re
-from typing import Any, Final, Mapping, Sequence, cast
+from typing import Any, Final, TypedDict, cast
 
 from rich import print
 from dotenv import load_dotenv
@@ -25,6 +26,11 @@ logger = configure_logger(__name__, __file__)
 class WrongFunctionName(LLMChatException):
     def __init__(self, function_name: str):
         super().__init__(function_name)
+
+
+class FunctionCallDict(TypedDict):
+    name: str
+    arguments: str
 
 
 @dataclass(frozen=True)
@@ -159,20 +165,23 @@ class Main:
         self, last_message: CompleteMessage
     ) -> list[ToolCall]:
         tool_calls: list[ToolCall] = []
-        logger.info("last_message.chat_msg.content:")
-        logger.info(last_message.chat_msg.content)
+        last_message_content = last_message.chat_msg.content
+        logger.info("last_message_content:")
+        logger.info(last_message_content)
 
         # Greedily match text enclosed by [{ and }], delimiters included
         pattern = r"(\[\{.+\}\])"
 
         # Use re.DOTALL so that '.' also matches newline characters
-        resultado = re.search(pattern, last_message.chat_msg.content, re.DOTALL)
-        if resultado:
-            found = resultado.group(1)
-            index = resultado.start(1)
-            print(last_message.chat_msg.content[:index])
+        result = re.search(pattern, last_message_content, re.DOTALL)
+        if result:
+            found = result.group(1)
+            index = result.start(1)
+            msg_for_the_user = last_message_content[:index]
+            print(msg_for_the_user)
             parsed = json.loads(found)
-            for item in parsed:
+            assert isinstance(parsed, list)
+            for item in cast(list[FunctionCallDict], parsed):
                 name = item["name"]
                 assert isinstance(name, str)
                 args_parsed = item["arguments"]
