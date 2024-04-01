@@ -3,12 +3,12 @@ import json
 import os
 from pprint import pformat
 import re
-from typing import Any, Final, Mapping, cast
+from typing import Any, Final, Mapping, Sequence, cast
 
 from rich import print
 from dotenv import load_dotenv
 
-from examples.shop_data import ProductsData, get_products_data
+from examples.shop_data import ProductRef, ProductsData, get_products_data
 from src.domain import ChatMessage
 from src.infrastructure.client_wrapper import (
     ClientWrapper,
@@ -44,21 +44,23 @@ models: Final[Mapping[str, ModelName]] = dict(
 products: Final[ProductsData] = get_products_data()
 
 
-def _retrieve_product_prices(product_names: list[str]) -> dict[str, float | None]:
+def _retrieve_product_prices(
+    product_refs: Sequence[ProductRef],
+) -> dict[str, float | None]:
     prices: dict[str, float | None] = {}
-    for name in product_names:
+    for ref in product_refs:
         for product in products:
-            if product["name"]["english"] == name:
-                prices[name] = product["price"]
+            if product["ref"] == ref:
+                prices[ref] = product["price"]
                 break
         else:
-            prices[name] = None
-    assert len(prices) == len(product_names)
+            prices[ref] = None
+    assert len(prices) == len(product_refs)
     return prices
 
 
-def retrieve_product_prices(product_names: list[str]) -> str:
-    return json.dumps(_retrieve_product_prices(product_names))
+def retrieve_product_prices(product_refs: Sequence[ProductRef]) -> str:
+    return json.dumps(_retrieve_product_prices(product_refs))
 
 
 tools = [
@@ -70,13 +72,13 @@ tools = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "product_names": {
+                    "product_refs": {
                         "type": "array",
                         "items": {"type": "string"},
-                        "description": "Names (in english) of the products which prices do you want",
+                        "description": "References of the products which prices do you want",
                     }
                 },
-                "required": ["product_names"],
+                "required": ["product_refs"],
             },
         },
     }
@@ -87,9 +89,10 @@ def format_products_for_assistant() -> str:
     lines: list[str] = []
     for product in products:
         product_name = product["name"]
-        lines.append(
-            f'- {product_name["english"]} (spanish: {product_name["spanish"]})'
-        )
+        ref = product["ref"]
+        english = product_name["english"]
+        spanish = product_name["spanish"]
+        lines.append(f"- {ref} {english} (spanish: {spanish})")
     return "\n".join(lines)
 
 
@@ -188,12 +191,12 @@ class Main:
             match function_name:
                 case "retrieve_product_prices":
                     assert len(function_params) == 1, function_params
-                    assert "product_names" in function_params
-                    product_names = function_params.get("product_names")
-                    assert isinstance(product_names, list)
-                    cast(list[str], product_names)
+                    assert "product_refs" in function_params
+                    product_refs = function_params.get("product_refs")
+                    assert isinstance(product_refs, list)
+                    cast(list[ProductRef], product_refs)
                     function_result = retrieve_product_prices(
-                        product_names  # pyright: ignore [reportUnknownArgumentType]
+                        product_refs  # pyright: ignore [reportUnknownArgumentType]
                     )
                     tool_response_message = create_tool_response(
                         function_name, function_result

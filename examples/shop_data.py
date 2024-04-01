@@ -1,12 +1,14 @@
-from typing import Sequence, TypedDict
+from typing import NewType, Sequence, TypedDict
 import csv
 from pathlib import Path
+
+ProductRef = NewType("ProductRef", str)
 
 
 class Product(TypedDict):
     name: dict[str, str]
     price: float
-    ref: str
+    ref: ProductRef
 
 
 ProductsData = Sequence[Product]
@@ -20,7 +22,7 @@ def get_products_data() -> ProductsData:
         for row in reader:
             # Convertir cada fila del CSV en un diccionario
             item: Product = {
-                "ref": row["ref"],
+                "ref": ProductRef(row["ref"]),
                 "name": {
                     "english": row["english_name"],
                     "spanish": row["spanish_name"],
