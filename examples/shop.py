@@ -158,18 +158,20 @@ class Main:
         self, last_message: CompleteMessage
     ) -> list[ToolCall]:
         tool_calls: list[ToolCall] = []
-        logger.info("last_message.chat_msg.content:")
-        logger.info(last_message.chat_msg.content)
+        last_message_content = last_message.chat_msg.content
+        logger.info("last_message_content:")
+        logger.info(last_message_content)
 
         # Greedily match text enclosed by [{ and }], delimiters included
         pattern = r"(\[\{.+\}\])"
 
         # Use re.DOTALL so that '.' also matches newline characters
-        resultado = re.search(pattern, last_message.chat_msg.content, re.DOTALL)
-        if resultado:
-            found = resultado.group(1)
-            index = resultado.start(1)
-            print(last_message.chat_msg.content[:index])
+        result = re.search(pattern, last_message_content, re.DOTALL)
+        if result:
+            found = result.group(1)
+            index = result.start(1)
+            msg_for_the_user = last_message_content[:index]
+            print(msg_for_the_user)
             parsed = json.loads(found)
             for item in parsed:
                 name = item["name"]
