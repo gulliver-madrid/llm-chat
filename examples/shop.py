@@ -22,6 +22,11 @@ from src.models.shared import CompleteMessage, Model, ModelName, Platform
 logger = configure_logger(__name__, __file__)
 
 
+class WrongFunctionName(LLMChatException):
+    def __init__(self, function_name: str):
+        super().__init__(function_name)
+
+
 @dataclass(frozen=True)
 class Function:
     name: str
@@ -172,25 +177,35 @@ class Main:
         return tool_calls
 
     def _use_price_query_to_answer(self, tool_calls: list[ToolCall]) -> QueryResult:
+        assert tool_calls
         display_neutral_msg("Realizando consulta de precios...")
         for tool_call in tool_calls:
             function_name = tool_call.function.name
             function_params = json.loads(tool_call.function.arguments)
-            assert function_name == "retrieve_product_prices"
-            assert len(function_params) == 1
-            assert "names_in_english" in function_params
-            names_in_english = function_params.get("names_in_english")
-            function_result = retrieve_product_prices(names_in_english)
-            tool_response_message = create_tool_response(function_name, function_result)
-            self._messages.append(CompleteMessage(tool_response_message))
-        response = self._client.get_simple_response(
+            assert isinstance(function_params, dict)
+            function_params = cast(dict[str, object], function_params)
+            match function_name:
+                case "retrieve_product_prices":
+                    assert len(function_params) == 1, function_params
+                    assert "names_in_english" in function_params
+                    names_in_english = function_params.get("names_in_english")
+                    assert isinstance(names_in_english, list)
+                    cast(list[str], names_in_english)
+                    function_result = retrieve_product_prices(
+                        names_in_english  # pyright: ignore [reportUnknownArgumentType]
+                    )
+                    tool_response_message = create_tool_response(
+                        function_name, function_result
+                    )
+                    self._messages.append(CompleteMessage(tool_response_message))
+                case _:
+                    raise WrongFunctionName(function_name)
+        return self._client.get_simple_response(
             self._model,
             self._messages,
             tools=tools,
             tool_choice="none",
         )
-
-        return response
 
 
 def create_tool_response(function_name: str, function_result: str) -> ChatMessage:
