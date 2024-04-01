@@ -20,11 +20,21 @@ class Product(TypedDict):
 ProductsData = Sequence[Product]
 
 
-def get_products_data() -> ProductsData:
-    path = Path(__file__).parent / "items.csv"
-    with open(path, "r", encoding="utf-8") as file:
-        reader = csv.DictReader(file)
-        return [parse_product(row) for row in reader]
+class ShopRepository:
+    _products: ProductsData | None = None
+
+    @property
+    def products(self) -> ProductsData:
+        if self._products is None:
+            self._products = self._get_products_data()
+        return self._products
+
+    def _get_products_data(self) -> ProductsData:
+        path = Path(__file__).parent / "items.csv"
+        with open(path, "r", encoding="utf-8") as file:
+            reader = csv.DictReader(file)
+            products = [parse_product(row) for row in reader]
+        return products
 
 
 def parse_product(row: dict[str, Any]) -> Product:
