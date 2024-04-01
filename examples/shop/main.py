@@ -9,9 +9,9 @@ from typing import Any, Final, TypeGuard, TypedDict, cast
 from rich import print
 from dotenv import load_dotenv
 
-from examples.prompts import system_prompt_template
-from examples.shop_data import ShopRepository
-from examples.tools import ToolsManager, tools
+from examples.shop.prompts import system_prompt_template
+from examples.shop.repository import ShopRepository
+from examples.shop.tools import ToolsManager, tools
 
 from src.domain import ChatMessage
 from src.infrastructure.client_wrapper import (
@@ -19,7 +19,7 @@ from src.infrastructure.client_wrapper import (
     QueryResult,
 )
 from src.infrastructure.exceptions import LLMChatException
-from src.io_helpers import display_neutral_msg, get_input, show_error_msg
+from src.io_helpers import display_neutral_msg, get_input
 from src.logging import configure_logger
 from src.models.shared import CompleteMessage, Model, ModelName, Platform
 
@@ -201,12 +201,3 @@ class Main:
 
 def create_tool_response(function_name: str, function_result: str) -> ChatMessage:
     return ChatMessage(role="tool", name=function_name, content=function_result)
-
-
-if __name__ == "__main__":
-    main = Main()
-    try:
-        main.execute()
-    except LLMChatException as err:
-        show_error_msg(str(err))
-        print()
