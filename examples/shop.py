@@ -4,12 +4,12 @@ import json
 import os
 from pprint import pformat
 import re
-from typing import Any, Final, TypedDict, cast
+from typing import Any, Final, TypeGuard, TypedDict, cast
 
 from rich import print
 from dotenv import load_dotenv
 
-from examples.shop_data import ProductRef, ProductsData, get_products_data
+from examples.shop_data import ProductsData, get_products_data
 from src.domain import ChatMessage
 from src.infrastructure.client_wrapper import (
     ClientWrapper,
@@ -29,18 +29,49 @@ class WrongFunctionName(LLMChatException):
 
 
 class FunctionCallDict(TypedDict):
+    """Representa un diccionario con una function call tal como se carga del JSON"""
+
     name: str
-    arguments: str
+    arguments: object
+
+
+def is_object_mapping(obj: object) -> TypeGuard[Mapping[str, object]]:
+    return isinstance(obj, Mapping)
+
+
+def is_object_sequence(obj: object) -> TypeGuard[Sequence[object]]:
+    return isinstance(obj, Sequence)
+
+
+def is_str_sequence(obj: object) -> TypeGuard[Sequence[str]]:
+    if not is_object_sequence(obj):
+        return False
+    return all(isinstance(item, str) for item in obj)
+
+
+def is_function_call_mapping(obj: object) -> TypeGuard[FunctionCallDict]:
+    if not is_object_mapping(obj):
+        return False
+    for key in ("name", "arguments"):
+        if not key in obj:
+            return False
+    if not isinstance(obj["name"], str):
+        return False
+    return True
 
 
 @dataclass(frozen=True)
 class Function:
+    """Objeto con el mismo formato que el miembro 'function' del objeto ToolCall recibido desde la API de Mistral"""
+
     name: str
     arguments: str
 
 
 @dataclass(frozen=True)
 class ToolCall:
+    """Objeto con el mismo formato que el original recibido desde la API de Mistral"""
+
     function: Function
 
 
@@ -51,7 +82,7 @@ products: Final[ProductsData] = get_products_data()
 
 
 def _retrieve_product_prices(
-    product_refs: Sequence[ProductRef],
+    product_refs: Sequence[str],
 ) -> dict[str, float | None]:
     prices: dict[str, float | None] = {}
     for ref in product_refs:
@@ -65,7 +96,7 @@ def _retrieve_product_prices(
     return prices
 
 
-def retrieve_product_prices(product_refs: Sequence[ProductRef]) -> str:
+def retrieve_product_prices(product_refs: Sequence[str]) -> str:
     return json.dumps(_retrieve_product_prices(product_refs))
 
 
@@ -159,7 +190,7 @@ class Main:
         print(response.content)
 
         logger.info("self._messages:")
-        logger.info(pformat(self._messages))
+        logger.info(pformat(self._messages, width=120))
 
     def _parse_tool_calls_from_content(
         self, last_message: CompleteMessage
@@ -180,10 +211,10 @@ class Main:
             msg_for_the_user = last_message_content[:index]
             print(msg_for_the_user)
             parsed = json.loads(found)
-            assert isinstance(parsed, list)
-            for item in cast(list[FunctionCallDict], parsed):
+            assert is_object_sequence(parsed)
+            for item in parsed:
+                assert is_function_call_mapping(item), item
                 name = item["name"]
-                assert isinstance(name, str)
                 args_parsed = item["arguments"]
                 args = json.dumps(args_parsed)
                 tool_calls.append(ToolCall(Function(name, args)))
@@ -195,18 +226,14 @@ class Main:
         for tool_call in tool_calls:
             function_name = tool_call.function.name
             function_params = json.loads(tool_call.function.arguments)
-            assert isinstance(function_params, dict)
-            function_params = cast(dict[str, object], function_params)
+            assert is_object_mapping(function_params)
             match function_name:
                 case "retrieve_product_prices":
                     assert len(function_params) == 1, function_params
                     assert "product_refs" in function_params
                     product_refs = function_params.get("product_refs")
-                    assert isinstance(product_refs, list)
-                    cast(list[ProductRef], product_refs)
-                    function_result = retrieve_product_prices(
-                        product_refs  # pyright: ignore [reportUnknownArgumentType]
-                    )
+                    assert is_str_sequence(product_refs)
+                    function_result = retrieve_product_prices(product_refs)
                     tool_response_message = create_tool_response(
                         function_name, function_result
                     )
