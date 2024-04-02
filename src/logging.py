@@ -27,5 +27,7 @@ def configure_logger(
 
     # Anade el FileHandler al logger
     logger.addHandler(file_handler)
+    logger.info("\n")
+    logger.info("START")
 
     return logger
