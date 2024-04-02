@@ -201,7 +201,10 @@ class ClientWrapper:
         )
 
     def define_system_prompt(
-        self,
-        prompt: str,
+        self, prompt: str, *, use_system: bool = True
     ) -> list[CompleteMessage]:
-        return [CompleteMessage(chat_msg=ChatMessage("system", prompt))]
+        return [
+            CompleteMessage(
+                chat_msg=ChatMessage("system" if use_system else "user", prompt)
+            )
+        ]

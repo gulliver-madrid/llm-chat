@@ -14,6 +14,7 @@ from examples.shop.function_calling import (
     is_function_call_mapping,
 )
 from examples.shop.prompts import system_prompt_template
+from examples.shop.read_config import read_use_system_config
 from examples.shop.repository import ShopRepository
 from examples.shop.tools import ToolsManager, tools
 from examples.shop.types import is_object_mapping, is_object_sequence, is_str_sequence
@@ -49,6 +50,7 @@ class Main:
         self._model = Model(Platform.Mistral, models["large"])
         self._repository = ShopRepository()
         self._tools_manager = ToolsManager(self._repository)
+        self.use_system = read_use_system_config()
 
     def execute(self) -> None:
         load_dotenv()
@@ -56,7 +58,9 @@ class Main:
         self._client = ClientWrapper(mistral_api_key=mistral_api_key)
         self._messages.clear()
         self._messages.extend(
-            self._client.define_system_prompt(self._create_system_prompt())
+            self._client.define_system_prompt(
+                self._create_system_prompt(), use_system=self.use_system
+            )
         )
         user_query = get_input("Pregunta lo que quieras sobre nuestra tienda")
 
