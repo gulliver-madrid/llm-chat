@@ -1,17 +1,22 @@
-from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from collections.abc import Mapping
 import json
 import os
 from pprint import pformat
 import re
-from typing import Any, Final, TypeGuard, TypedDict, cast
+from typing import Any, Final, cast
 
 from rich import print
 from dotenv import load_dotenv
 
+from examples.shop.function_calling import (
+    FunctionCall,
+    ToolCall,
+    is_function_call_mapping,
+)
 from examples.shop.prompts import system_prompt_template
 from examples.shop.repository import ShopRepository
 from examples.shop.tools import ToolsManager, tools
+from examples.shop.types import is_object_mapping, is_object_sequence, is_str_sequence
 from src.infrastructure.client_wrapper import (
     ClientWrapper,
     QueryResult,
@@ -27,53 +32,6 @@ logger = configure_logger(__name__, __file__)
 class WrongFunctionName(LLMChatException):
     def __init__(self, function_name: str):
         super().__init__(function_name)
-
-
-class FunctionCallDict(TypedDict):
-    """Representa un diccionario con una function call tal como se carga del JSON"""
-
-    name: str
-    arguments: object
-
-
-def is_object_mapping(obj: object) -> TypeGuard[Mapping[str, object]]:
-    return isinstance(obj, Mapping)
-
-
-def is_object_sequence(obj: object) -> TypeGuard[Sequence[object]]:
-    return isinstance(obj, Sequence)
-
-
-def is_str_sequence(obj: object) -> TypeGuard[Sequence[str]]:
-    if not is_object_sequence(obj):
-        return False
-    return all(isinstance(item, str) for item in obj)
-
-
-def is_function_call_mapping(obj: object) -> TypeGuard[FunctionCallDict]:
-    if not is_object_mapping(obj):
-        return False
-    for key in ("name", "arguments"):
-        if not key in obj:
-            return False
-    if not isinstance(obj["name"], str):
-        return False
-    return True
-
-
-@dataclass(frozen=True)
-class Function:
-    """Objeto con el mismo formato que el miembro 'function' del objeto ToolCall recibido desde la API de Mistral"""
-
-    name: str
-    arguments: str
-
-
-@dataclass(frozen=True)
-class ToolCall:
-    """Objeto con el mismo formato que el original recibido desde la API de Mistral"""
-
-    function: Function
 
 
 models: Final[Mapping[str, ModelName]] = dict(
@@ -153,7 +111,7 @@ class Main:
                 name = item["name"]
                 args_parsed = item["arguments"]
                 args = json.dumps(args_parsed)
-                tool_calls.append(ToolCall(Function(name, args)))
+                tool_calls.append(ToolCall(FunctionCall(name, args)))
         return tool_calls
 
     def _use_price_query_to_answer(self, tool_calls: list[ToolCall]) -> QueryResult:
