@@ -3,10 +3,8 @@ from pathlib import Path
 
 
 # Funcion para configurar un logger y enviar su salida a un archivo
-def configure_logger(
-    name: str, file: str, level: int = logging.DEBUG
-) -> logging.Logger:
-    log_file_name = f"{Path(file).stem}.log"
+def configure_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
+    log_file_name = f"{name}.log"
     # Crea un logger especifico
     logger = logging.getLogger(name)
     logger.propagate = False  # Evita la propagacion al logger raiz
