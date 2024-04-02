@@ -68,6 +68,7 @@ class ClientWrapper:
         debug: bool = False,
         tools: list[dict[str, Any]] | None = None,
         tool_choice: str = "none",
+        random_seed: int | None = None,
     ) -> QueryResult:
         """
         Retrieves a simple response from the LLM client.
@@ -79,7 +80,12 @@ class ClientWrapper:
             CompleteMessage(ChatMessage(role="user", content=query))
         )
         return self.get_simple_response(
-            model, complete_messages, debug=debug, tools=tools, tool_choice=tool_choice
+            model,
+            complete_messages,
+            debug=debug,
+            tools=tools,
+            tool_choice=tool_choice,
+            random_seed=random_seed,
         )
 
     def get_simple_response(
@@ -90,6 +96,7 @@ class ClientWrapper:
         debug: bool = False,
         tools: list[dict[str, Any]] | None = None,
         tool_choice: str = "none",
+        random_seed: int | None = None,
     ) -> QueryResult:
         """
         Retrieves a simple response from the LLM client.
@@ -100,10 +107,18 @@ class ClientWrapper:
         match model.platform:
             case Platform.OpenAI:
                 assert not tools, "Currently tools are not available with OpenAI models"
+                if random_seed is not None:
+                    print(
+                        "Warning: random_seed not currently supported with OpenAI API"
+                    )
                 chat_msg = self._answer_using_openai(model, messages)
             case Platform.Mistral:
                 chat_msg = self._answer_using_mistral(
-                    model, messages, tools=tools, tool_choice=tool_choice
+                    model,
+                    messages,
+                    tools=tools,
+                    tool_choice=tool_choice,
+                    random_seed=random_seed,
                 )
             case _:
                 raise ValueError(f"Missing platform in model: {model}")
@@ -144,6 +159,7 @@ class ClientWrapper:
         *,
         tools: list[dict[str, Any]] | None = None,
         tool_choice: str = "none",
+        random_seed: int | None = None,
     ) -> ChatMessage:
         assert model.platform == Platform.Mistral
 
@@ -166,6 +182,7 @@ class ClientWrapper:
                 messages=mistral_messages,
                 tools=tools,
                 tool_choice=tool_choice,
+                random_seed=random_seed,
             )
         except MistralConnectionException:
             raise APIConnectionError("Mistral") from None
