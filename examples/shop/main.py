@@ -28,7 +28,7 @@ from src.io_helpers import display_neutral_msg, get_input
 from src.logging import configure_logger
 from src.models.shared import CompleteMessage, Model, ModelName, Platform
 
-logger = configure_logger(__name__, __file__)
+logger = configure_logger(__name__)
 
 
 class WrongFunctionName(LLMChatException):

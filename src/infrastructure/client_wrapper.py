@@ -25,7 +25,7 @@ from src.models.shared import (
 __all__ = ["QueryResult", "ClientWrapper"]
 
 
-logger = configure_logger(__name__, __file__)
+logger = configure_logger(__name__)
 
 
 @dataclass(frozen=True)
