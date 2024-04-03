@@ -3,6 +3,7 @@ from typing import Sequence
 from rich import print
 
 
+from src.generic_view import GenericView
 from src.io_helpers import (
     BLUE_VIOLET_COLOR,
     BOLD_STYLE,
@@ -14,6 +15,7 @@ from src.io_helpers import (
 )
 from src.models.model_choice import ModelChoiceParser
 from src.models.shared import ModelName, Model
+from src.views import escape_for_rich
 
 
 class SelectModelController:
@@ -21,6 +23,7 @@ class SelectModelController:
         self._model_choice_parser = ModelChoiceParser(models)
         self._models = models
         self._default_model = self._models[0]
+        self._view = GenericView()
 
     def select_model(self) -> Model:
         """
@@ -44,7 +47,9 @@ class SelectModelController:
             else:
                 chosen_model = self._default_model
 
-        print(f"\nModelo elegido: {chosen_model.model_name}")
+        self._view.print(
+            escape_for_rich(f"\nModelo elegido: {chosen_model.model_name}")
+        )
         return chosen_model
 
     def _show_options(self) -> None:
@@ -56,7 +61,7 @@ class SelectModelController:
             )
         )
         for i, model in enumerate(self._models, start=1):
-            print(f"{i}. {model.model_name}")
+            self._view.print(escape_for_rich(f"{i}. {model.model_name}"))
 
         styled_default_model_explanation = create_styled_default_model_explanation(
             self._default_model.model_name
