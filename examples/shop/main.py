@@ -13,7 +13,7 @@ from examples.shop.function_calling import (
     is_function_call_mapping,
 )
 from examples.shop.prompts import add_margin, system_prompt_template
-from examples.shop.read_config import read_model_config, read_use_system_config
+from examples.shop.read_config import ConfigReader
 from examples.shop.repository import ShopRepository
 from examples.shop.tools import ToolsManager, tools
 from examples.shop.types import is_object_mapping, is_object_sequence, is_str_sequence
@@ -27,7 +27,7 @@ from src.infrastructure.exceptions import LLMChatException
 from src.infrastructure.repository import ChatRepository
 from src.io_helpers import display_neutral_msg, get_input
 from src.logging import configure_logger
-from src.models.shared import CompleteMessage
+from src.models.shared import CompleteMessage, Model
 from src.models_data import get_models
 
 logger = configure_logger(__name__)
@@ -42,20 +42,15 @@ class Main:
     _client: ClientWrapper
 
     def __init__(self) -> None:
+        self._config_reader = ConfigReader()
         self._messages: Final[list[CompleteMessage]] = []
-        model_name = read_model_config()
-        models = get_models()
-        model = models[0]
-        if model_name:
-            for model in models:
-                if model.model_name == model_name:
-                    break
+        model = self._get_model()
         print("Using model", model.model_name)
         self._model = model
         self._repository = ChatRepository()
         self._shop_repository = ShopRepository()
         self._tools_manager = ToolsManager(self._shop_repository)
-        self.use_system = read_use_system_config()
+        self.use_system = self._config_reader.read_use_system_config()
         self._tool_calls_regex = create_tool_calls_regex()
 
     def execute(self) -> None:
@@ -98,6 +93,19 @@ class Main:
 
         logger.info("self._messages:")
         logger.info(pformat(self._messages, width=120))
+
+    def _get_model(self) -> Model:
+        model_name = self._config_reader.read_model_config()
+        models = get_models()
+        default_model = models[0]
+        model = None
+        if model_name:
+            for model in models:
+                if model.model_name == model_name:
+                    break
+            else:
+                print(f"Modelo desconocido: {model_name}")
+        return model or default_model
 
     def _parse_tool_calls_from_content(
         self, last_message: CompleteMessage
