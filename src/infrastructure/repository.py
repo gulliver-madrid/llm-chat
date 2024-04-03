@@ -41,6 +41,10 @@ class Repository:
         )
         self._save_conversation(conversation_id, conversation)
 
+    def load_conversation(self, conversation_id: ConversationId) -> str:
+        filepath = self._build_conversation_filepath(conversation_id)
+        return self._read_file(filepath)
+
     def _get_new_conversation_id(self) -> ConversationId:
         max_number = find_max_file_number(self._chats_dir)
         new_number = (max_number + 1) if max_number is not None else 0
@@ -52,10 +56,6 @@ class Repository:
     ) -> None:
         filepath = self._build_conversation_filepath(conversation_id)
         self._write_file(filepath, conversation)
-
-    def load_conversation(self, conversation_id: ConversationId) -> str:
-        filepath = self._build_conversation_filepath(conversation_id)
-        return self._read_file(filepath)
 
     def _build_conversation_filepath(self, conversation_id: ConversationId) -> Path:
         return self._build_chat_path(conversation_id)
