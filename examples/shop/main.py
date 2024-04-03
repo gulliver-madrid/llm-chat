@@ -23,6 +23,7 @@ from src.infrastructure.client_wrapper import (
     QueryResult,
 )
 from src.infrastructure.exceptions import LLMChatException
+from src.infrastructure.repository import ChatRepository
 from src.io_helpers import display_neutral_msg, get_input
 from src.logging import configure_logger
 from src.models.shared import ChatMessage, CompleteMessage, Model, ModelName, Platform
@@ -46,6 +47,7 @@ class Main:
     def __init__(self) -> None:
         self._messages: Final[list[CompleteMessage]] = []
         self._model = Model(Platform.Mistral, models["large"])
+        self._repository = ChatRepository()
         self._shop_repository = ShopRepository()
         self._tools_manager = ToolsManager(self._shop_repository)
         self.use_system = read_use_system_config()
@@ -73,6 +75,7 @@ class Main:
             tools=tools,
             tool_choice="auto",
         )
+        self._repository.save(response.messages)
         self._messages.clear()
         self._messages.extend(response.messages)
         last_message = self._messages[-1]
@@ -140,12 +143,14 @@ class Main:
                     self._messages.append(CompleteMessage(tool_response_message))
                 case _:
                     raise WrongFunctionName(function_name)
-        return self._client.get_simple_response(
+        response = self._client.get_simple_response(
             self._model,
             self._messages,
             tools=tools,
             tool_choice="none",
         )
+        self._repository.save(response.messages)
+        return response
 
     def _create_system_prompt(self) -> str:
         return system_prompt_template.substitute(
