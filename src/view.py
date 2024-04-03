@@ -4,6 +4,7 @@ from rich.markdown import Markdown
 
 from typing import Mapping, Sequence
 
+from src.generic_view import Raw
 from src.io_helpers import display_neutral_msg, get_input
 from src.models.placeholders import Placeholder
 from src.models.serialization import ConversationId
@@ -52,7 +53,7 @@ class View:
         """
         substitutions: dict[Placeholder, str] = {}
         for placeholder in unique_placeholders:
-            replacement = get_input("Por favor indica el valor de " + placeholder)
+            replacement = get_input(Raw("Por favor indica el valor de " + placeholder))
             substitutions[placeholder] = replacement
         return substitutions
 
@@ -68,7 +69,7 @@ class View:
     def write_object(self, obj: object) -> None:
         print(obj)
 
-    def display_neutral_msg(self, texto: str) -> None:
+    def display_neutral_msg(self, texto: Raw) -> None:
         display_neutral_msg(texto)
 
     def display_conversation(

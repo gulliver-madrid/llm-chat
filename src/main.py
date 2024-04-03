@@ -5,6 +5,7 @@ from typing import Sequence
 
 from src.engine import ExitException, MainEngine
 from src.controllers.select_model import SelectModelController
+from src.generic_view import Raw
 from src.infrastructure.client_wrapper import ClientWrapper
 from src.io_helpers import (
     display_neutral_msg,
@@ -13,7 +14,12 @@ from src.io_helpers import (
 from src.models.shared import Model
 from src.models_data import get_models
 
-PROGRAM_PROMPT = "Introduce tu consulta. Introduce `end` como único contenido de una línea cuando hayas terminado. Para obtener ayuda, introduce únicamente `/help` y pulsa Enter."
+
+PROGRAM_PROMPT = Raw(
+    (
+        "Introduce tu consulta. Introduce `end` como único contenido de una línea cuando hayas terminado. Para obtener ayuda, introduce únicamente `/help` y pulsa Enter."
+    )
+)
 
 
 class Main:
@@ -49,7 +55,7 @@ def main() -> None:
         main_instance.execute()
     except ExitException:
         pass
-    display_neutral_msg("Saliendo")
+    display_neutral_msg(Raw("Saliendo"))
 
 
 if __name__ == "__main__":

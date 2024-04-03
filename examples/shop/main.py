@@ -21,14 +21,14 @@ from examples.shop.read_config import ConfigReader
 from examples.shop.repository import ShopRepository
 from examples.shop.tools import ToolsManager, tools
 from examples.shop.types import is_object_mapping, is_object_sequence, is_str_sequence
-from src.generic_view import GenericView
+from src.generic_view import GenericView, Raw
 from src.infrastructure.client_wrapper import ClientWrapper, QueryResult
 from src.infrastructure.repository import ChatRepository
-from src.io_helpers import display_neutral_msg, get_input
+from src.io_helpers import display_neutral_msg, escape_for_rich, get_input
 from src.logging import configure_logger
 from src.models.shared import ChatMessage, CompleteMessage, Model, define_system_prompt
 from src.models_data import get_models
-from src.views import escape_for_rich
+
 
 logger = configure_logger(__name__)
 
@@ -47,7 +47,7 @@ class Main:
         self.use_system = self._config_reader.read_use_system_config()
         self._tool_calls_regex = create_tool_calls_regex()
         self._view = GenericView()
-        self._view.print(escape_for_rich("Using model " + model.model_name))
+        self._view.print(escape_for_rich(Raw("Using model " + model.model_name)))
 
     def execute(self) -> None:
         load_dotenv()
@@ -59,8 +59,7 @@ class Main:
                 self._create_system_prompt(), use_system=self.use_system
             )
         )
-        user_query = get_input("Pregunta lo que quieras sobre nuestra tienda")
-
+        user_query = get_input(Raw("Pregunta lo que quieras sobre nuestra tienda"))
         if user_query == "/exit":
             print("Conversación finalizada")
             quit()
@@ -85,7 +84,7 @@ class Main:
         if tool_calls:
             response = self._use_price_query_to_answer(tool_calls)
 
-        self._view.print(escape_for_rich(response.content))
+        self._view.print(escape_for_rich(Raw(response.content)))
 
         logger.info("self._messages:")
         logger.info(pformat(self._messages, width=120))
@@ -117,7 +116,7 @@ class Main:
             found = result.group(1)
             index = result.start(1)
             msg_for_the_user = last_message_content[:index]
-            self._view.print(escape_for_rich(msg_for_the_user))
+            self._view.print(escape_for_rich(Raw(msg_for_the_user)))
             parsed = json.loads(found)
             assert is_object_sequence(parsed)
             for item in parsed:
@@ -130,7 +129,7 @@ class Main:
 
     def _use_price_query_to_answer(self, tool_calls: list[ToolCall]) -> QueryResult:
         assert tool_calls
-        display_neutral_msg("Realizando consulta de precios...")
+        display_neutral_msg(Raw("Realizando consulta de precios..."))
         for tool_call in tool_calls:
             function_name = tool_call.function.name
             function_params = json.loads(tool_call.function.arguments)
