@@ -13,6 +13,7 @@ class ChatMessage:
     content: str
     name: str | None = field(kw_only=True, default=None)
     tool_calls: object = field(kw_only=True, default=None)
+    tool_call_id: str | None = field(kw_only=True, default=None)
 
 
 class Platform(Enum):

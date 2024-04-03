@@ -105,14 +105,15 @@ class ClientWrapper:
         match model.platform:
 
             case Platform.OpenAI:
-                assert not tools, "Currently tools are not available with OpenAI models"
                 if random_seed is not None:
                     raise LLMChatException(
                         "Error: random_seed not currently supported with OpenAI API"
                     )
                 if not self._openai_client_wrapper:
                     raise ClientNotDefined("OpenAI", "OpenAI")
-                chat_msg = self._openai_client_wrapper.answer(model, messages)
+                chat_msg = self._openai_client_wrapper.answer(
+                    model, messages, tools=tools
+                )
 
             case Platform.Mistral:
                 if not self._mistralai_client_wrapper:
