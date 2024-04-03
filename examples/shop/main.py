@@ -46,8 +46,8 @@ class Main:
     def __init__(self) -> None:
         self._messages: Final[list[CompleteMessage]] = []
         self._model = Model(Platform.Mistral, models["large"])
-        self._repository = ShopRepository()
-        self._tools_manager = ToolsManager(self._repository)
+        self._shop_repository = ShopRepository()
+        self._tools_manager = ToolsManager(self._shop_repository)
         self.use_system = read_use_system_config()
 
     def execute(self) -> None:
@@ -154,7 +154,7 @@ class Main:
 
     def _format_products_for_assistant(self) -> str:
         lines: list[str] = []
-        for product in self._repository.products:
+        for product in self._shop_repository.products:
             product_name = product["name"]
             ref = product["ref"]
             english = product_name["english"]
