@@ -2,6 +2,13 @@
 
 (work in progress, not totally updated)
 
+## [Unreleased]
+- Use of Raw, EscapedStr, StyledStr to handle strings that may be contaminated by style brackets or escapes. Several things are sought:
+  - not to pass directly to `rich` functions text of which it is unknown if it has non-style brackets
+  - not to apply style without first escaping the text
+  - not to escape already escaped text, as it would generate unwanted backslashes
+- Text that obviously does not risk having received style through brackets (such as a pure response from the model, and strings processed from this response before entering the view circuit) does not need to be marked as Raw until it is going to enter the view circuit.
+
 
 ## [Unreleased]
 - [BREAKING CHANGES] Change the chat directory. The transition should happen automatically.
