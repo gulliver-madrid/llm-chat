@@ -51,6 +51,7 @@ class Main:
         self._shop_repository = ShopRepository()
         self._tools_manager = ToolsManager(self._shop_repository)
         self.use_system = read_use_system_config()
+        self._tool_calls_regex = create_tool_calls_regex()
 
     def execute(self) -> None:
         load_dotenv()
@@ -101,11 +102,8 @@ class Main:
         logger.info("last_message_content:")
         logger.info(last_message_content)
 
-        # Greedily match text enclosed by [{ and }], delimiters included
-        pattern = r"(\[\{.+\}\])"
-
         # Use re.DOTALL so that '.' also matches newline characters
-        result = re.search(pattern, last_message_content, re.DOTALL)
+        result = self._tool_calls_regex.search(last_message_content, re.DOTALL)
         if result:
             found = result.group(1)
             index = result.start(1)
@@ -170,3 +168,8 @@ class Main:
 
 def create_tool_response(function_name: str, function_result: str) -> ChatMessage:
     return ChatMessage(role="tool", name=function_name, content=function_result)
+
+
+def create_tool_calls_regex() -> re.Pattern[str]:
+    # Greedily match text enclosed by [{ and }], delimiters included
+    return re.compile(r"(\[\{.+\}\])")
