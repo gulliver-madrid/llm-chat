@@ -66,8 +66,8 @@ class View:
         user_input_continue = get_input()
         return user_input_continue.lower() in ["", "y", "yes"]
 
-    def write_object(self, texto: object) -> None:
-        print(texto)
+    def write_object(self, obj: object) -> None:
+        print(obj)
 
     def display_neutral_msg(self, texto: str) -> None:
         display_neutral_msg(texto)
