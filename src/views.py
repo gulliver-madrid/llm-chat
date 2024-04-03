@@ -1,5 +1,6 @@
 from rich import print
 
+from src.generic_view import EscapedStr
 from src.infrastructure.ahora import get_current_time
 from src.io_helpers import highlight_role
 from src.models.shared import ModelName
@@ -19,5 +20,5 @@ def get_interaction_styled_view(model: ModelName, query: str, content: str) -> s
     return "\n".join(lines)
 
 
-def escape_for_rich(s: str) -> str:
-    return s.replace("[", r"\[")
+def escape_for_rich(s: str) -> EscapedStr:
+    return EscapedStr(s.replace("[", r"\["))
