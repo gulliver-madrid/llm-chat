@@ -1,5 +1,6 @@
 from typing import Sequence
 
+from src.generic_view import Raw
 from src.infrastructure.client_wrapper import (
     ClientWrapper,
     QueryResult,
@@ -13,6 +14,7 @@ from src.controllers.command_interpreter import (
 from src.controllers.select_model import SelectModelController
 from src.infrastructure.repository import Repository
 from src.io_helpers import (
+    ensure_escaped,
     get_input,
     show_error_msg,
 )
@@ -42,7 +44,7 @@ class ExitException(Exception): ...
 # settings
 QUERY_NUMBER_LIMIT_WARNING = 5
 
-PRESS_ENTER_TO_CONTINUE = "Pulsa Enter para continuar"
+PRESS_ENTER_TO_CONTINUE = Raw("Pulsa Enter para continuar")
 
 
 class MainEngine:
@@ -61,7 +63,7 @@ class MainEngine:
         try:
             action, rest_query = self._command_interpreter.parse_user_input(raw_query)
         except CommandNoValid as err:
-            show_error_msg(str(err))
+            show_error_msg(Raw(str(err)))
             return
         self.process_action(action, rest_query)
 
@@ -91,7 +93,7 @@ class MainEngine:
                 pass
             case ActionType.SHOW_MODEL:
                 self._view.display_neutral_msg(
-                    f"El modelo actual es {self._model.model_name}"
+                    Raw(f"El modelo actual es {self._model.model_name}")
                 )
                 return
             case ActionType.SYSTEM_PROMPT:
@@ -118,7 +120,7 @@ class MainEngine:
                     )
                 case _:
                     raise ValueError(action.type)
-            self._view.display_neutral_msg("La conversación ha sido cargada")
+            self._view.display_neutral_msg(Raw("La conversación ha sido cargada"))
             return
 
         if not rest_query:
@@ -149,7 +151,9 @@ class MainEngine:
             )
 
             query_result = self._get_simple_response_from_model(query, debug)
-            print_interaction(self._model.model_name, query, query_result.content)
+            print_interaction(
+                self._model.model_name, Raw(query), Raw(query_result.content)
+            )
             self._repository.save(query_result.messages)
             if i == 0:
                 messages = query_result.messages
@@ -178,7 +182,7 @@ class MainEngine:
         try:
             queries = build_queries(rest_query, user_substitutions)
         except QueryBuildException as err:
-            show_error_msg(str(err))
+            show_error_msg(ensure_escaped(Raw(str(err))))
             return None
         else:
             self._view.write_object("Placeholders sustituidos exitosamente")
