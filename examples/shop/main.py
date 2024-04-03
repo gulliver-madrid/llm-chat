@@ -1,4 +1,3 @@
-from collections.abc import Mapping
 import json
 import os
 from pprint import pformat
@@ -14,7 +13,7 @@ from examples.shop.function_calling import (
     is_function_call_mapping,
 )
 from examples.shop.prompts import add_margin, system_prompt_template
-from examples.shop.read_config import read_use_system_config
+from examples.shop.read_config import read_model_config, read_use_system_config
 from examples.shop.repository import ShopRepository
 from examples.shop.tools import ToolsManager, tools
 from examples.shop.types import is_object_mapping, is_object_sequence, is_str_sequence
@@ -28,7 +27,8 @@ from src.infrastructure.exceptions import LLMChatException
 from src.infrastructure.repository import ChatRepository
 from src.io_helpers import display_neutral_msg, get_input
 from src.logging import configure_logger
-from src.models.shared import CompleteMessage, Model, ModelName, Platform
+from src.models.shared import CompleteMessage
+from src.models_data import get_models
 
 logger = configure_logger(__name__)
 
@@ -38,17 +38,20 @@ class WrongFunctionName(LLMChatException):
         super().__init__(function_name)
 
 
-models: Final[Mapping[str, ModelName]] = dict(
-    medium=ModelName("mistral-medium"), large=ModelName("mistral-large-2402")
-)
-
-
 class Main:
     _client: ClientWrapper
 
     def __init__(self) -> None:
         self._messages: Final[list[CompleteMessage]] = []
-        self._model = Model(Platform.Mistral, models["large"])
+        model_name = read_model_config()
+        models = get_models()
+        model = models[0]
+        if model_name:
+            for model in models:
+                if model.model_name == model_name:
+                    break
+        print("Using model", model.model_name)
+        self._model = model
         self._repository = ChatRepository()
         self._shop_repository = ShopRepository()
         self._tools_manager = ToolsManager(self._shop_repository)
