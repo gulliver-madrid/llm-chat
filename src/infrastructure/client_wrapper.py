@@ -1,18 +1,15 @@
 from dataclasses import dataclass
-from pprint import pformat
 import time
-from typing import Any, Sequence, cast
+from typing import Any, Sequence
 
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
-from mistralai.exceptions import MistralConnectionException
-from openai import OpenAI
 
 from src.infrastructure.exceptions import (
-    APIConnectionError,
     ClientNotDefined,
     TooManyRequests,
+    LLMChatException,
 )
+from src.infrastructure.mistral_client_wrapper import MistralClientWrapper
+from src.infrastructure.openai_client_wrapper import OpenAIClientWrapper
 from src.logging import configure_logger
 from src.models.shared import (
     ChatMessage,
@@ -52,12 +49,12 @@ class ClientWrapper:
     def __init__(
         self, *, mistral_api_key: str | None = None, openai_api_key: str | None = None
     ):
-        self._mistralai_client = None
-        self._openai_client = None
+        self._mistralai_client_wrapper = None
+        self._openai_client_wrapper = None
         if mistral_api_key:
-            self._mistralai_client = MistralClient(api_key=mistral_api_key)
+            self._mistralai_client_wrapper = MistralClientWrapper(mistral_api_key)
         if openai_api_key:
-            self._openai_client = OpenAI(api_key=openai_api_key)
+            self._openai_client_wrapper = OpenAIClientWrapper(openai_api_key)
 
     def get_simple_response_to_query(
         self,
@@ -104,98 +101,35 @@ class ClientWrapper:
         prevent_too_many_queries()
         # type annotated here for safety because MistralClient define messages type as list[Any]
         messages: list[ChatMessage] = extract_chat_messages(complete_messages)
+
         match model.platform:
+
             case Platform.OpenAI:
                 assert not tools, "Currently tools are not available with OpenAI models"
                 if random_seed is not None:
-                    print(
-                        "Warning: random_seed not currently supported with OpenAI API"
+                    raise LLMChatException(
+                        "Error: random_seed not currently supported with OpenAI API"
                     )
-                chat_msg = self._answer_using_openai(model, messages)
+                if not self._openai_client_wrapper:
+                    raise ClientNotDefined("OpenAI", "OpenAI")
+                chat_msg = self._openai_client_wrapper.answer(model, messages)
+
             case Platform.Mistral:
-                chat_msg = self._answer_using_mistral(
+                if not self._mistralai_client_wrapper:
+                    raise ClientNotDefined("Mistral AI", "Mistral")
+                chat_msg = self._mistralai_client_wrapper.answer(
                     model,
                     messages,
                     tools=tools,
                     tool_choice=tool_choice,
                     random_seed=random_seed,
                 )
+
             case _:
                 raise ValueError(f"Missing platform in model: {model}")
+
         if debug:
             print(f"{chat_msg=}")
             breakpoint()
         complete_messages.append(CompleteMessage(chat_msg, model))
         return QueryResult(chat_msg.content, complete_messages)
-
-    def _answer_using_openai(
-        self, model: Model, messages: Sequence[ChatMessage]
-    ) -> ChatMessage:
-
-        if not self._openai_client:
-            raise ClientNotDefined("OpenAI", "OpenAI")
-
-        openai_messages: Any = [
-            {
-                "role": msg.role,
-                "content": msg.content,
-            }
-            for msg in messages
-        ]
-        openai_chat_completion = self._openai_client.chat.completions.create(
-            messages=openai_messages,
-            model=model.model_name,
-        )
-        openai_chat_msg = openai_chat_completion.choices[0].message
-        assert isinstance(openai_chat_msg.content, str)
-        content = openai_chat_msg.content
-        role = openai_chat_msg.role
-        return ChatMessage(role, content)
-
-    def _answer_using_mistral(
-        self,
-        model: Model,
-        messages: Sequence[ChatMessage],
-        *,
-        tools: list[dict[str, Any]] | None = None,
-        tool_choice: str = "none",
-        random_seed: int | None = None,
-    ) -> ChatMessage:
-        assert model.platform == Platform.Mistral
-
-        if not self._mistralai_client:
-            raise ClientNotDefined("Mistral AI", "Mistral")
-
-        mistral_messages = [
-            MistralChatMessage(
-                role=msg.role,
-                content=msg.content,
-                name=msg.name,
-                tool_calls=cast(Any, msg.tool_calls),
-            )
-            for msg in messages
-        ]
-        logger.info(f"{tool_choice=}")
-        try:
-            chat_response = self._mistralai_client.chat(
-                model=model.model_name,
-                messages=mistral_messages,
-                tools=tools,
-                tool_choice=tool_choice,
-                random_seed=random_seed,
-            )
-        except MistralConnectionException:
-            raise APIConnectionError("Mistral") from None
-        choices = chat_response.choices
-        assert len(choices) == 1
-        mistral_chat_msg = choices[0].message
-        assert isinstance(mistral_chat_msg.content, str)
-
-        logger.info("mistral_chat_msg:")
-        logger.info(pformat(mistral_chat_msg))
-
-        return ChatMessage(
-            mistral_chat_msg.role,
-            mistral_chat_msg.content,
-            tool_calls=mistral_chat_msg.tool_calls,
-        )
