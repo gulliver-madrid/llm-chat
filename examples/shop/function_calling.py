@@ -2,6 +2,12 @@ from dataclasses import dataclass
 from typing import TypeGuard, TypedDict
 
 from examples.shop.types import is_object_mapping
+from src.infrastructure.exceptions import LLMChatException
+
+
+class WrongFunctionName(LLMChatException):
+    def __init__(self, function_name: str):
+        super().__init__(function_name)
 
 
 class FunctionCallDict(TypedDict):
