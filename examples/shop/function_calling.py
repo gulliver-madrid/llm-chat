@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TypeGuard, TypedDict
 
 from examples.shop.types import is_object_mapping
@@ -41,3 +41,4 @@ class ToolCall:
     """Object with the same format as the original received from the Mistral API"""
 
     function: FunctionCall
+    id: str | None = field(kw_only=True, default=None)

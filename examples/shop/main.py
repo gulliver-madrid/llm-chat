@@ -54,7 +54,10 @@ class Main:
     def execute(self) -> None:
         load_dotenv()
         mistral_api_key = os.environ.get("MISTRAL_API_KEY")
-        self._client = ClientWrapper(mistral_api_key=mistral_api_key)
+        openai_api_key = os.environ.get("OPENAI_API_KEY")
+        self._client = ClientWrapper(
+            mistral_api_key=mistral_api_key, openai_api_key=openai_api_key
+        )
         self._messages.clear()
         self._messages.extend(
             define_system_prompt(
@@ -145,8 +148,9 @@ class Main:
                     function_result = self._tools_manager.retrieve_product_prices(
                         product_refs
                     )
+                    assert isinstance(tool_call.id, str)
                     tool_response_message = create_tool_response(
-                        function_name, function_result
+                        function_name, function_result, tool_call.id
                     )
                     self._messages.append(CompleteMessage(tool_response_message))
                 case _:
@@ -178,8 +182,15 @@ class Main:
         return "\n".join(lines)
 
 
-def create_tool_response(function_name: str, function_result: str) -> ChatMessage:
-    return ChatMessage(role="tool", name=function_name, content=function_result)
+def create_tool_response(
+    function_name: str, function_result: str, tool_call_id: str
+) -> ChatMessage:
+    return ChatMessage(
+        role="tool",
+        name=function_name,
+        content=function_result,
+        tool_call_id=tool_call_id,
+    )
 
 
 def create_tool_calls_regex() -> re.Pattern[str]:
