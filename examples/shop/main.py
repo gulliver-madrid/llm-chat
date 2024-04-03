@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 from examples.shop.function_calling import (
     FunctionCall,
     ToolCall,
+    WrongFunctionName,
     is_function_call_mapping,
 )
 from examples.shop.prompts import (
@@ -23,23 +24,14 @@ from examples.shop.tools import ToolsManager, tools
 from examples.shop.types import is_object_mapping, is_object_sequence, is_str_sequence
 
 from src.domain import ChatMessage
-from src.infrastructure.client_wrapper import (
-    ClientWrapper,
-    QueryResult,
-)
-from src.infrastructure.exceptions import LLMChatException
+from src.infrastructure.client_wrapper import ClientWrapper, QueryResult
 from src.infrastructure.repository import ChatRepository
 from src.io_helpers import display_neutral_msg, get_input
 from src.logging import configure_logger
-from src.models.shared import CompleteMessage, Model
+from src.models.shared import CompleteMessage, Model, define_system_prompt
 from src.models_data import get_models
 
 logger = configure_logger(__name__)
-
-
-class WrongFunctionName(LLMChatException):
-    def __init__(self, function_name: str):
-        super().__init__(function_name)
 
 
 class Main:
@@ -63,7 +55,7 @@ class Main:
         self._client = ClientWrapper(mistral_api_key=mistral_api_key)
         self._messages.clear()
         self._messages.extend(
-            self._client.define_system_prompt(
+            define_system_prompt(
                 self._create_system_prompt(), use_system=self.use_system
             )
         )

@@ -199,12 +199,3 @@ class ClientWrapper:
             mistral_chat_msg.content,
             tool_calls=mistral_chat_msg.tool_calls,
         )
-
-    def define_system_prompt(
-        self, prompt: str, *, use_system: bool = True
-    ) -> list[CompleteMessage]:
-        return [
-            CompleteMessage(
-                chat_msg=ChatMessage("system" if use_system else "user", prompt)
-            )
-        ]
