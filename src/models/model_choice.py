@@ -3,9 +3,6 @@ from typing import NoReturn, Sequence
 from src.models.shared import Model
 
 
-MISTRAL_MODEL_PREFIX = "mistral"
-
-
 class ModelChoiceParser:
     def __init__(self, models: Sequence[Model]) -> None:
         self._models = models
