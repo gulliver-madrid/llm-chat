@@ -26,7 +26,12 @@ from src.models.serialization import (
     cast_string_to_conversation_id,
     convert_conversation_into_messages,
 )
-from src.models.shared import CompleteMessage, Model, extract_chat_messages
+from src.models.shared import (
+    CompleteMessage,
+    Model,
+    define_system_prompt,
+    extract_chat_messages,
+)
 from src.view import View
 from src.views import print_interaction
 
@@ -93,7 +98,7 @@ class MainEngine:
                 system_prompt = True
 
         if system_prompt:
-            self._prev_messages = self._client_wrapper.define_system_prompt(rest_query)
+            self._prev_messages = define_system_prompt(rest_query)
             self._view.write_object("System prompt established")
             return
 
