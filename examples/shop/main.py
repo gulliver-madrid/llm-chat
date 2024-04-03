@@ -13,7 +13,7 @@ from examples.shop.function_calling import (
     ToolCall,
     is_function_call_mapping,
 )
-from examples.shop.prompts import system_prompt_template
+from examples.shop.prompts import add_margin, system_prompt_template
 from examples.shop.read_config import read_use_system_config
 from examples.shop.repository import ShopRepository
 from examples.shop.tools import ToolsManager, tools
@@ -153,9 +153,9 @@ class Main:
         return response
 
     def _create_system_prompt(self) -> str:
-        return system_prompt_template.substitute(
-            {"product_list": self._format_products_for_assistant()}
-        )
+        formatted_list = add_margin(self._format_products_for_assistant(), 4)
+        prompt = system_prompt_template.substitute({"product_list": formatted_list})
+        return prompt
 
     def _format_products_for_assistant(self) -> str:
         lines: list[str] = []
