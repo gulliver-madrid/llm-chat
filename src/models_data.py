@@ -5,7 +5,7 @@ from src.models.shared import Model, ModelName, Platform
 models_data: Final[Mapping[Platform, Sequence[str]]] = {
     Platform.Mistral: (
         "mistral-tiny",
-        "mistral-small",
+        "mistral-small-latest",
         "mistral-medium",
         "mistral-large-2402",
     ),
