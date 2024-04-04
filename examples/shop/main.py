@@ -102,6 +102,10 @@ class Main:
         )
         user_query = get_input("Pregunta lo que quieras sobre nuestra tienda")
 
+        if user_query == "/exit":
+            print("Conversación finalizada")
+            quit()
+
         response = self._client.get_simple_response_to_query(
             self._model,
             user_query,
