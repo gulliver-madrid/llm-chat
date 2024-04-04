@@ -35,15 +35,14 @@ class Main:
     def __init__(self) -> None:
         self._config_reader = ConfigReader()
         self._messages: Final[list[CompleteMessage]] = []
-        model = self._get_model()
-        self._model = model
+        self._model = self._get_model()
         self._repository = Repository()
         self._shop_repository = ShopRepository()
         self._tools_manager = ToolsManager(self._shop_repository)
-        self.use_system = self._config_reader.read_use_system_config()
+        self._use_system = self._config_reader.read_use_system_config()
         self._tool_calls_regex = create_tool_calls_regex()
         self._view = GenericView()
-        self._view.print(escape_for_rich(Raw("Using model " + model.model_name)))
+        self._display_model_name()
         self._prompt_generator = SystemPromptGenerator()
 
     def execute(self) -> None:
@@ -56,7 +55,7 @@ class Main:
         self._messages.clear()
         system_prompt = define_system_prompt(
             self._prompt_generator.create_system_prompt(self._shop_repository.products),
-            use_system=self.use_system,
+            use_system=self._use_system,
         )
         self._messages.append(system_prompt)
         user_query = get_input(Raw("Pregunta lo que quieras sobre nuestra tienda"))
@@ -102,13 +101,15 @@ class Main:
                 print(f"Modelo desconocido: {model_name}")
         return model or default_model
 
+    def _display_model_name(self) -> None:
+        self._view.print(escape_for_rich(Raw("Using model " + self._model.model_name)))
+
     def _parse_tool_calls_from_content(
         self, last_message: CompleteMessage
     ) -> list[ToolCall]:
         tool_calls: list[ToolCall] = []
         last_message_content = last_message.chat_msg.content
-        logger.info("last_message_content:")
-        logger.info(last_message_content)
+        logger.info("last_message_content=" + pformat(last_message_content, width=120))
 
         # Use re.DOTALL so that '.' also matches newline characters
         result = self._tool_calls_regex.search(last_message_content, re.DOTALL)
