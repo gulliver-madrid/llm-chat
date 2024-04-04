@@ -100,7 +100,7 @@ class MainEngine:
                 system_prompt = True
 
         if system_prompt:
-            self._prev_messages = define_system_prompt(rest_query)
+            self._prev_messages = [define_system_prompt(rest_query)]
             self._view.write_object("System prompt established")
             return
 

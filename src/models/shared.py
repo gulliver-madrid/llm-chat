@@ -39,11 +39,7 @@ def extract_chat_messages(
     return [complete_chat.chat_msg for complete_chat in complete_messages]
 
 
-def define_system_prompt(
-    prompt: str, *, use_system: bool = True
-) -> list[CompleteMessage]:
-    return [
-        CompleteMessage(
-            chat_msg=ChatMessage("system" if use_system else "user", prompt)
-        )
-    ]
+def define_system_prompt(prompt: str, *, use_system: bool = True) -> CompleteMessage:
+    return CompleteMessage(
+        chat_msg=ChatMessage("system" if use_system else "user", prompt)
+    )
