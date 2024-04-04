@@ -1,4 +1,3 @@
-from pprint import pformat
 from typing import Any, Sequence, cast
 
 from mistralai.client import MistralClient
@@ -6,7 +5,7 @@ from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
 from mistralai.exceptions import MistralConnectionException
 
 from src.infrastructure.exceptions import APIConnectionError
-from src.logging import configure_logger
+from src.logging import configure_logger, format_var
 from src.models.shared import (
     ChatMessage,
     Model,
@@ -56,8 +55,7 @@ class MistralClientWrapper:
         mistral_chat_msg = choices[0].message
         assert isinstance(mistral_chat_msg.content, str)
 
-        logger.info("mistral_chat_msg:")
-        logger.info(pformat(mistral_chat_msg))
+        logger.info(format_var("mistral_chat_msg", mistral_chat_msg))
 
         return ChatMessage(
             mistral_chat_msg.role,

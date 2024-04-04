@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from pprint import pformat
 
 
 # Funcion para configurar un logger y enviar su salida a un archivo
@@ -29,3 +30,7 @@ def configure_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
     logger.info("START")
 
     return logger
+
+
+def format_var(name: str, obj: object) -> str:
+    return name + "=" + pformat(obj, width=120)
