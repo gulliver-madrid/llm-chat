@@ -1,10 +1,9 @@
-from pprint import pformat
 from types import NoneType
 from typing import Any, Sequence, cast
 
 from openai import OpenAI
 
-from src.logging import configure_logger
+from src.logging import configure_logger, format_var
 from src.models.shared import (
     ChatMessage,
     Model,
@@ -37,7 +36,7 @@ class OpenAIClientWrapper:
             openai_messages.append(openai_msg)
 
         logger.info(f"{model=}")
-        logger.info("openai_messages=" + pformat(openai_messages, width=120))
+        logger.info(format_var("openai_messages", openai_messages))
         logger.info(f"{tools=}")
 
         openai_chat_completion = self._openai_client.chat.completions.create(
@@ -47,7 +46,7 @@ class OpenAIClientWrapper:
         )
         openai_chat_msg = openai_chat_completion.choices[0].message
 
-        logger.info("openai_chat_msg=" + pformat(openai_chat_msg))
+        logger.info(format_var("openai_chat_msg", openai_chat_msg))
 
         assert isinstance(openai_chat_msg.content, (str, NoneType))
         content = openai_chat_msg.content
