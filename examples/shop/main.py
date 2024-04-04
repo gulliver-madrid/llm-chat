@@ -1,6 +1,5 @@
 import json
 import os
-from pprint import pformat
 import re
 from typing import Any, Final, cast
 
@@ -21,7 +20,7 @@ from src.generic_view import GenericView, Raw
 from src.infrastructure.client_wrapper import ClientWrapper, QueryResult
 from src.infrastructure.repository import Repository
 from src.io_helpers import display_neutral_msg, escape_for_rich, get_input
-from src.logging import configure_logger
+from src.logging import configure_logger, format_var
 from src.models.shared import ChatMessage, CompleteMessage, Model, define_system_prompt
 from src.models_data import get_models
 
@@ -85,8 +84,7 @@ class Main:
 
         self._view.print(escape_for_rich(Raw(response.content)))
 
-        logger.info("self._messages:")
-        logger.info(pformat(self._messages, width=120))
+        logger.info(format_var("self._messages", self._messages))
 
     def _get_model(self) -> Model:
         model_name = self._config_reader.read_model_config()
@@ -109,7 +107,7 @@ class Main:
     ) -> list[ToolCall]:
         tool_calls: list[ToolCall] = []
         last_message_content = last_message.chat_msg.content
-        logger.info("last_message_content=" + pformat(last_message_content, width=120))
+        logger.info(format_var("last_message_content", last_message_content))
 
         # Use re.DOTALL so that '.' also matches newline characters
         result = self._tool_calls_regex.search(last_message_content, re.DOTALL)
