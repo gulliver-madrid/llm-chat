@@ -30,31 +30,32 @@ poetry install
 
 ### Using `pip`
 
-Install the required Python packages: `mistralai` and `rich`. You can install them using pip, either globally or inside a virtual environment:
+In the `pyproject.toml` file, within the `[tool.poetry.dependencies]` section, dependencies are listed. You can install them using pip, either globally or within a virtual environment:
 
 ```
-pip install mistralai rich
+pip install mistralai openai rich [...rest of the dependencies]
 ```
 
-This command will install the necessary dependencies.
+## Execution
 
-## Usage
+**Before running the application**, make sure you have set at least one of the API keys, either as environment variables or in the `.env` file.
 
-**Before using this app**, ensure you have set your `MISTRAL_API_KEY` environment variable:
-
-On Linux:
+Example of setting the Mistral API key on Linux:
 
 ```
 export MISTRAL_API_KEY=<your_api_key>
 ```
+
 On Windows:
 
 ```
 set MISTRAL_API_KEY=<your_api_key>
 ```
 
+To use the `.env` file, the contents of the `.env.example` file can serve as an illustration.
 
-**To run the app**, execute the `src/main.py` file.
+
+**To run the application**, execute the `src/main.py` file.
 
 Using poetry:
 
@@ -62,15 +63,17 @@ Using poetry:
 poetry run python src/main.py
 ```
 
-Or, if installed using pip:
+Or, if installed using pip, use the following command (in your case, after activating the virtual environment):
 
 ```
 python src/main.py
 ```
 
-The app allows you to interact with `mistral` LLM models in a conversational manner by inputting questions. After launching the app, it will prompt you to choose from the available models or to proceed with the default model. Once a model is selected, you can begin typing your question. If your query spans multiple lines, simply continue typing until you've finished formulating your question.
+## Usage
 
-To indicate that you have finished entering your question, type `end` on a new line. The model will then process your input and provide a response. After receiving a response, you are free to initiate a new query by following the same process.
+This application allows you to interact with Mistral's and OpenAI's LLM models conversationally. After launching the application, it will prompt you to choose between the available models or proceed with the default model. Once a model is selected, you can start typing your query. If it spans multiple lines, just continue typing until you have finished formulating your question. To indicate that you have finished entering your question, type `end` on a new line. The model will then process your input and provide a response. After receiving a response, you are free to start a new query following the same process.
+
+Conversations will be automatically recorded in the `data/chats` directory. You can load a recorded conversation to continue it using the `/load` command followed by the numerical id of the conversation. If you want to edit the text of a conversation before loading it, simply edit the file, taking care to respect its general format. You can also copy the content into a new file, in which case you will need to assign it the next available id number as its name. It is not necessary to change the id contained within the file, or any other metadata.
 
 To start a new conversation instead of continuing with the current one, use the `/new` command at the beginning of your query.
 
