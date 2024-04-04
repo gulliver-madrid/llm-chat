@@ -1,6 +1,6 @@
 # LLM-Chat: Interfaz de Texto para Grandes Modelos de Lenguaje (LLMs)
 
-[Advertencia: ¡Riesgo de Force Push!](#⚠️-advertencia-¡riesgo-de-force-push) • [Descargo de Responsabilidad](#descargo-de-responsabilidad) • [Instalación](#instalación) • [Uso](#uso) • [Actualización de Gestión de Proyecto](#🚀-actualización-de-gestión-de-proyecto)
+[Advertencia: ¡Riesgo de Force Push!](#advertencia-¡riesgo-de-force-push) • [Descargo de Responsabilidad](#descargo-de-responsabilidad) • [Instalación](#instalación) • [Uso](#uso) • [Actualización de Gestión de Proyecto](#🚀-actualización-de-gestión-de-proyecto)
 
 Este proyecto proporciona una interfaz de texto para interactuar con los modelos de [Mistral AI](https://mistral.ai/) y [OpenAI](https://www.openai.com/). La aplicación permite a los usuarios seleccionar un modelo, ingresar una pregunta y recibir la respuesta del modelo.
 
@@ -137,11 +137,10 @@ El programa incluye funcionalidades de depuración usando el comando `/debug`. E
 
 ### Desarrollo
 
-#### ⚠️ Advertencia: ¡Riesgo de Force Push!
+#### Advertencia: ¡Riesgo de Force Push!
 
-Si tiene cambios locales que no desea perder, por favor no use `git pull` o `git fetch`. Estos comandos pueden sobrescribir cambios locales si no se usan con cuidado. Además, con las nuevas actualizaciones de gestión de versiones, podría haber cambios que reescriban la historia del proyecto en el repositorio remoto para definir claramente los puntos de cambio de versión.
+Si tiene cambios locales que no desea perder, por favor no use `git pull` o `git fetch`. Estos comandos pueden sobrescribir cambios locales.
 
-Gracias por su comprensión y paciencia mientras hacemos estas mejoras. Si tiene alguna pregunta o necesita ayuda para navegar los cambios, no dude en comunicarse.
 
 #### 🚀 Actualización de Gestión de Proyecto
 
@@ -151,6 +150,7 @@ Para mejorar cómo gestionamos las versiones y documentamos los cambios, estamos
 
 - **Introduciendo un Registro de Cambios Detallado**: Un `CHANGELOG.md` ahora es parte del proyecto. Listará modificaciones, nuevas características y correcciones para cada lanzamiento, brindando a todos una vista clara de cómo evoluciona el proyecto.
 
+Gracias por su comprensión y paciencia mientras hacemos estas mejoras. Si tiene alguna pregunta o necesita ayuda para navegar los cambios, no dude en comunicarse.
 
 #### Dependencias de desarrollo
 

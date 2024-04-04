@@ -3,7 +3,7 @@
 [[leer en español](README.es.md)]
 
 
-[Warning: Risk of Force Push!](#⚠️-warning-risk-of-force-push) • [Disclaimer](#disclaimer) • [Installation](#installation) • [Usage](#usage) • [Project Management Update](#🚀-project-management-update)
+[Warning: Risk of Force Push!](#warning-risk-of-force-push) • [Disclaimer](#disclaimer) • [Installation](#installation) • [Usage](#usage) • [Project Management Update](#🚀-project-management-update)
 
 This project provides a text interface to interact with the models of [Mistral AI](https://mistral.ai/) and [OpenAI](https://www.openai.com/). The application allows users to select a model, enter a question, and receive the model's response.
 
@@ -140,11 +140,9 @@ This application includes debugging functionalities using the command `/debug`. 
 
 ### Development
 
-#### ⚠️ Warning: Risk of Force Push!
+#### Warning: Risk of Force Push!
 
-If you have local changes that you don’t want to lose, please don't use `git pull` or `git fetch`. These commands can overwrite local changes if not used carefully. Also, with the new version management updates, there might be changes that rewrite the project's history in the remote repository to clearly define version change points.
-
-Thanks for your understanding and patience as we make these improvements. If you have any questions or need help navigating the changes, feel free to reach out.
+If you have local changes that you don’t want to lose, please don't use `git pull` or `git fetch`. These commands can overwrite local changes.
 
 #### 🚀 Project Management Update
 
@@ -154,6 +152,7 @@ To improve how we manage versions and document changes, we're making some import
 
 - **Introducing a Detailed Changelog**: A `CHANGELOG.md` is now part of the project. It will list modifications, new features, and fixes for each release, giving everyone a clear view of how the project evolves.
 
+Thanks for your understanding and patience as we make these improvements. If you have any questions or need help navigating the changes, feel free to reach out.
 
 #### Development dependencies
 
