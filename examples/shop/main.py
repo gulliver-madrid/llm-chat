@@ -12,11 +12,7 @@ from examples.shop.function_calling import (
     WrongFunctionName,
     is_function_call_mapping,
 )
-from examples.shop.prompts import (
-    add_margin,
-    interaction_examples,
-    system_prompt_template,
-)
+from examples.shop.prompt_generator import SystemPromptGenerator
 from examples.shop.read_config import ConfigReader
 from examples.shop.repository import ShopRepository
 from examples.shop.tools import ToolsManager, tools
@@ -50,6 +46,7 @@ class Main:
         self._tool_calls_regex = create_tool_calls_regex()
         self._view = GenericView()
         self._view.print(escape_for_rich(Raw("Using model " + model.model_name)))
+        self._prompt_generator = SystemPromptGenerator()
 
     def execute(self) -> None:
         load_dotenv()
@@ -59,11 +56,11 @@ class Main:
             mistral_api_key=mistral_api_key, openai_api_key=openai_api_key
         )
         self._messages.clear()
-        self._messages.extend(
-            define_system_prompt(
-                self._create_system_prompt(), use_system=self.use_system
-            )
+        system_prompt = define_system_prompt(
+            self._prompt_generator.create_system_prompt(self._shop_repository.products),
+            use_system=self.use_system,
         )
+        self._messages.append(system_prompt)
         user_query = get_input(Raw("Pregunta lo que quieras sobre nuestra tienda"))
         if user_query == "/exit":
             print("Conversación finalizada")
@@ -163,23 +160,6 @@ class Main:
         )
         self._repository.save(response.messages)
         return response
-
-    def _create_system_prompt(self) -> str:
-        formatted_list = add_margin(self._format_products_for_assistant(), 4)
-        prompt = system_prompt_template.substitute(
-            {"product_list": formatted_list, "examples": interaction_examples}
-        )
-        return prompt
-
-    def _format_products_for_assistant(self) -> str:
-        lines: list[str] = []
-        for product in self._shop_repository.products:
-            product_name = product["name"]
-            ref = product["ref"]
-            english = product_name["english"]
-            spanish = product_name["spanish"]
-            lines.append(f"- {ref} {english} (spanish: {spanish})")
-        return "\n".join(lines)
 
 
 def create_tool_response(
