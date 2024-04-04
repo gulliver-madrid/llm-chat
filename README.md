@@ -132,11 +132,7 @@ This application offers the following features:
 - Input validation and error handling.
 - Display of model interactions with time-stamps and role indicators.
 - Loading of previous conversations, in their original state or edited by the user.
-- Support for entering debug mode.
 
-### Debugging
-
-This application includes debugging functionalities using the command `/debug`. This allows inspect the `chat_response` object returned by the Mistral API.
 
 ### Development
 

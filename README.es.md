@@ -129,11 +129,7 @@ Esta aplicación ofrece las siguientes funcionalidades:
 - Validación de entrada y manejo de errores.
 - Mostrar interacciones del modelo con marcas de tiempo e indicadores de roles.
 - Carga de conversaciones previas, en su estado original o editadas por el usuario.
-- Soporte para entrar en modo de depuración.
 
-### Depuración
-
-El programa incluye funcionalidades de depuración usando el comando `/debug`. Esto permite inspeccionar el objeto `chat_response` devuelto por la API de Mistral.
 
 ### Desarrollo
 
