@@ -5,7 +5,7 @@
 
 [Warning: Risk of Force Push!](#⚠️-warning-risk-of-force-push) • [Disclaimer](#disclaimer) • [Installation](#installation) • [Usage](#usage) • [Project Management Update](#🚀-project-management-update)
 
-This project provides a text interface to interact with the models of [Mistral AI](https://mistral.ai/) and OpenAI. The application allows users to select a model, enter a question, and receive the model's response.
+This project provides a text interface to interact with the models of [Mistral AI](https://mistral.ai/) and [OpenAI](https://www.openai.com/). The application allows users to select a model, enter a question, and receive the model's response.
 
 ## Note
 So far, this project only allowed access to Mistral models. Now it is also possible to access several OpenAI models. We are updating the documentation accordingly, but the updating process is not yet complete.

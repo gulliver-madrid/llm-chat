@@ -2,7 +2,7 @@
 
 [Advertencia: ¡Riesgo de Force Push!](#⚠️-advertencia-¡riesgo-de-force-push) • [Descargo de Responsabilidad](#descargo-de-responsabilidad) • [Instalación](#instalación) • [Uso](#uso) • [Actualización de Gestión de Proyecto](#🚀-actualización-de-gestión-de-proyecto)
 
-Este proyecto proporciona una interfaz de texto para interactuar con los modelos de [Mistral AI](https://mistral.ai/) y OpenAI. La aplicación permite a los usuarios seleccionar un modelo, ingresar una pregunta y recibir la respuesta del modelo.
+Este proyecto proporciona una interfaz de texto para interactuar con los modelos de [Mistral AI](https://mistral.ai/) y [OpenAI](https://www.openai.com/). La aplicación permite a los usuarios seleccionar un modelo, ingresar una pregunta y recibir la respuesta del modelo.
 
 ## Nota
 Hasta ahora este proyecto solo permitía acceder a los modelos de Mistral. Ahora es posible acceder también a varios modelos de OpenAI. Estamos actualizando la documentación en consecuencia, pero el proceso de actualización aún no está completado.
