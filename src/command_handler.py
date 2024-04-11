@@ -92,6 +92,7 @@ class CommandHandler:
 
         if system_prompt:
             # establece el system prompt
+            # TODO: allow multiline
             self._prev_messages = [define_system_prompt(remaining_input)]
             self._view.write_object("System prompt established")
             return
