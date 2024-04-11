@@ -1,0 +1,2 @@
+# settings
+QUERY_NUMBER_LIMIT_WARNING = 5
