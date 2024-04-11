@@ -48,34 +48,35 @@ def test_parse_messages_from_text() -> None:
         assert result == messages
 
 
-def test_is_tag() -> None:
-    # no tags
-    assert_is_tag(False, "")
+NO_TAGS = [
+    "",
     # something before
-    assert_is_tag(False, " [META id=0001]")
+    " [META id=0001]",
     # something after
-    assert_is_tag(False, "[META id=0001] ")
+    "[META id=0001] ",
     # missing space
-    assert_is_tag(False, "[METAid]")
+    "[METAid]",
+]
+TAGS_WITH_TYPES = [
+    ("[META id=0001]", TagType.META),
+    ("[ROLE ASSISTANT model=model_1]", TagType.ROLE),
+]
 
-    # tags
-    assert_is_tag(True, "[META id=0001]")
-    assert_is_tag(True, "[ROLE ASSISTANT model=model_1]")
+
+def test_is_tag() -> None:
+    for no_tag in NO_TAGS:
+        assert_is_tag(False, no_tag)
+
+    for tag, _ in TAGS_WITH_TYPES:
+        assert_is_tag(True, tag)
 
 
 def test_get_tag_type() -> None:
-    # no tags
-    assert_tag_type(None, "")
-    # something before
-    assert_tag_type(None, " [META id=0001]")
-    # something after
-    assert_tag_type(None, "[META id=0001] ")
-    # missing space
-    assert_tag_type(None, "[METAid]")
+    for no_tag in NO_TAGS:
+        assert_tag_type(None, no_tag)
 
-    # tags
-    assert_tag_type(TagType.META, "[META id=0001]")
-    assert_tag_type(TagType.ROLE, "[ROLE ASSISTANT model=model_1]")
+    for tag, expected_type in TAGS_WITH_TYPES:
+        assert_tag_type(expected_type, tag)
 
 
 def assert_is_tag(expected: bool, string: str) -> None:
