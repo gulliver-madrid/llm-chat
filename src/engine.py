@@ -63,13 +63,15 @@ class MainEngine:
 
     def process_raw_query(self, raw_query: str) -> None:
         try:
-            action, rest_query = self._command_interpreter.parse_user_input(raw_query)
+            action, remaining_input = self._command_interpreter.parse_user_input(
+                raw_query
+            )
         except CommandNoValid as err:
             show_error_msg(Raw(str(err)))
             return
-        self.process_action(action, rest_query)
+        self.process_action(action, remaining_input)
 
-    def process_action(self, action: Action, rest_query: str) -> None:
+    def process_action(self, action: Action, remaining_input: str) -> None:
         debug = False
         new_conversation = False
         system_prompt = False
@@ -88,7 +90,7 @@ class MainEngine:
             case ActionType.DEBUG:
                 debug = True
             case ActionType.LOAD_CONVERSATION | ActionType.LOAD_MESSAGES:
-                conversation_to_load = cast_string_to_conversation_id(rest_query)
+                conversation_to_load = cast_string_to_conversation_id(remaining_input)
             case ActionType.NEW_CONVERSATION:
                 new_conversation = True
             case ActionType.CONTINUE_CONVERSATION:
@@ -101,7 +103,7 @@ class MainEngine:
 
         if system_prompt:
             # sets the system prompt
-            self._prev_messages = [define_system_prompt(rest_query)]
+            self._prev_messages = [define_system_prompt(remaining_input)]
             self._view.write_object("System prompt established")
             return
 
@@ -109,15 +111,15 @@ class MainEngine:
             self._load_conversation(action, conversation_to_load)
             return
 
-        if not rest_query:
+        if not remaining_input:
             return
 
         while (more := input()).lower() != "end":
-            rest_query += "\n" + more
+            remaining_input += "\n" + more
 
-        placeholders = find_unique_placeholders(rest_query)
+        placeholders = find_unique_placeholders(remaining_input)
 
-        queries = self._define_final_queries(rest_query, placeholders)
+        queries = self._define_final_queries(remaining_input, placeholders)
         if queries is None:
             return
 
@@ -190,14 +192,14 @@ class MainEngine:
         )
 
     def _define_final_queries(
-        self, rest_query: str, placeholders: list[Placeholder]
+        self, remaining_input: str, placeholders: list[Placeholder]
     ) -> list[QueryText] | None:
         if not placeholders:
-            return [QueryText(rest_query)]
+            return [QueryText(remaining_input)]
 
         user_substitutions = self._view.get_raw_substitutions_from_user(placeholders)
         try:
-            queries = build_queries(rest_query, user_substitutions)
+            queries = build_queries(remaining_input, user_substitutions)
         except QueryBuildException as err:
             show_error_msg(ensure_escaped(Raw(str(err))))
             return None
