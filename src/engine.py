@@ -25,6 +25,7 @@ from src.models.placeholders import (
     find_unique_placeholders,
 )
 from src.models.serialization import (
+    ConversationId,
     cast_string_to_conversation_id,
     convert_conversation_into_messages,
 )
@@ -87,7 +88,7 @@ class MainEngine:
             case ActionType.DEBUG:
                 debug = True
             case ActionType.LOAD_CONVERSATION | ActionType.LOAD_MESSAGES:
-                conversation_to_load = rest_query
+                conversation_to_load = cast_string_to_conversation_id(rest_query)
             case ActionType.NEW_CONVERSATION:
                 new_conversation = True
             case ActionType.CONTINUE_CONVERSATION:
@@ -107,23 +108,7 @@ class MainEngine:
             return
 
         if conversation_to_load:
-            # carga la conversacion
-            assert action
-            conversation_id = cast_string_to_conversation_id(conversation_to_load)
-            del conversation_to_load
-            conversation = self._repository.load_conversation(conversation_id)
-            self._prev_messages = convert_conversation_into_messages(conversation)
-            match action.type:
-                case ActionType.LOAD_CONVERSATION:
-                    self._view.display_conversation(conversation_id, conversation)
-                case ActionType.LOAD_MESSAGES:
-                    self._view.display_messages(
-                        conversation_id,
-                        extract_chat_messages(self._prev_messages),
-                    )
-                case _:
-                    raise ValueError(action.type)
-            self._view.display_neutral_msg(Raw("La conversación ha sido cargada"))
+            self._load_conversation(action, conversation_to_load)
             return
 
         if not rest_query:
@@ -163,6 +148,24 @@ class MainEngine:
             if i == 0:
                 messages = query_result.messages
         self._prev_messages = None if len(queries) > 1 else messages
+
+    def _load_conversation(
+        self, action: Action, conversation_id: ConversationId
+    ) -> None:
+        """Load a conversation based in its id"""
+        conversation = self._repository.load_conversation(conversation_id)
+        self._prev_messages = convert_conversation_into_messages(conversation)
+        match action.type:
+            case ActionType.LOAD_CONVERSATION:
+                self._view.display_conversation(conversation_id, conversation)
+            case ActionType.LOAD_MESSAGES:
+                self._view.display_messages(
+                    conversation_id,
+                    extract_chat_messages(self._prev_messages),
+                )
+            case _:
+                raise ValueError(action.type)
+        self._view.display_neutral_msg(Raw("La conversación ha sido cargada"))
 
     def _get_simple_response_from_model(
         self, query: str, debug: bool = False
