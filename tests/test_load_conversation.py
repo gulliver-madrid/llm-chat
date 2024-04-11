@@ -29,7 +29,7 @@ CASES = [
 ]
 
 
-def test_load_conversation_from_text() -> None:
+def test_parse_conversation_from_text() -> None:
     for text, expected_conversation in CASES:
         conversation = convert_text_to_conversation_object(
             text, preserve_model=True, check_model_exists=False
@@ -37,7 +37,7 @@ def test_load_conversation_from_text() -> None:
         assert conversation == expected_conversation
 
 
-def test_load_messages_from_text() -> None:
+def test_parse_messages_from_text() -> None:
     for text, messages in [
         (TEXT_1, COMPLETE_MESSAGES_1),
         (TEXT_2, COMPLETE_MESSAGES_2),
