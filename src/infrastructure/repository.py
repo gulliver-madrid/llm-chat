@@ -15,7 +15,7 @@ CHAT_EXT = "chat"
 CHAT_NAME_PATTERN = re.compile(rf"^(\d{{{NUMBER_OF_DIGITS}}})\.{CHAT_EXT}$")
 
 
-class Repository:
+class ChatRepository:
     def __init__(self) -> None:
         self.__data_dir = Path(__file__).parent.parent.parent / "data"
         self._chats_dir = self.__data_dir / "chats"

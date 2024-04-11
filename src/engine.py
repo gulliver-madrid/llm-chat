@@ -12,7 +12,7 @@ from src.controllers.command_interpreter import (
     CommandNoValid,
 )
 from src.controllers.select_model import SelectModelController
-from src.infrastructure.repository import Repository
+from src.infrastructure.repository import ChatRepository
 from src.io_helpers import (
     ensure_escaped,
     get_input,
@@ -53,7 +53,7 @@ class MainEngine:
     def __init__(self, models: Sequence[Model], client_wrapper: ClientWrapper) -> None:
         self._models = models
         self._select_model_controler = SelectModelController(models)
-        self._repository = Repository()
+        self._repository = ChatRepository()
         self._client_wrapper = client_wrapper
         self._view = View()
         self._prev_messages: list[CompleteMessage] | None = None
@@ -140,9 +140,9 @@ class MainEngine:
             return
         if new_conversation:
             self._prev_messages = None
-        self.answer_queries(queries, debug)
+        self._answer_queries(queries, debug)
 
-    def answer_queries(self, queries: Sequence[str], debug: bool = False) -> None:
+    def _answer_queries(self, queries: Sequence[str], debug: bool = False) -> None:
         number_of_queries = len(queries)
         messages = None
         for i, query in enumerate(queries):
