@@ -35,18 +35,15 @@ def test_load_conversation_from_text_2() -> None:
     assert conversation == expected
 
 
-def test_load_messages_from_text_1() -> None:
-    result = convert_conversation_into_messages(
-        TEXT_1, preserve_model=True, check_model_exists=False
-    )
-    assert result == COMPLETE_MESSAGES_1
-
-
-def test_load_messages_from_text_2() -> None:
-    result = convert_conversation_into_messages(
-        TEXT_2, preserve_model=True, check_model_exists=False
-    )
-    assert result == COMPLETE_MESSAGES_2
+def test_load_messages_from_text() -> None:
+    for text, messages in [
+        (TEXT_1, COMPLETE_MESSAGES_1),
+        (TEXT_2, COMPLETE_MESSAGES_2),
+    ]:
+        result = convert_conversation_into_messages(
+            text, preserve_model=True, check_model_exists=False
+        )
+        assert result == messages
 
 
 def test_is_tag() -> None:
