@@ -20,6 +20,12 @@ from src.models.shared import (
 from src.view import View
 
 
+def setup_engine(
+    models: Sequence[Model], client_wrapper: ClientWrapper
+) -> "MainEngine":
+    return MainEngine(models, client_wrapper)
+
+
 class MainEngine:
 
     def __init__(self, models: Sequence[Model], client_wrapper: ClientWrapper) -> None:

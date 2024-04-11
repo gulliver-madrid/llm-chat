@@ -4,7 +4,7 @@ import os
 from typing import Sequence
 
 from src.command_handler import ExitException
-from src.engine import MainEngine
+from src.engine import setup_engine
 from src.controllers.select_model import SelectModelController
 from src.generic_view import Raw
 from src.infrastructure.client_wrapper import ClientWrapper
@@ -29,7 +29,7 @@ class Main:
         load_dotenv()
         mistral_api_key = os.environ.get("MISTRAL_API_KEY")
         openai_api_key = os.environ.get("OPENAI_API_KEY")
-        self._engine = MainEngine(
+        self._engine = setup_engine(
             models,
             ClientWrapper(
                 mistral_api_key=mistral_api_key, openai_api_key=openai_api_key
