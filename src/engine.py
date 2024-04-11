@@ -94,9 +94,7 @@ class MainEngine:
             case ActionType.CONTINUE_CONVERSATION:
                 pass
             case ActionType.SHOW_MODEL:
-                self._view.display_neutral_msg(
-                    Raw(f"El modelo actual es {self._model.model_name}")
-                )
+                self._show_model()
                 return
             case ActionType.SYSTEM_PROMPT:
                 system_prompt = True
@@ -132,22 +130,29 @@ class MainEngine:
             self._prev_messages = None
         self._answer_queries(queries, debug)
 
+    def _show_model(self) -> None:
+        self._view.display_neutral_msg(
+            Raw(f"El modelo actual es {self._model.model_name}")
+        )
+
     def _answer_queries(self, queries: Sequence[str], debug: bool = False) -> None:
-        number_of_queries = len(queries)
+        """If there are multiple queries, the conversation ends after executing them."""
         messages = None
         for i, query in enumerate(queries):
-            self._view.display_processing_query_text(
-                current=i + 1, total=number_of_queries
-            )
+            messages = self._answer_query(debug, i + 1, len(queries), query)
+        self._prev_messages = messages
 
-            query_result = self._get_simple_response_from_model(query, debug)
-            print_interaction(
-                self._model.model_name, Raw(query), Raw(query_result.content)
-            )
-            self._repository.save(query_result.messages)
-            if i == 0:
-                messages = query_result.messages
-        self._prev_messages = None if len(queries) > 1 else messages
+    def _answer_query(
+        self, debug: bool, current: int, total: int, query: str
+    ) -> list[CompleteMessage] | None:
+        self._view.display_processing_query_text(current=current, total=total)
+        query_result = self._get_simple_response_from_model(query, debug)
+        self._print_interaction(query, query_result)
+        self._repository.save(query_result.messages)
+        return query_result.messages if current == 1 else None
+
+    def _print_interaction(self, query: str, query_result: QueryResult) -> None:
+        print_interaction(self._model.model_name, Raw(query), Raw(query_result.content))
 
     def _load_conversation(
         self, action: Action, conversation_id: ConversationId
