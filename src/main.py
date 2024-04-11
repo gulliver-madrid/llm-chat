@@ -3,7 +3,8 @@ from dotenv import load_dotenv
 import os
 from typing import Sequence
 
-from src.engine import ExitException, MainEngine
+from src.command_handler import ExitException
+from src.engine import MainEngine
 from src.controllers.select_model import SelectModelController
 from src.generic_view import Raw
 from src.infrastructure.client_wrapper import ClientWrapper
@@ -38,7 +39,7 @@ class Main:
     def execute(self) -> None:
         """Runs the text interface to Mistral models"""
 
-        self._engine.prompt_to_select_model()
+        self._engine.initiate()
 
         while True:
             raw_query = get_input(PROGRAM_PROMPT)
