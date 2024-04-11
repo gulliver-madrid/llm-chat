@@ -10,6 +10,9 @@ Placeholder = NewType("Placeholder", str)
 # Data structure mapping placeholders to their replacements
 Substitutions = Mapping[Placeholder, str]
 
+# Final text of the query (any placeholder should have been replaced)
+QueryText = NewType("QueryText", str)
+
 FOR_COMMAND_PREFFIX = "/for"
 
 
@@ -23,7 +26,7 @@ class MultipleForNotSupported(QueryBuildException):
         )
 
 
-def build_queries(raw_query: str, substitutions: Substitutions) -> list[str]:
+def build_queries(raw_query: str, substitutions: Substitutions) -> list[QueryText]:
     """
     Constructs a list of queries by replacing placeholders in the raw query with user-provided substitutions.
     If a 'for' command is detected, it generates multiple queries by iterating over the specified range.
@@ -77,7 +80,7 @@ class OneForReplacer:
         self._substitutions: Final = substitutions
         self._placeholder_with_for: Final = placeholder_with_for
 
-    def replace_placeholders_with_one_for(self, query: str) -> list[str]:
+    def replace_placeholders_with_one_for(self, query: str) -> list[QueryText]:
         """
         Replace placeholders when there is only one for-style replacement.
 
@@ -114,7 +117,7 @@ class OneForReplacer:
         return raw_string.removeprefix(command).strip()
 
 
-def _replace_single_placeholders(query: str, substitutions: Substitutions) -> str:
+def _replace_single_placeholders(query: str, substitutions: Substitutions) -> QueryText:
     for placeholder, replacement in substitutions.items():
         query = query.replace(placeholder, replacement)
-    return query
+    return QueryText(query)
