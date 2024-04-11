@@ -1,5 +1,6 @@
 from src.models.parsed_line import ParsedLine, TagType
 from src.models.serialization import (
+    Conversation,
     convert_conversation_into_messages,
     convert_text_to_conversation_object,
     ConversationId,
@@ -17,16 +18,10 @@ def test_load_conversation_from_text_1() -> None:
         TEXT_1, preserve_model=True, check_model_exists=False
     )
     expected_messages = COMPLETE_MESSAGES_1
-    assert conversation.id == ConversationId("0001")
-    assert conversation.schema_version == "0.2"
-    assert conversation.number_of_messages == 4
-    assert conversation.current_time == "2024-03-16 14:50:15"
-    for complete_msg, expected_complete_msg in zip(
-        conversation.messages, expected_messages
-    ):
-        assert complete_msg.model == expected_complete_msg.model
-        assert complete_msg.chat_msg.role == expected_complete_msg.chat_msg.role
-        assert complete_msg.chat_msg.content == expected_complete_msg.chat_msg.content
+    expected = Conversation(
+        ConversationId("0001"), "0.2", 4, "2024-03-16 14:50:15", expected_messages
+    )
+    assert conversation == expected
 
 
 def test_load_conversation_from_text_2() -> None:
@@ -34,23 +29,16 @@ def test_load_conversation_from_text_2() -> None:
         TEXT_2, preserve_model=True, check_model_exists=False
     )
     expected_messages = COMPLETE_MESSAGES_2
-    assert conversation.id == ConversationId("0002")
-    assert conversation.schema_version == "0.2"
-    assert conversation.number_of_messages == 2
-    assert conversation.current_time == "2023-05-20 13:00:02"
-    for complete_msg, expected_complete_msg in zip(
-        conversation.messages, expected_messages
-    ):
-        assert complete_msg.model == expected_complete_msg.model
-        assert complete_msg.chat_msg.role == expected_complete_msg.chat_msg.role
-        assert complete_msg.chat_msg.content == expected_complete_msg.chat_msg.content
+    expected = Conversation(
+        ConversationId("0002"), "0.2", 2, "2023-05-20 13:00:02", expected_messages
+    )
+    assert conversation == expected
 
 
 def test_load_messages_from_text() -> None:
+    expected_chat_messages = extract_chat_messages(COMPLETE_MESSAGES_1)
     result = convert_conversation_into_messages(TEXT_1)
-    for complete_msg, expected_chat_msg in zip(
-        result, extract_chat_messages(COMPLETE_MESSAGES_1)
-    ):
+    for complete_msg, expected_chat_msg in zip(result, expected_chat_messages):
         assert complete_msg.chat_msg.role == expected_chat_msg.role
         assert complete_msg.chat_msg.content == expected_chat_msg.content
 
