@@ -5,7 +5,7 @@ from src.models.serialization import (
     convert_text_to_conversation_object,
     ConversationId,
 )
-from src.models.shared import ChatMessage, extract_chat_messages
+from src.models.shared import ChatMessage
 from tests.objects import COMPLETE_MESSAGES_1, COMPLETE_MESSAGES_2, TEXT_1, TEXT_2
 
 
@@ -35,12 +35,18 @@ def test_load_conversation_from_text_2() -> None:
     assert conversation == expected
 
 
-def test_load_messages_from_text() -> None:
-    expected_chat_messages = extract_chat_messages(COMPLETE_MESSAGES_1)
-    result = convert_conversation_into_messages(TEXT_1)
-    for complete_msg, expected_chat_msg in zip(result, expected_chat_messages):
-        assert complete_msg.chat_msg.role == expected_chat_msg.role
-        assert complete_msg.chat_msg.content == expected_chat_msg.content
+def test_load_messages_from_text_1() -> None:
+    result = convert_conversation_into_messages(
+        TEXT_1, preserve_model=True, check_model_exists=False
+    )
+    assert result == COMPLETE_MESSAGES_1
+
+
+def test_load_messages_from_text_2() -> None:
+    result = convert_conversation_into_messages(
+        TEXT_2, preserve_model=True, check_model_exists=False
+    )
+    assert result == COMPLETE_MESSAGES_2
 
 
 def test_is_tag() -> None:
