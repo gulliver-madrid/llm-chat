@@ -164,8 +164,18 @@ class MainEngine:
         self, action: Action, conversation_id: ConversationId
     ) -> None:
         """Load a conversation based in its id"""
-        conversation = self._repository.load_conversation(conversation_id)
+        conversation = self._repository.load_conversation_as_text(conversation_id)
         self._prev_messages = convert_conversation_text_into_messages(conversation)
+        self._display_loaded_conversation(action, conversation_id, conversation)
+        self._view.display_neutral_msg(Raw("La conversación ha sido cargada"))
+
+    def _display_loaded_conversation(
+        self,
+        action: Action,
+        conversation_id: ConversationId,
+        conversation: str,
+    ) -> None:
+        assert self._prev_messages
         match action.type:
             case ActionType.LOAD_CONVERSATION:
                 self._view.display_conversation(conversation_id, conversation)
@@ -176,7 +186,6 @@ class MainEngine:
                 )
             case _:
                 raise ValueError(action.type)
-        self._view.display_neutral_msg(Raw("La conversación ha sido cargada"))
 
     def _get_simple_response_from_model(
         self, query: QueryText, debug: bool = False
