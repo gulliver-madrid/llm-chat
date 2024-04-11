@@ -41,7 +41,7 @@ class ChatRepository:
         )
         self._save_conversation(conversation_id, conversation)
 
-    def load_conversation(self, conversation_id: ConversationId) -> str:
+    def load_conversation_as_text(self, conversation_id: ConversationId) -> str:
         filepath = self._build_conversation_filepath(conversation_id)
         return self._read_file(filepath)
 

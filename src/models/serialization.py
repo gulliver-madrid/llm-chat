@@ -41,7 +41,7 @@ class ConversationBuilder:
         return "\n".join(self._texts)
 
 
-def convert_conversation_into_messages(
+def convert_conversation_text_into_messages(
     text: str, *, preserve_model: bool = False, check_model_exists: bool = True
 ) -> list[CompleteMessage]:
     lines = text.split("\n")
@@ -157,7 +157,7 @@ def convert_text_to_conversation_object(
         SCHEMA_VERSION,
         number_of_messages,
         current_time,
-        convert_conversation_into_messages(
+        convert_conversation_text_into_messages(
             text, preserve_model=preserve_model, check_model_exists=check_model_exists
         ),
     )
