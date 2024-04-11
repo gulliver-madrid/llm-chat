@@ -25,6 +25,7 @@ from src.models.placeholders import (
     find_unique_placeholders,
 )
 from src.models.serialization import (
+    ConversationId,
     cast_string_to_conversation_id,
     convert_conversation_into_messages,
 )
@@ -81,46 +82,30 @@ class MainEngine:
                 get_input(PRESS_ENTER_TO_CONTINUE)
                 return
             case ActionType.CHANGE_MODEL:
-                self.select_model()
+                self.prompt_to_select_model()
                 return
             case ActionType.DEBUG:
                 debug = True
             case ActionType.LOAD_CONVERSATION | ActionType.LOAD_MESSAGES:
-                conversation_to_load = rest_query
+                conversation_to_load = cast_string_to_conversation_id(rest_query)
             case ActionType.NEW_CONVERSATION:
                 new_conversation = True
             case ActionType.CONTINUE_CONVERSATION:
                 pass
             case ActionType.SHOW_MODEL:
-                self._view.display_neutral_msg(
-                    Raw(f"El modelo actual es {self._model.model_name}")
-                )
+                self._show_model()
                 return
             case ActionType.SYSTEM_PROMPT:
                 system_prompt = True
 
         if system_prompt:
+            # sets the system prompt
             self._prev_messages = [define_system_prompt(rest_query)]
             self._view.write_object("System prompt established")
             return
 
         if conversation_to_load:
-            assert action
-            conversation_id = cast_string_to_conversation_id(conversation_to_load)
-            del conversation_to_load
-            conversation = self._repository.load_conversation(conversation_id)
-            self._prev_messages = convert_conversation_into_messages(conversation)
-            match action.type:
-                case ActionType.LOAD_CONVERSATION:
-                    self._view.display_conversation(conversation_id, conversation)
-                case ActionType.LOAD_MESSAGES:
-                    self._view.display_messages(
-                        conversation_id,
-                        extract_chat_messages(self._prev_messages),
-                    )
-                case _:
-                    raise ValueError(action.type)
-            self._view.display_neutral_msg(Raw("La conversación ha sido cargada"))
+            self._load_conversation(action, conversation_to_load)
             return
 
         if not rest_query:
@@ -138,26 +123,55 @@ class MainEngine:
         number_of_queries = len(queries)
         if self._cancel_for_being_too_many_queries(number_of_queries):
             return
+
         if new_conversation:
             self._prev_messages = None
-        self.answer_queries(queries, debug)
+        self._answer_queries(queries, debug)
 
-    def answer_queries(self, queries: Sequence[str], debug: bool = False) -> None:
-        number_of_queries = len(queries)
+    def prompt_to_select_model(self) -> None:
+        self._model = self._select_model_controler.select_model()
+
+    def _show_model(self) -> None:
+        self._view.display_neutral_msg(
+            Raw(f"El modelo actual es {self._model.model_name}")
+        )
+
+    def _answer_queries(self, queries: Sequence[str], debug: bool = False) -> None:
+        """If there are multiple queries, the conversation ends after executing them."""
         messages = None
         for i, query in enumerate(queries):
-            self._view.display_processing_query_text(
-                current=i + 1, total=number_of_queries
-            )
+            messages = self._answer_query(debug, i + 1, len(queries), query)
+        self._prev_messages = messages
 
-            query_result = self._get_simple_response_from_model(query, debug)
-            print_interaction(
-                self._model.model_name, Raw(query), Raw(query_result.content)
-            )
-            self._repository.save(query_result.messages)
-            if i == 0:
-                messages = query_result.messages
-        self._prev_messages = None if len(queries) > 1 else messages
+    def _answer_query(
+        self, debug: bool, current: int, total: int, query: str
+    ) -> list[CompleteMessage] | None:
+        self._view.display_processing_query_text(current=current, total=total)
+        query_result = self._get_simple_response_from_model(query, debug)
+        self._print_interaction(query, query_result)
+        self._repository.save(query_result.messages)
+        return query_result.messages if current == 1 else None
+
+    def _print_interaction(self, query: str, query_result: QueryResult) -> None:
+        print_interaction(self._model.model_name, Raw(query), Raw(query_result.content))
+
+    def _load_conversation(
+        self, action: Action, conversation_id: ConversationId
+    ) -> None:
+        """Load a conversation based in its id"""
+        conversation = self._repository.load_conversation(conversation_id)
+        self._prev_messages = convert_conversation_into_messages(conversation)
+        match action.type:
+            case ActionType.LOAD_CONVERSATION:
+                self._view.display_conversation(conversation_id, conversation)
+            case ActionType.LOAD_MESSAGES:
+                self._view.display_messages(
+                    conversation_id,
+                    extract_chat_messages(self._prev_messages),
+                )
+            case _:
+                raise ValueError(action.type)
+        self._view.display_neutral_msg(Raw("La conversación ha sido cargada"))
 
     def _get_simple_response_from_model(
         self, query: str, debug: bool = False
@@ -187,6 +201,3 @@ class MainEngine:
         else:
             self._view.write_object("Placeholders sustituidos exitosamente")
             return queries
-
-    def select_model(self) -> None:
-        self._model = self._select_model_controler.select_model()
