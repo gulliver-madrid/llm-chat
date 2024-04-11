@@ -38,7 +38,7 @@ class Main:
     def execute(self) -> None:
         """Runs the text interface to Mistral models"""
 
-        self._engine.select_model()
+        self._engine.prompt_to_select_model()
 
         while True:
             raw_query = get_input(PROGRAM_PROMPT)

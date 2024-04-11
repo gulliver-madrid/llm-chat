@@ -83,7 +83,7 @@ class MainEngine:
                 get_input(PRESS_ENTER_TO_CONTINUE)
                 return
             case ActionType.CHANGE_MODEL:
-                self.select_model()
+                self.prompt_to_select_model()
                 return
             case ActionType.DEBUG:
                 debug = True
@@ -129,6 +129,9 @@ class MainEngine:
         if new_conversation:
             self._prev_messages = None
         self._answer_queries(queries, debug)
+
+    def prompt_to_select_model(self) -> None:
+        self._model = self._select_model_controler.select_model()
 
     def _show_model(self) -> None:
         self._view.display_neutral_msg(
@@ -200,6 +203,3 @@ class MainEngine:
         else:
             self._view.write_object("Placeholders sustituidos exitosamente")
             return queries
-
-    def select_model(self) -> None:
-        self._model = self._select_model_controler.select_model()
