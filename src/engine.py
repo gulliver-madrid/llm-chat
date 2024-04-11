@@ -28,7 +28,7 @@ from src.models.placeholders import (
 from src.models.serialization import (
     ConversationId,
     cast_string_to_conversation_id,
-    convert_conversation_into_messages,
+    convert_conversation_text_into_messages,
 )
 from src.models.shared import (
     CompleteMessage,
@@ -126,7 +126,7 @@ class MainEngine:
 
         # cancela si hay demasiadas queries
         number_of_queries = len(queries)
-        if self._cancel_for_being_too_many_queries(number_of_queries):
+        if self._should_cancel_for_being_too_many_queries(number_of_queries):
             return
 
         if new_conversation:
@@ -166,8 +166,18 @@ class MainEngine:
         self, action: Action, conversation_id: ConversationId
     ) -> None:
         """Load a conversation based in its id"""
-        conversation = self._repository.load_conversation(conversation_id)
-        self._prev_messages = convert_conversation_into_messages(conversation)
+        conversation = self._repository.load_conversation_as_text(conversation_id)
+        self._prev_messages = convert_conversation_text_into_messages(conversation)
+        self._display_loaded_conversation(action, conversation_id, conversation)
+        self._view.display_neutral_msg(Raw("La conversación ha sido cargada"))
+
+    def _display_loaded_conversation(
+        self,
+        action: Action,
+        conversation_id: ConversationId,
+        conversation: str,
+    ) -> None:
+        assert self._prev_messages
         match action.type:
             case ActionType.LOAD_CONVERSATION:
                 self._view.display_conversation(conversation_id, conversation)
@@ -178,7 +188,6 @@ class MainEngine:
                 )
             case _:
                 raise ValueError(action.type)
-        self._view.display_neutral_msg(Raw("La conversación ha sido cargada"))
 
     def _get_simple_response_from_model(
         self, query: QueryText, debug: bool = False
@@ -187,7 +196,7 @@ class MainEngine:
             self._model, query, self._prev_messages, debug=debug
         )
 
-    def _cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
+    def _should_cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
         return (
             number_of_queries > QUERY_NUMBER_LIMIT_WARNING
             and not self._view.confirm_launching_many_queries(number_of_queries)
