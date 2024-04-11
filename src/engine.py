@@ -73,6 +73,7 @@ class MainEngine:
         system_prompt = False
         conversation_to_load = None
 
+        # evalua la accion
         match action.type:
             case ActionType.EXIT:
                 raise ExitException()
@@ -100,11 +101,13 @@ class MainEngine:
                 system_prompt = True
 
         if system_prompt:
+            # establece el system prompt
             self._prev_messages = [define_system_prompt(rest_query)]
             self._view.write_object("System prompt established")
             return
 
         if conversation_to_load:
+            # carga la conversacion
             assert action
             conversation_id = cast_string_to_conversation_id(conversation_to_load)
             del conversation_to_load
@@ -135,9 +138,11 @@ class MainEngine:
         if queries is None:
             return
 
+        # cancela si hay demasiadas queries
         number_of_queries = len(queries)
         if self._cancel_for_being_too_many_queries(number_of_queries):
             return
+
         if new_conversation:
             self._prev_messages = None
         self._answer_queries(queries, debug)
