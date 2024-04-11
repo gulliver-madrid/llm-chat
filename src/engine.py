@@ -214,6 +214,6 @@ class MainEngine:
         except QueryBuildException as err:
             show_error_msg(ensure_escaped(Raw(str(err))))
             return None
-        else:
-            self._view.write_object("Placeholders sustituidos exitosamente")
-            return queries
+
+        self._view.write_object("Placeholders sustituidos exitosamente")
+        return queries
