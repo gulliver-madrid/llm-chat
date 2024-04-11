@@ -21,6 +21,7 @@ from src.io_helpers import (
 from src.models.placeholders import (
     Placeholder,
     QueryBuildException,
+    QueryText,
     build_queries,
     find_unique_placeholders,
 )
@@ -138,7 +139,9 @@ class MainEngine:
             Raw(f"El modelo actual es {self._model.model_name}")
         )
 
-    def _answer_queries(self, queries: Sequence[str], debug: bool = False) -> None:
+    def _answer_queries(
+        self, queries: Sequence[QueryText], debug: bool = False
+    ) -> None:
         """If there are multiple queries, the conversation ends after executing them."""
         messages = None
         for i, query in enumerate(queries):
@@ -146,7 +149,7 @@ class MainEngine:
         self._prev_messages = messages
 
     def _answer_query(
-        self, debug: bool, current: int, total: int, query: str
+        self, debug: bool, current: int, total: int, query: QueryText
     ) -> list[CompleteMessage] | None:
         self._view.display_processing_query_text(current=current, total=total)
         query_result = self._get_simple_response_from_model(query, debug)
@@ -154,7 +157,7 @@ class MainEngine:
         self._repository.save(query_result.messages)
         return query_result.messages if current == 1 else None
 
-    def _print_interaction(self, query: str, query_result: QueryResult) -> None:
+    def _print_interaction(self, query: QueryText, query_result: QueryResult) -> None:
         print_interaction(self._model.model_name, Raw(query), Raw(query_result.content))
 
     def _load_conversation(
@@ -176,7 +179,7 @@ class MainEngine:
         self._view.display_neutral_msg(Raw("La conversación ha sido cargada"))
 
     def _get_simple_response_from_model(
-        self, query: str, debug: bool = False
+        self, query: QueryText, debug: bool = False
     ) -> QueryResult:
         return self._client_wrapper.get_simple_response_to_query(
             self._model, query, self._prev_messages, debug=debug
@@ -190,9 +193,9 @@ class MainEngine:
 
     def _define_final_queries(
         self, rest_query: str, placeholders: list[Placeholder]
-    ) -> list[str] | None:
+    ) -> list[QueryText] | None:
         if not placeholders:
-            return [rest_query]
+            return [QueryText(rest_query)]
 
         user_substitutions = self._view.get_raw_substitutions_from_user(placeholders)
         try:
