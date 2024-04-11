@@ -23,25 +23,37 @@ from src.view import View
 def setup_engine(
     models: Sequence[Model], client_wrapper: ClientWrapper
 ) -> "MainEngine":
-    return MainEngine(models, client_wrapper)
+    select_model_controler = SelectModelController(models)
+    chat_repository = ChatRepository()
+    view = View()
+    command_interpreter = CommandInterpreter()
+    command_handler = CommandHandler(
+        view,
+        select_model_controler,
+        chat_repository,
+        client_wrapper,
+    )
+    return MainEngine(
+        models,
+        command_interpreter,
+        command_handler,
+        select_model_controler,
+    )
 
 
 class MainEngine:
 
-    def __init__(self, models: Sequence[Model], client_wrapper: ClientWrapper) -> None:
+    def __init__(
+        self,
+        models: Sequence[Model],
+        command_interpreter: CommandInterpreter,
+        command_handler: CommandHandler,
+        select_model_controler: SelectModelController,
+    ) -> None:
         self._models = models
-        select_model_controler = SelectModelController(models)
-        repository = ChatRepository()
-        client_wrapper = client_wrapper
-        view = View()
-
-        self._command_interpreter = CommandInterpreter()
-        self._command_handler = CommandHandler(
-            view,
-            select_model_controler,
-            repository,
-            client_wrapper,
-        )
+        select_model_controler = select_model_controler
+        self._command_interpreter = command_interpreter
+        self._command_handler = command_handler
 
     def initiate(self) -> None:
         self._command_handler.prompt_to_select_model()
