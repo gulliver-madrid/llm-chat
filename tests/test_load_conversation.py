@@ -13,26 +13,28 @@ def create_chat_msg(role: str, content: str) -> ChatMessage:
     return ChatMessage(role=role, content=content)
 
 
-def test_load_conversation_from_text_1() -> None:
-    conversation = convert_text_to_conversation_object(
-        TEXT_1, preserve_model=True, check_model_exists=False
-    )
-    expected_messages = COMPLETE_MESSAGES_1
-    expected = Conversation(
-        ConversationId("0001"), "0.2", 4, "2024-03-16 14:50:15", expected_messages
-    )
-    assert conversation == expected
+CASES = [
+    (
+        TEXT_1,
+        Conversation(
+            ConversationId("0001"), "0.2", 4, "2024-03-16 14:50:15", COMPLETE_MESSAGES_1
+        ),
+    ),
+    (
+        TEXT_2,
+        Conversation(
+            ConversationId("0002"), "0.2", 2, "2023-05-20 13:00:02", COMPLETE_MESSAGES_2
+        ),
+    ),
+]
 
 
-def test_load_conversation_from_text_2() -> None:
-    conversation = convert_text_to_conversation_object(
-        TEXT_2, preserve_model=True, check_model_exists=False
-    )
-    expected_messages = COMPLETE_MESSAGES_2
-    expected = Conversation(
-        ConversationId("0002"), "0.2", 2, "2023-05-20 13:00:02", expected_messages
-    )
-    assert conversation == expected
+def test_load_conversation_from_text() -> None:
+    for text, expected_conversation in CASES:
+        conversation = convert_text_to_conversation_object(
+            text, preserve_model=True, check_model_exists=False
+        )
+        assert conversation == expected_conversation
 
 
 def test_load_messages_from_text() -> None:
