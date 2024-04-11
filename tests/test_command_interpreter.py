@@ -11,7 +11,7 @@ from src.controllers.command_interpreter import (
 class Case:
     raw_query: str
     expected_action_name: ActionType
-    expected_rest_query: str
+    expected_remaining_input: str
 
 
 def test_command_interpreter_valid_command() -> None:
@@ -33,10 +33,10 @@ def test_command_interpreter_valid_command() -> None:
             "Eres un asistente experto.",
         ),
     ]:
-        action, rest_query = command_interpreter.parse_user_input(case.raw_query)
+        action, remaining_input = command_interpreter.parse_user_input(case.raw_query)
         assert action
         assert action.type == case.expected_action_name
-        assert rest_query == case.expected_rest_query
+        assert remaining_input == case.expected_remaining_input
 
 
 def test_command_interpreter_wrong_command() -> None:
