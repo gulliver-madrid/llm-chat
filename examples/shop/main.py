@@ -18,7 +18,7 @@ from examples.shop.tools import ToolsManager, tools
 from examples.shop.types import is_object_mapping, is_object_sequence, is_str_sequence
 from src.generic_view import GenericView, Raw
 from src.infrastructure.client_wrapper import ClientWrapper, QueryResult
-from src.infrastructure.repository import Repository
+from src.infrastructure.repository import ChatRepository
 from src.io_helpers import display_neutral_msg, escape_for_rich, get_input
 from src.logging import configure_logger, format_var
 from src.models.shared import ChatMessage, CompleteMessage, Model, define_system_prompt
@@ -35,7 +35,7 @@ class Main:
         self._config_reader = ConfigReader()
         self._messages: Final[list[CompleteMessage]] = []
         self._model = self._get_model()
-        self._repository = Repository()
+        self._repository = ChatRepository()
         self._shop_repository = ShopRepository()
         self._tools_manager = ToolsManager(self._shop_repository)
         self._use_system = self._config_reader.read_use_system_config()
