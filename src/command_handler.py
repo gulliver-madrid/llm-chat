@@ -1,3 +1,4 @@
+from dataclasses import dataclass, field
 from typing import Final, Sequence
 
 from src.generic_view import Raw
@@ -44,6 +45,16 @@ PRESS_ENTER_TO_CONTINUE = Raw("Pulsa Enter para continuar")
 class ExitException(Exception): ...
 
 
+@dataclass
+class ModelWrapper:
+    """Mutable class to hold current model inside"""
+
+    model: Model | None = field(default=None)
+
+    def change(self, model: Model) -> None:
+        self.model = model
+
+
 class CommandHandler:
     def __init__(
         self,
@@ -55,7 +66,7 @@ class CommandHandler:
         prev_messages: list[CompleteMessage] | None = None,
     ):
         self._view = view
-        self._model: Model | None
+        self._model_wrapper: Final = ModelWrapper()
         self._select_model_controler = select_model_controler
         self._repository = repository
         self._client_wrapper = client_wrapper
@@ -121,12 +132,12 @@ class CommandHandler:
         self._answer_queries(queries, debug)
 
     def prompt_to_select_model(self) -> None:
-        self._model = self._select_model_controler.select_model()
+        self._model_wrapper.change(self._select_model_controler.select_model())
 
     def _show_model(self) -> None:
-        assert self._model
+        assert self._model_wrapper.model
         self._view.display_neutral_msg(
-            Raw(f"El modelo actual es {self._model.model_name}")
+            Raw(f"El modelo actual es {self._model_wrapper.model.model_name}")
         )
 
     def _answer_queries(
@@ -149,8 +160,10 @@ class CommandHandler:
         return query_result.messages if current == 1 else None
 
     def _print_interaction(self, query: QueryText, query_result: QueryResult) -> None:
-        assert self._model
-        print_interaction(self._model.model_name, Raw(query), Raw(query_result.content))
+        assert self._model_wrapper.model
+        print_interaction(
+            self._model_wrapper.model.model_name, Raw(query), Raw(query_result.content)
+        )
 
     def _load_conversation(
         self, action: Action, conversation_id: ConversationId
@@ -182,9 +195,9 @@ class CommandHandler:
     def _get_simple_response_from_model(
         self, query: QueryText, debug: bool = False
     ) -> QueryResult:
-        assert self._model
+        assert self._model_wrapper.model
         return self._client_wrapper.get_simple_response_to_query(
-            self._model, query, self._prev_messages, debug=debug
+            self._model_wrapper.model, query, self._prev_messages, debug=debug
         )
 
     def _should_cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
