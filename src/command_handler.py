@@ -31,10 +31,10 @@ from src.models.serialization import (
 from src.models.shared import (
     CompleteMessage,
     Model,
-    define_system_prompt,
     extract_chat_messages,
 )
 from src.settings import QUERY_NUMBER_LIMIT_WARNING
+from src.strategies import EstablishSystemPromptAction
 from src.view import View
 from src.views import print_interaction
 
@@ -66,7 +66,6 @@ class CommandHandler:
     def process_action(self, action: Action, remaining_input: str) -> None:
         debug = False
         new_conversation = False
-        system_prompt = False
         conversation_to_load = None
 
         # evalua la accion
@@ -92,14 +91,11 @@ class CommandHandler:
                 self._show_model()
                 return
             case ActionType.SYSTEM_PROMPT:
-                system_prompt = True
-
-        if system_prompt:
-            # establece el system prompt
-            # TODO: allow multiline
-            self._prev_messages[:] = [define_system_prompt(remaining_input)]
-            self._view.write_object("System prompt established")
-            return
+                action_strategy = EstablishSystemPromptAction(
+                    self._view, self._prev_messages, remaining_input
+                )
+                action_strategy.execute()
+                return
 
         if conversation_to_load:
             self._load_conversation(action, conversation_to_load)
