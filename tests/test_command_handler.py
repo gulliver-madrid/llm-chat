@@ -1,4 +1,6 @@
 from unittest.mock import Mock
+
+import pytest
 from src.command_handler import CommandHandler
 from src.controllers.command_interpreter import Action, ActionType
 from src.controllers.select_model import SelectModelController
@@ -34,8 +36,8 @@ class TestCommandHandler:
         assert self.prev_messages_stub[0].chat_msg.content == system_prompt
         self.mock_view.write_object.assert_called_once_with("System prompt established")
 
-    def test_show_model(self) -> None:
-        remaining = "some text"
+    def test_show_model_right(self) -> None:
+        remaining = ""
         model_name = ModelName("Model name test")
         self.mock_select_model_controler.select_model.return_value = Model(
             None, model_name
@@ -48,3 +50,16 @@ class TestCommandHandler:
         self.mock_view.display_neutral_msg.assert_called_once_with(
             Raw("El modelo actual es Model name test")
         )
+
+    def test_show_model_wrong(self) -> None:
+        remaining = "some text"
+        model_name = ModelName("Model name test")
+        self.mock_select_model_controler.select_model.return_value = Model(
+            None, model_name
+        )
+
+        self.command_handler.prompt_to_select_model()
+        with pytest.raises(ValueError):
+            self.command_handler.process_action(
+                Action(ActionType.SHOW_MODEL), remaining
+            )
