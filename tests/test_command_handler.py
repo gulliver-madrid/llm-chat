@@ -36,14 +36,22 @@ class TestCommandHandler:
         assert self.prev_messages_stub[0].chat_msg.content == system_prompt
         self.mock_view.write_object.assert_called_once_with("System prompt established")
 
-    def test_show_model_right(self) -> None:
-        remaining = ""
-        model_name = ModelName("Model name test")
-        self.mock_select_model_controler.select_model.return_value = Model(
-            None, model_name
-        )
 
+class TestCommandHandlerShowModel(TestCommandHandler):
+    def setup_method(self) -> None:
+        super().setup_method()
+        self.model_name = ModelName("Model name test")
+
+    def _select_model(self) -> None:
+        self.mock_select_model_controler.select_model.return_value = Model(
+            None, self.model_name
+        )
         self.command_handler.prompt_to_select_model()
+
+    def test_show_model_works_when_no_extra_prompt(self) -> None:
+        remaining = ""
+        self._select_model()
+
         self.command_handler.process_action(Action(ActionType.SHOW_MODEL), remaining)
 
         assert len(self.prev_messages_stub) == 0
@@ -51,14 +59,10 @@ class TestCommandHandler:
             Raw("El modelo actual es Model name test")
         )
 
-    def test_show_model_wrong(self) -> None:
+    def test_show_model_fails_when_there_is_extra_prompt(self) -> None:
         remaining = "some text"
-        model_name = ModelName("Model name test")
-        self.mock_select_model_controler.select_model.return_value = Model(
-            None, model_name
-        )
+        self._select_model()
 
-        self.command_handler.prompt_to_select_model()
         with pytest.raises(ValueError):
             self.command_handler.process_action(
                 Action(ActionType.SHOW_MODEL), remaining
