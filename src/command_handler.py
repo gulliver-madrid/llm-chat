@@ -1,4 +1,3 @@
-from dataclasses import dataclass, field
 from typing import Final, Sequence
 
 from src.generic_view import Raw
@@ -17,6 +16,7 @@ from src.io_helpers import (
     get_input,
     show_error_msg,
 )
+from src.models.model_wrapper import ModelWrapper
 from src.models.placeholders import (
     Placeholder,
     QueryBuildException,
@@ -31,11 +31,10 @@ from src.models.serialization import (
 )
 from src.models.shared import (
     CompleteMessage,
-    Model,
     extract_chat_messages,
 )
 from src.settings import QUERY_NUMBER_LIMIT_WARNING
-from src.strategies import EstablishSystemPromptAction
+from src.strategies import ActionStrategy, EstablishSystemPromptAction, ShowModelAction
 from src.view import View
 from src.views import print_interaction
 
@@ -43,16 +42,6 @@ PRESS_ENTER_TO_CONTINUE = Raw("Pulsa Enter para continuar")
 
 
 class ExitException(Exception): ...
-
-
-@dataclass
-class ModelWrapper:
-    """Mutable class to hold current model inside"""
-
-    model: Model | None = field(default=None)
-
-    def change(self, model: Model) -> None:
-        self.model = model
 
 
 class CommandHandler:
@@ -79,6 +68,8 @@ class CommandHandler:
         new_conversation = False
         conversation_to_load = None
 
+        action_strategy: ActionStrategy | None = None
+
         match action.type:
             case ActionType.EXIT:
                 raise ExitException()
@@ -98,14 +89,15 @@ class CommandHandler:
             case ActionType.CONTINUE_CONVERSATION:
                 pass
             case ActionType.SHOW_MODEL:
-                self._show_model()
-                return
+                action_strategy = ShowModelAction(self._view, self._model_wrapper)
             case ActionType.SYSTEM_PROMPT:
                 action_strategy = EstablishSystemPromptAction(
                     self._view, self._prev_messages
                 )
-                action_strategy.execute(remaining_input)
-                return
+
+        if action_strategy:
+            action_strategy.execute(remaining_input)
+            return
 
         if conversation_to_load:
             self._load_conversation(action, conversation_to_load)
@@ -133,12 +125,6 @@ class CommandHandler:
 
     def prompt_to_select_model(self) -> None:
         self._model_wrapper.change(self._select_model_controler.select_model())
-
-    def _show_model(self) -> None:
-        assert self._model_wrapper.model
-        self._view.display_neutral_msg(
-            Raw(f"El modelo actual es {self._model_wrapper.model.model_name}")
-        )
 
     def _answer_queries(
         self, queries: Sequence[QueryText], debug: bool = False
