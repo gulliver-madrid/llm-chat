@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Final, Sequence
 
 from src.generic_view import Raw
 from src.infrastructure.client_wrapper import (
@@ -57,7 +57,7 @@ class CommandHandler:
         self._select_model_controler = select_model_controler
         self._repository = repository
         self._client_wrapper = client_wrapper
-        self._prev_messages: list[CompleteMessage] | None = None
+        self._prev_messages: Final[list[CompleteMessage]] = []
 
     def process_action(self, action: Action, remaining_input: str) -> None:
         debug = False
@@ -92,7 +92,7 @@ class CommandHandler:
         if system_prompt:
             # sets the system prompt
             # TODO: allow multiline
-            self._prev_messages = [define_system_prompt(remaining_input)]
+            self._prev_messages[:] = [define_system_prompt(remaining_input)]
             self._view.write_object("System prompt established")
             return
 
@@ -117,7 +117,7 @@ class CommandHandler:
             return
 
         if new_conversation:
-            self._prev_messages = None
+            self._prev_messages.clear()
         self._answer_queries(queries, debug)
 
     def prompt_to_select_model(self) -> None:
@@ -133,10 +133,11 @@ class CommandHandler:
         self, queries: Sequence[QueryText], debug: bool = False
     ) -> None:
         """If there are multiple queries, the conversation ends after executing them."""
+        assert queries
         messages = None
         for i, query in enumerate(queries):
             messages = self._answer_query(debug, i + 1, len(queries), query)
-        self._prev_messages = messages
+        self._prev_messages[:] = messages or []
 
     def _answer_query(
         self, debug: bool, current: int, total: int, query: QueryText
@@ -156,7 +157,7 @@ class CommandHandler:
     ) -> None:
         """Load a conversation based in its id"""
         conversation = self._repository.load_conversation_as_text(conversation_id)
-        self._prev_messages = convert_conversation_text_into_messages(conversation)
+        self._prev_messages[:] = convert_conversation_text_into_messages(conversation)
         self._display_loaded_conversation(action, conversation_id, conversation)
         self._view.display_neutral_msg(Raw("La conversación ha sido cargada"))
 
