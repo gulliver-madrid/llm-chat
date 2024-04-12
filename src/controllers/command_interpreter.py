@@ -21,8 +21,8 @@ class Action:
 
 
 class CommandNoValid(Exception):
-    def __init__(self) -> None:
-        super().__init__("Comando no válido")
+    def __init__(self, wrong_command: str) -> None:
+        super().__init__(f"Comando no válido: {wrong_command}")
 
 
 class CommandInterpreter:
@@ -36,7 +36,7 @@ class CommandInterpreter:
         if not first.startswith("/"):
             return (Action(ActionType.CONTINUE_CONVERSATION), raw_query)
 
-        match first[1:]:
+        match command := first[1:]:
             case "q" | "quit" | "exit":
                 action = Action(ActionType.EXIT)
             case "h" | "help":
@@ -56,6 +56,6 @@ class CommandInterpreter:
             case "sys" | "system":
                 action = Action(ActionType.SYSTEM_PROMPT)
             case _:
-                raise CommandNoValid()
+                raise CommandNoValid(command)
         assert action
         return (action, " ".join(splitted[1:]))

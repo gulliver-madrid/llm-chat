@@ -1,12 +1,12 @@
+from typing import Mapping, Sequence
+
 from rich import print
 from rich.console import Console
 from rich.markdown import Markdown
 
-from typing import Mapping, Sequence
-
 from src.domain import ChatMessage
-from src.generic_view import Raw
-from src.io_helpers import display_neutral_msg, get_input
+from src.generic_view import EscapedStr, Raw
+from src.io_helpers import display_neutral_msg, get_input, show_error_msg
 from src.models.placeholders import Placeholder
 from src.models.serialization import ConversationId
 
@@ -92,6 +92,9 @@ class View:
     def display_processing_query_text(self, *, current: int, total: int) -> None:
         text = define_processing_query_text(current=current, total=total)
         self.write_object(text)
+
+    def show_error_msg(self, text: EscapedStr | Raw) -> None:
+        show_error_msg(text)
 
 
 def define_processing_query_text(*, current: int, total: int) -> str:

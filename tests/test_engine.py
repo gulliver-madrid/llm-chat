@@ -4,6 +4,8 @@ from src.command_handler import CommandHandler
 from src.controllers.command_interpreter import CommandInterpreter, CommandNoValid
 from src.controllers.select_model import SelectModelController
 from src.engine import MainEngine
+from src.generic_view import Raw
+from src.view import View
 
 
 class TestMainEngine:
@@ -13,12 +15,14 @@ class TestMainEngine:
         self.mock_command_handler = Mock(spec=CommandHandler)
         self.mock_command_interpreter = Mock(spec=CommandInterpreter)
         self.mock_select_model_controller = Mock(spec=SelectModelController)
+        self.mock_view = Mock(spec=View)
 
         self.engine = MainEngine(
             models=[],
             command_interpreter=self.mock_command_interpreter,
             command_handler=self.mock_command_handler,
             select_model_controler=self.mock_select_model_controller,
+            view=self.mock_view,
         )
 
     def test_initiate(self) -> None:
@@ -52,10 +56,15 @@ class TestMainEngine:
         """
         Checks that MainEngine.process_raw_query() properly handles a query that raises an exception.
         """
-        query = "bad query"
-        self.mock_command_interpreter.parse_user_input.side_effect = CommandNoValid()
+        query = "/bad query"
+        self.mock_command_interpreter.parse_user_input.side_effect = CommandNoValid(
+            "bad"
+        )
 
         self.engine.process_raw_query(query)
 
         self.mock_command_interpreter.parse_user_input.assert_called_once_with(query)
         self.mock_command_handler.process_action.assert_not_called()
+        self.mock_view.show_error_msg.assert_called_once_with(
+            Raw("Comando no válido: bad")
+        )
