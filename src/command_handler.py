@@ -91,9 +91,9 @@ class CommandHandler:
                 return
             case ActionType.SYSTEM_PROMPT:
                 action_strategy = EstablishSystemPromptAction(
-                    self._view, self._prev_messages, remaining_input
+                    self._view, self._prev_messages
                 )
-                action_strategy.execute()
+                action_strategy.execute(remaining_input)
                 return
 
         if conversation_to_load:

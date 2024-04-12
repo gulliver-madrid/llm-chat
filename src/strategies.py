@@ -6,19 +6,16 @@ from src.view import View
 
 class ActionStrategy(ABC):
     @abstractmethod
-    def execute(self) -> None:
+    def execute(self, remaining_input: str) -> None:
         pass
 
 
 class EstablishSystemPromptAction(ActionStrategy):
-    def __init__(
-        self, view: View, prev_messages: list[CompleteMessage], remaining_input: str
-    ):
+    def __init__(self, view: View, prev_messages: list[CompleteMessage]):
         self._view = view
         self._prev_messages = prev_messages
-        self._remaining_input = remaining_input
 
-    def execute(self) -> None:
+    def execute(self, remaining_input: str) -> None:
         # TODO: allow multiline
-        self._prev_messages[:] = [define_system_prompt(self._remaining_input)]
+        self._prev_messages[:] = [define_system_prompt(remaining_input)]
         self._view.write_object("System prompt established")
