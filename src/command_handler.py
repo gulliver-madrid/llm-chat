@@ -51,13 +51,17 @@ class CommandHandler:
         select_model_controler: SelectModelController,
         repository: ChatRepository,
         client_wrapper: ClientWrapper,
+        *,
+        prev_messages: list[CompleteMessage] | None = None,
     ):
         self._view = view
         self._model: Model | None
         self._select_model_controler = select_model_controler
         self._repository = repository
         self._client_wrapper = client_wrapper
-        self._prev_messages: Final[list[CompleteMessage]] = []
+        self._prev_messages: Final[list[CompleteMessage]] = (
+            prev_messages if prev_messages is not None else []
+        )
 
     def process_action(self, action: Action, remaining_input: str) -> None:
         debug = False
