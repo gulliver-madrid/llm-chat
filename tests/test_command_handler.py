@@ -11,7 +11,9 @@ from src.models.shared import CompleteMessage, Model, ModelName
 from src.view import View
 
 
-class TestCommandHandler:
+class TestCommandHandlerBase:
+    """This class should not be directly instantiated"""
+
     def setup_method(self) -> None:
         self.mock_view = Mock(spec=View)
         self.mock_select_model_controler = Mock(spec=SelectModelController)
@@ -26,6 +28,8 @@ class TestCommandHandler:
             prev_messages=self.prev_messages_stub,
         )
 
+
+class TestCommandHandlerMultipleActions(TestCommandHandlerBase):
     def test_process_system(self) -> None:
         system_prompt = "System prompt string"
         self.command_handler.process_action(
@@ -37,7 +41,7 @@ class TestCommandHandler:
         self.mock_view.write_object.assert_called_once_with("System prompt established")
 
 
-class TestCommandHandlerShowModel(TestCommandHandler):
+class TestCommandHandlerShowModel(TestCommandHandlerBase):
     def setup_method(self) -> None:
         super().setup_method()
         self.model_name = ModelName("Model name test")
