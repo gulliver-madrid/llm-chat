@@ -2,21 +2,14 @@ from typing import Sequence
 
 from src.command_handler import CommandHandler
 from src.generic_view import Raw
-from src.infrastructure.client_wrapper import (
-    ClientWrapper,
-)
+from src.infrastructure.client_wrapper import ClientWrapper
 from src.controllers.command_interpreter import (
     CommandInterpreter,
     CommandNoValid,
 )
 from src.controllers.select_model import SelectModelController
 from src.infrastructure.repository import ChatRepository
-from src.io_helpers import (
-    show_error_msg,
-)
-from src.models.shared import (
-    Model,
-)
+from src.models.shared import Model
 from src.view import View
 
 
@@ -34,10 +27,7 @@ def setup_engine(
         client_wrapper,
     )
     return MainEngine(
-        models,
-        command_interpreter,
-        command_handler,
-        select_model_controler,
+        models, command_interpreter, command_handler, select_model_controler, view
     )
 
 
@@ -49,11 +39,13 @@ class MainEngine:
         command_interpreter: CommandInterpreter,
         command_handler: CommandHandler,
         select_model_controler: SelectModelController,
+        view: View,
     ) -> None:
         self._models = models
         select_model_controler = select_model_controler
         self._command_interpreter = command_interpreter
         self._command_handler = command_handler
+        self._view = view
 
     def initiate(self) -> None:
         self._command_handler.prompt_to_select_model()
@@ -64,6 +56,6 @@ class MainEngine:
                 raw_query
             )
         except CommandNoValid as err:
-            show_error_msg(Raw(str(err)))
+            self._view.show_error_msg(Raw(str(err)))
             return
         self._command_handler.process_action(action, remaining_input)
