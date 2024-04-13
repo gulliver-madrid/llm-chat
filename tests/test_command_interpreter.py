@@ -32,6 +32,8 @@ def test_command_interpreter_valid_command() -> None:
             ActionType.SYSTEM_PROMPT,
             "Eres un asistente experto.",
         ),
+        Case("hola que tal", ActionType.CONTINUE_CONVERSATION, "hola que tal"),
+        Case("", ActionType.CONTINUE_CONVERSATION, ""),
     ]:
         action, remaining_input = command_interpreter.parse_user_input(case.raw_query)
         assert action
