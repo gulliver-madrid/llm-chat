@@ -39,26 +39,28 @@ command_map = {
     ActionType.SYSTEM_PROMPT: ("sys", "system"),
 }
 
+COMMAND_PREFIX = "/"
+
 
 class CommandInterpreter:
     def __init__(self) -> None:
         self._commands_to_actions: Final = self._build_commands_to_actions()
 
     def parse_user_input(self, raw_query: str) -> tuple[Action, str]:
-        splitted = raw_query.strip().split()
-        if not splitted:
-            return (Action(ActionType.CONTINUE_CONVERSATION), raw_query)
-        action = None
-        first = splitted[0]
-        if not first.startswith("/"):
+        if not raw_query.startswith(COMMAND_PREFIX):
             return (Action(ActionType.CONTINUE_CONVERSATION), raw_query)
 
-        command = first[1:]
+        splitted = raw_query.strip().split(maxsplit=1)
+        while len(splitted) < 2:
+            splitted.append("")
+        first, rest = splitted
+        command = first.removeprefix(COMMAND_PREFIX)
         action_type = self._commands_to_actions.get(command)
         if not action_type:
-            raise CommandNoValid(command)
+            raise CommandNoValid(COMMAND_PREFIX + command)
+
         action = Action(action_type)
-        return (action, " ".join(splitted[1:]))
+        return (action, rest)
 
     def _build_commands_to_actions(self) -> Mapping[str, ActionType]:
         commands_to_actions: dict[str, ActionType] = {}
