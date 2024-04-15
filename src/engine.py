@@ -1,13 +1,13 @@
 from typing import Sequence
 
 from src.command_handler import CommandHandler
-from src.generic_view import Raw
-from src.infrastructure.client_wrapper import ClientWrapper
 from src.controllers.command_interpreter import (
     CommandInterpreter,
     CommandNoValid,
 )
 from src.controllers.select_model import SelectModelController
+from src.generic_view import Raw
+from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.repository import ChatRepository
 from src.models.shared import Model
 from src.view import View
