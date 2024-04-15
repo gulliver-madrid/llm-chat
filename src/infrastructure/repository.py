@@ -51,7 +51,7 @@ class ChatRepository:
         self._save_conversation(conversation_id, conversation)
 
     def load_conversation_as_text(self, conversation_id: ConversationId) -> str:
-        filepath = self._build_conversation_filepath(conversation_id)
+        filepath = self._build_chat_path(conversation_id)
         return self._file_manager.read_file(filepath)
 
     def _get_new_conversation_id(self) -> ConversationId:
@@ -63,13 +63,8 @@ class ChatRepository:
     def _save_conversation(
         self, conversation_id: ConversationId, conversation_as_text: str
     ) -> None:
-        filepath = self._build_conversation_filepath(conversation_id)
+        filepath = self._build_chat_path(conversation_id)
         self._file_manager.write_file(filepath, conversation_as_text)
-
-    def _build_conversation_filepath(
-        self, conversation_id: ConversationId
-    ) -> PathWrapper:
-        return self._build_chat_path(conversation_id)
 
     def _build_chat_path(self, conversation_id: ConversationId) -> PathWrapper:
         return self._chats_dir / (conversation_id + "." + CHAT_EXT)
