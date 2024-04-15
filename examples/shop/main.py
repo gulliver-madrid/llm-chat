@@ -19,7 +19,7 @@ from examples.shop.types import is_object_mapping, is_object_sequence, is_str_se
 
 from src.domain import ChatMessage
 from src.generic_view import GenericView, Raw
-from src.infrastructure.client_wrapper import ClientWrapper, QueryResult
+from src.infrastructure.llm_connection import ClientWrapper, QueryResult
 from src.infrastructure.repository import ChatRepository
 from src.io_helpers import display_neutral_msg, escape_for_rich, get_input
 from src.logging import configure_logger, format_var
