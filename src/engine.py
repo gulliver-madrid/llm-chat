@@ -7,6 +7,7 @@ from src.controllers.command_interpreter import (
 )
 from src.controllers.select_model import SelectModelController
 from src.generic_view import Raw
+from src.infrastructure.ahora import TimeManager
 from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.repository import ChatRepository
 from src.models.shared import Model
@@ -21,10 +22,7 @@ def setup_engine(
     view = View()
     command_interpreter = CommandInterpreter()
     command_handler = CommandHandler(
-        view,
-        select_model_controler,
-        chat_repository,
-        client_wrapper,
+        view, select_model_controler, chat_repository, client_wrapper, TimeManager()
     )
     return MainEngine(
         models, command_interpreter, command_handler, select_model_controler, view
