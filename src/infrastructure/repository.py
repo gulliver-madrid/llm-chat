@@ -70,7 +70,8 @@ class ChatRepository:
         self._file_manager.write_file(filepath, conversation_as_text)
 
     def _build_chat_path(self, conversation_id: ConversationId) -> PathWrapper:
-        return self._chats_dir / (conversation_id + "." + CHAT_EXT)
+        filename = conversation_id + "." + CHAT_EXT
+        return self._chats_dir / filename
 
     def _is_chat_file(self, path_wrapper: PathWrapper) -> bool:
         assert self._file_manager.path_exists(path_wrapper)
