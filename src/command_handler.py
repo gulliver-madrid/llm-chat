@@ -144,7 +144,7 @@ class CommandHandler:
         self._view.display_processing_query_text(current=current, total=total)
         query_result = self._get_simple_response_from_model(query, debug)
         self._print_interaction(query, query_result)
-        self._repository.save(query_result.messages)
+        self._repository.save_messages(query_result.messages)
         return query_result.messages if current == 1 else None
 
     def _print_interaction(self, query: QueryText, query_result: QueryResult) -> None:
