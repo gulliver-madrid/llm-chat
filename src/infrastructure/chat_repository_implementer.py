@@ -1,4 +1,5 @@
 import re
+from typing import Iterable
 
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
@@ -66,16 +67,21 @@ class ChatRepositoryImplementer:
     def _find_max_file_number(self, directory_path: PathWrapper) -> int | None:
         assert self._file_manager.path_is_dir(directory_path)
 
-        max_number = -1
-        ignored_count = 0
-        for path_wrapper in self._file_manager.get_children(directory_path):
-            if not self._is_chat_file(path_wrapper):
-                ignored_count += 1
-                continue
-            number = int(path_wrapper.stem)
-            max_number = max(max_number, number)
+        children = self._file_manager.get_children(directory_path)
+        chat_files = self._get_chat_files(children)
+
+        ignored_count = len(children) - len(chat_files)
         if ignored_count > 0:
             print(f"Se ignoraron {ignored_count} rutas")
-        if max_number < 0:
-            return None
-        return max_number
+
+        return get_max_stem_value(chat_files)
+
+    def _get_chat_files(
+        self, path_wrappers: Iterable[PathWrapper]
+    ) -> list[PathWrapper]:
+        return [p for p in path_wrappers if not self._is_chat_file(p)]
+
+
+def get_max_stem_value(chat_files: Iterable[PathWrapper]) -> int | None:
+    values = (int(p.stem) for p in chat_files)
+    return max(values, default=None)
