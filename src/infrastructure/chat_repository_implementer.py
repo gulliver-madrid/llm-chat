@@ -9,7 +9,7 @@ from src.python_modules.FileSystemWrapper.safe_file_remover import SafeFileRemov
 from src.models.serialization import (
     NUMBER_OF_DIGITS,
     ConversationId,
-    cast_string_to_conversation_id,
+    convert_digits_to_conversation_id,
 )
 
 logger = configure_logger(__name__)
@@ -63,7 +63,7 @@ class ChatRepositoryImplementer:
         if new_number > WARNING_THRESHOLD:
             logger.warning("Warning: running short of chat id numbers")
         assert 0 <= new_number < TOO_MUCH_CHATS, new_number
-        return cast_string_to_conversation_id(str(new_number).zfill(NUMBER_OF_DIGITS))
+        return convert_digits_to_conversation_id(str(new_number))
 
     def _move_content(self, source: PathWrapper, dest: PathWrapper) -> None:
         content = self._file_manager.read_file(source)
