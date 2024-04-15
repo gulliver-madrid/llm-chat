@@ -40,8 +40,9 @@ class TestCommandHandlerMultipleActions(TestCommandHandlerBase):
             Action(ActionType.SYSTEM_PROMPT), system_prompt
         )
         assert len(self.prev_messages_stub) == 1
-        assert self.prev_messages_stub[0].chat_msg.role == "system"
-        assert self.prev_messages_stub[0].chat_msg.content == system_prompt
+        first_chat_msg = self.prev_messages_stub[0].chat_msg
+        assert first_chat_msg.role == "system"
+        assert first_chat_msg.content == system_prompt
         self.mock_view.write_object.assert_called_once_with("System prompt established")
 
 
