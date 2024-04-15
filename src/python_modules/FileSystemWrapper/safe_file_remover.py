@@ -3,6 +3,8 @@ from .path_wrapper import PathWrapper
 
 
 class SafeFileRemover:
+    """Only access to disk using FileManager"""
+
     def __init__(self, file_manager: FileManager) -> None:
         self._file_manager = file_manager
 
