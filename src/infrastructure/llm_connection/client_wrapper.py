@@ -2,14 +2,11 @@ from dataclasses import dataclass
 import time
 from typing import Any, Sequence
 
-
 from src.infrastructure.exceptions import (
     ClientNotDefined,
     TooManyRequests,
     LLMChatException,
 )
-from src.infrastructure.mistral_client_wrapper import MistralClientWrapper
-from src.infrastructure.openai_client_wrapper import OpenAIClientWrapper
 from src.logging import configure_logger
 from src.models.shared import (
     ChatMessage,
@@ -18,6 +15,8 @@ from src.models.shared import (
     Platform,
     extract_chat_messages,
 )
+from .mistral_client_wrapper import MistralClientWrapper
+from .openai_client_wrapper import OpenAIClientWrapper
 
 __all__ = ["QueryResult", "ClientWrapper"]
 

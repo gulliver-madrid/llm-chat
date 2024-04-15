@@ -4,10 +4,10 @@ import os
 from typing import Sequence
 
 from src.command_handler import ExitException
-from src.engine import setup_engine
 from src.controllers.select_model import SelectModelController
+from src.engine import setup_engine
 from src.generic_view import Raw
-from src.infrastructure.client_wrapper import ClientWrapper
+from src.infrastructure.llm_connection import ClientWrapper
 from src.io_helpers import (
     display_neutral_msg,
     get_input,
