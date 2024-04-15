@@ -33,10 +33,13 @@ class ChatRepository:
             new_path = self._build_chat_path(new_id)
             assert not new_path.exists(), new_path
             self._write_file(new_path, text)
-            tmp_delete_path_ = create_temporary_delete_path(path)
-            path.rename(tmp_delete_path_)
-            assert not path.exists()
-            tmp_delete_path_.unlink()
+            self._remove_using_tmp_file(path)
+
+    def _remove_using_tmp_file(self, path: Path) -> None:
+        tmp_delete_path_ = create_temporary_delete_path(path)
+        path.rename(tmp_delete_path_)
+        assert not path.exists()
+        tmp_delete_path_.unlink()
 
     def save(self, complete_messages: Sequence[CompleteMessage]) -> None:
         conversation_id = self._get_new_conversation_id()
