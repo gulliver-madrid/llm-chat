@@ -8,6 +8,7 @@ from src.controllers.select_model import SelectModelController
 from src.generic_view import Raw
 from src.infrastructure.ahora import TimeManager
 from src.infrastructure.llm_connection import ClientWrapper
+from src.infrastructure.llm_connection.client_wrapper import QueryResult
 from src.infrastructure.repository import ChatRepository
 from src.models.shared import CompleteMessage, Model, ModelName
 from src.view import View
@@ -21,14 +22,15 @@ class TestCommandHandlerBase:
         self.mock_select_model_controler = Mock(spec=SelectModelController)
         self.mock_repository = Mock(spec=ChatRepository)
         self.mock_time_manager = Mock(spec=TimeManager)
+        self.mock_time_manager.get_current_time.return_value = "2024-03-01 01:30:00"
         self.mock_client_wrapper = Mock(spec=ClientWrapper)
         self.prev_messages_stub: list[CompleteMessage] = []
         self.command_handler = CommandHandler(
-            self.mock_view,
-            self.mock_select_model_controler,
-            self.mock_repository,
-            self.mock_client_wrapper,
-            self.mock_time_manager,
+            view=self.mock_view,
+            select_model_controler=self.mock_select_model_controler,
+            repository=self.mock_repository,
+            time_manager=self.mock_time_manager,
+            client_wrapper=self.mock_client_wrapper,
             prev_messages=self.prev_messages_stub,
         )
 
@@ -76,3 +78,21 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
             self.command_handler.process_action(
                 Action(ActionType.SHOW_MODEL), remaining
             )
+
+    def test_chat_with_model(self) -> None:
+        model_response = "Fine, thanks!"
+        self.mock_view.input_extra_line.return_value = "end"
+        self.mock_client_wrapper.get_simple_response_to_query.return_value = (
+            QueryResult(model_response, [])
+        )
+
+        remaining = "hello, how are you?"
+        self._select_model()
+
+        self.command_handler.process_action(
+            Action(ActionType.CONTINUE_CONVERSATION), remaining
+        )
+        self.mock_view.print_interaction.assert_called()
+        calls = self.mock_view.print_interaction.mock_calls
+        assert len(calls) == 1
+        assert calls[0].args[3] == Raw(model_response)
