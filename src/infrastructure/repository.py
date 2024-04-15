@@ -4,7 +4,7 @@ from typing import Sequence
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
-from src.infrastructure.ahora import get_current_time
+from src.infrastructure.ahora import TimeManager
 from src.models.serialization import (
     ConversationId,
     create_conversation_texts,
@@ -18,9 +18,11 @@ class ChatRepository:
         self,
         *,
         file_manager: FileManager | None = None,
+        time_manager: TimeManager | None = None,
         chat_repository_implementer: "ChatRepositoryImplementer | None" = None,
     ) -> None:
         self._file_manager = file_manager or FileManager()
+        self._time_manager = time_manager or TimeManager()
         self._chat_repository_implementer = (
             chat_repository_implementer or ChatRepositoryImplementer()
         )
@@ -33,8 +35,9 @@ class ChatRepository:
 
     def save_messages(self, complete_messages: Sequence[CompleteMessage]) -> None:
         conversation_id = self._chat_repository_implementer.get_new_conversation_id()
+        current_time = self._time_manager.get_current_time()
         conversation = create_conversation_texts(
-            complete_messages, conversation_id, get_current_time()
+            complete_messages, conversation_id, current_time
         )
         self._save_conversation(conversation_id, conversation)
 

@@ -6,6 +6,7 @@ from src.command_handler import CommandHandler
 from src.controllers.command_interpreter import Action, ActionType
 from src.controllers.select_model import SelectModelController
 from src.generic_view import Raw
+from src.infrastructure.ahora import TimeManager
 from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.repository import ChatRepository
 from src.models.shared import CompleteMessage, Model, ModelName
@@ -19,6 +20,7 @@ class TestCommandHandlerBase:
         self.mock_view = Mock(spec=View)
         self.mock_select_model_controler = Mock(spec=SelectModelController)
         self.mock_repository = Mock(spec=ChatRepository)
+        self.mock_time_manager = Mock(spec=TimeManager)
         self.mock_client_wrapper = Mock(spec=ClientWrapper)
         self.prev_messages_stub: list[CompleteMessage] = []
         self.command_handler = CommandHandler(
@@ -26,6 +28,7 @@ class TestCommandHandlerBase:
             self.mock_select_model_controler,
             self.mock_repository,
             self.mock_client_wrapper,
+            self.mock_time_manager,
             prev_messages=self.prev_messages_stub,
         )
 
