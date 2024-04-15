@@ -20,8 +20,8 @@ CHAT_NAME_PATTERN = re.compile(rf"^(\d{{{NUMBER_OF_DIGITS}}})\.{CHAT_EXT}$")
 
 
 class ChatRepository:
-    def __init__(self) -> None:
-        self._file_manager = FileManager()
+    def __init__(self, file_manager: FileManager | None = None) -> None:
+        self._file_manager = file_manager or FileManager()
         self._file_remover = SafeFileRemover(self._file_manager)
         self.__data_dir = PathWrapper(Path(__file__).parent.parent.parent / "data")
         self._chats_dir = self.__data_dir / "chats"
