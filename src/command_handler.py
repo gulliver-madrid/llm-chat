@@ -6,6 +6,7 @@ from src.controllers.command_interpreter import (
 )
 from src.controllers.select_model import SelectModelController
 from src.generic_view import Raw
+from src.infrastructure.ahora import TimeManager
 from src.infrastructure.llm_connection import (
     ClientWrapper,
     QueryResult,
@@ -51,10 +52,12 @@ class CommandHandler:
         select_model_controler: SelectModelController,
         repository: ChatRepository,
         client_wrapper: ClientWrapper,
+        time_manager: TimeManager,
         *,
         prev_messages: list[CompleteMessage] | None = None,
     ):
         self._view = view
+        self._time_manager: Final = time_manager
         self._model_wrapper: Final = ModelWrapper()
         self._select_model_controler = select_model_controler
         self._repository = repository
@@ -150,7 +153,10 @@ class CommandHandler:
     def _print_interaction(self, query: QueryText, query_result: QueryResult) -> None:
         assert self._model_wrapper.model
         print_interaction(
-            self._model_wrapper.model.model_name, Raw(query), Raw(query_result.content)
+            self._time_manager,
+            self._model_wrapper.model.model_name,
+            Raw(query),
+            Raw(query_result.content),
         )
 
     def _load_conversation(
