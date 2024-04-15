@@ -2,9 +2,11 @@ from pathlib import Path
 import re
 from typing import Sequence
 
-from src.infrastructure.ahora import get_current_time
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
+from src.python_modules.FileSystemWrapper.safe_file_remover import SafeFileRemover
+
+from src.infrastructure.ahora import get_current_time
 from src.models.serialization import (
     NUMBER_OF_DIGITS,
     ConversationId,
@@ -20,6 +22,7 @@ CHAT_NAME_PATTERN = re.compile(rf"^(\d{{{NUMBER_OF_DIGITS}}})\.{CHAT_EXT}$")
 class ChatRepository:
     def __init__(self) -> None:
         self._file_manager = FileManager()
+        self._file_remover = SafeFileRemover(self._file_manager)
         self.__data_dir = PathWrapper(Path(__file__).parent.parent.parent / "data")
         self._chats_dir = self.__data_dir / "chats"
         self._file_manager.mkdir_if_not_exists(self.__data_dir)
@@ -46,13 +49,7 @@ class ChatRepository:
             new_path = self._build_chat_path(new_id)
             assert not self._file_manager.path_exists(new_path), new_path
             self._file_manager.write_file(new_path, content)
-            self._remove_using_tmp_file(path_wrapper)
-
-    def _remove_using_tmp_file(self, path_wrapper: PathWrapper) -> None:
-        tmp_delete_path = create_temporary_delete_path(path_wrapper)
-        self._file_manager.rename_path(path_wrapper, tmp_delete_path)
-        assert not self._file_manager.path_exists(path_wrapper)
-        self._file_manager.unlink_path(tmp_delete_path)
+            self._file_remover.remove_file(path_wrapper)
 
     def _get_new_conversation_id(self) -> ConversationId:
         max_number = self._find_max_file_number(self._chats_dir)
@@ -95,9 +92,3 @@ class ChatRepository:
         if max_number < 0:
             return None
         return max_number
-
-
-def create_temporary_delete_path(path_wrapper: PathWrapper) -> PathWrapper:
-    return PathWrapper(path_wrapper.path_value.parent) / (
-        "_delete_" + path_wrapper.name + ".tmp"
-    )
