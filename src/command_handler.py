@@ -27,7 +27,7 @@ from src.models.placeholders import (
 )
 from src.models.serialization import (
     ConversationId,
-    cast_string_to_conversation_id,
+    convert_digits_to_conversation_id,
     convert_conversation_text_into_messages,
 )
 from src.models.shared import (
@@ -87,7 +87,9 @@ class CommandHandler:
             case ActionType.DEBUG:
                 debug = True
             case ActionType.LOAD_CONVERSATION | ActionType.LOAD_MESSAGES:
-                conversation_to_load = cast_string_to_conversation_id(remaining_input)
+                conversation_to_load = convert_digits_to_conversation_id(
+                    remaining_input
+                )
             case ActionType.NEW_CONVERSATION:
                 new_conversation = True
             case ActionType.CONTINUE_CONVERSATION:
