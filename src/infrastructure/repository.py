@@ -42,10 +42,10 @@ class ChatRepository:
             if not self._is_chat_file(path_wrapper):
                 continue
             new_id = self._get_new_conversation_id()
-            text = self._file_manager.read_file(path_wrapper)
+            content = self._file_manager.read_file(path_wrapper)
             new_path = self._build_chat_path(new_id)
             assert not self._file_manager.path_exists(new_path), new_path
-            self._file_manager.write_file(new_path, text)
+            self._file_manager.write_file(new_path, content)
             self._remove_using_tmp_file(path_wrapper)
 
     def _remove_using_tmp_file(self, path_wrapper: PathWrapper) -> None:
