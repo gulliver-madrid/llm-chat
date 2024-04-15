@@ -116,10 +116,10 @@ def create_conversation_texts(
     return builder.build()
 
 
-def cast_string_to_conversation_id(string: str) -> ConversationId:
-    if not string.isdigit() or len(string) != NUMBER_OF_DIGITS:
+def convert_digits_to_conversation_id(string: str) -> ConversationId:
+    if not string.isdigit() or len(string) > NUMBER_OF_DIGITS:
         raise ValueError(f'"{string} "no pudo convertirse en un ConversationId')
-    return cast(ConversationId, string)
+    return cast(ConversationId, string.zfill(NUMBER_OF_DIGITS))
 
 
 def convert_text_to_conversation_object(
