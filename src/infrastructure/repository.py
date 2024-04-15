@@ -80,7 +80,6 @@ class ChatRepository:
 
     def _find_max_file_number(self, directory_path: PathWrapper) -> int | None:
         assert self._file_manager.path_is_dir(directory_path)
-        assert self._file_manager.path_exists(directory_path)
 
         max_number = -1
         ignored_count = 0
