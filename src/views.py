@@ -1,16 +1,7 @@
-from rich import print
-
 from src.generic_view import Raw
 from src.infrastructure.ahora import TimeManager
 from src.io_helpers import escape_for_rich, highlight_role
 from src.models.shared import ModelName
-
-
-def print_interaction(
-    time_manager: TimeManager, model_name: ModelName, query: Raw, content: Raw
-) -> None:
-    """Prints an interaction between user and model"""
-    print(get_interaction_styled_view(time_manager, model_name, query, content))
 
 
 def get_interaction_styled_view(
