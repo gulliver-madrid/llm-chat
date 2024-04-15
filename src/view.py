@@ -6,10 +6,12 @@ from rich.markdown import Markdown
 
 from src.domain import ChatMessage
 from src.generic_view import EscapedStr, Raw
+from src.infrastructure.ahora import TimeManager
 from src.io_helpers import display_neutral_msg, get_input, show_error_msg
 from src.models.placeholders import Placeholder
 from src.models.serialization import ConversationId
-
+from src.models.shared import ModelName
+from src.views import get_interaction_styled_view
 
 HELP_TEXT = """
 ## Consultas
@@ -33,6 +35,15 @@ Si empiezas el contenido de un placeholder con `/for` y pones las variantes sepa
 
 
 class View:
+
+    def print_interaction(
+        self, time_manager: TimeManager, model_name: ModelName, query: Raw, content: Raw
+    ) -> None:
+        """Prints an interaction between user and model"""
+        print(get_interaction_styled_view(time_manager, model_name, query, content))
+
+    def input_extra_line(self) -> str:
+        return input()
 
     def show_help(self) -> None:
         console = Console()
