@@ -1,15 +1,15 @@
 from typing import Final, Sequence
 
-from src.generic_view import Raw
-from src.infrastructure.client_wrapper import (
-    ClientWrapper,
-    QueryResult,
-)
 from src.controllers.command_interpreter import (
     Action,
     ActionType,
 )
 from src.controllers.select_model import SelectModelController
+from src.generic_view import Raw
+from src.infrastructure.llm_connection import (
+    ClientWrapper,
+    QueryResult,
+)
 from src.infrastructure.repository import ChatRepository
 from src.io_helpers import (
     ensure_escaped,

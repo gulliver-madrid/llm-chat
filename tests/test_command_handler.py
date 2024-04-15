@@ -1,11 +1,12 @@
 from unittest.mock import Mock
 
 import pytest
+
 from src.command_handler import CommandHandler
 from src.controllers.command_interpreter import Action, ActionType
 from src.controllers.select_model import SelectModelController
 from src.generic_view import Raw
-from src.infrastructure.client_wrapper import ClientWrapper
+from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.repository import ChatRepository
 from src.models.shared import CompleteMessage, Model, ModelName
 from src.view import View
