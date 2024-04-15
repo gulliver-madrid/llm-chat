@@ -2,7 +2,8 @@ from unittest.mock import Mock
 
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 
-from src.infrastructure.repository import ChatRepository, ChatRepositoryImplementer
+from src.infrastructure.chat_repository_implementer import ChatRepositoryImplementer
+from src.infrastructure.repository import ChatRepository
 
 
 def test_create_chat_repository() -> None:
