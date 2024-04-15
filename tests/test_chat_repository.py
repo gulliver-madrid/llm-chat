@@ -12,3 +12,8 @@ def test_create_chat_repository() -> None:
     ChatRepository(file_manager_mock)
 
     file_manager_mock.mkdir_if_not_exists.assert_called()
+
+    calls = file_manager_mock.mkdir_if_not_exists.mock_calls
+    assert any(call.args[0].name == "data" for call in calls)
+    assert any(call.args[0].name == "chats" for call in calls)
+    assert not any(call.args[0].name == "another_name" for call in calls)
