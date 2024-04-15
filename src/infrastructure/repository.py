@@ -57,7 +57,10 @@ class ChatRepository:
     def _get_new_conversation_id(self) -> ConversationId:
         max_number = self._find_max_file_number(self._chats_dir)
         new_number = (max_number + 1) if max_number is not None else 0
-        assert 0 <= new_number < 10**NUMBER_OF_DIGITS
+        too_much = 10**NUMBER_OF_DIGITS
+        if new_number > too_much * 0.9:
+            print("Warning: running short of chat id numbers")
+        assert 0 <= new_number < too_much, new_number
         return cast_string_to_conversation_id(str(new_number).zfill(NUMBER_OF_DIGITS))
 
     def _save_conversation(
