@@ -26,7 +26,7 @@ class ChatRepository:
         self._file_manager.mkdir_if_not_exists(self._chats_dir)
         self._move_chat_files_from_data_dir_to_chat_dir()
 
-    def save(self, complete_messages: Sequence[CompleteMessage]) -> None:
+    def save_messages(self, complete_messages: Sequence[CompleteMessage]) -> None:
         conversation_id = self._get_new_conversation_id()
         conversation = create_conversation_texts(
             complete_messages, conversation_id, get_current_time()
