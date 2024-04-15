@@ -3,6 +3,8 @@ import re
 from typing import Sequence
 
 from src.infrastructure.ahora import get_current_time
+from src.python_modules.FileSystemWrapper.file_manager import FileManager
+from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 from src.models.serialization import (
     NUMBER_OF_DIGITS,
     ConversationId,
@@ -17,29 +19,29 @@ CHAT_NAME_PATTERN = re.compile(rf"^(\d{{{NUMBER_OF_DIGITS}}})\.{CHAT_EXT}$")
 
 class ChatRepository:
     def __init__(self) -> None:
-        self.__data_dir = Path(__file__).parent.parent.parent / "data"
+        self._file_manager = FileManager()
+        self.__data_dir = PathWrapper(Path(__file__).parent.parent.parent / "data")
         self._chats_dir = self.__data_dir / "chats"
-        self.__data_dir.mkdir(exist_ok=True)
-        self._chats_dir.mkdir(exist_ok=True)
+        self._file_manager.mkdir_if_not_exists(self.__data_dir)
+        self._file_manager.mkdir_if_not_exists(self._chats_dir)
         self._move_chat_files_from_data_dir_to_chat_dir()
 
     def _move_chat_files_from_data_dir_to_chat_dir(self) -> None:
-        chat_files_in_data_dir = list(self.__data_dir.iterdir())
-        for path in chat_files_in_data_dir:
-            if not is_chat_file(path):
+        for path_wrapper in self._file_manager.get_children(self.__data_dir):
+            if not self._is_chat_file(path_wrapper):
                 continue
             new_id = self._get_new_conversation_id()
-            text = self._read_file(path)
+            text = self._file_manager.read_file(path_wrapper)
             new_path = self._build_chat_path(new_id)
-            assert not new_path.exists(), new_path
-            self._write_file(new_path, text)
-            self._remove_using_tmp_file(path)
+            assert not self._file_manager.path_exists(new_path), new_path
+            self._file_manager.write_file(new_path, text)
+            self._remove_using_tmp_file(path_wrapper)
 
-    def _remove_using_tmp_file(self, path: Path) -> None:
-        tmp_delete_path_ = create_temporary_delete_path(path)
-        path.rename(tmp_delete_path_)
-        assert not path.exists()
-        tmp_delete_path_.unlink()
+    def _remove_using_tmp_file(self, path_wrapper: PathWrapper) -> None:
+        tmp_delete_path = create_temporary_delete_path(path_wrapper)
+        self._file_manager.rename_path(path_wrapper, tmp_delete_path)
+        assert not self._file_manager.path_exists(path_wrapper)
+        self._file_manager.unlink_path(tmp_delete_path)
 
     def save(self, complete_messages: Sequence[CompleteMessage]) -> None:
         conversation_id = self._get_new_conversation_id()
@@ -50,66 +52,59 @@ class ChatRepository:
 
     def load_conversation_as_text(self, conversation_id: ConversationId) -> str:
         filepath = self._build_conversation_filepath(conversation_id)
-        return self._read_file(filepath)
+        return self._file_manager.read_file(filepath)
 
     def _get_new_conversation_id(self) -> ConversationId:
-        max_number = find_max_file_number(self._chats_dir)
+        max_number = self._find_max_file_number(self._chats_dir)
         new_number = (max_number + 1) if max_number is not None else 0
         assert 0 <= new_number < 10**NUMBER_OF_DIGITS
         return cast_string_to_conversation_id(str(new_number).zfill(NUMBER_OF_DIGITS))
 
     def _save_conversation(
-        self, conversation_id: ConversationId, conversation: str
+        self, conversation_id: ConversationId, conversation_as_text: str
     ) -> None:
         filepath = self._build_conversation_filepath(conversation_id)
-        self._write_file(filepath, conversation)
+        self._file_manager.write_file(filepath, conversation_as_text)
 
-    def _build_conversation_filepath(self, conversation_id: ConversationId) -> Path:
+    def _build_conversation_filepath(
+        self, conversation_id: ConversationId
+    ) -> PathWrapper:
         return self._build_chat_path(conversation_id)
 
-    def _write_file(self, path: Path, text: str) -> None:
-        with open(path, "w", encoding="utf-8") as file:
-            file.write(text)
-
-    def _read_file(self, path: Path) -> str:
-        with open(path, "r", encoding="utf-8") as file:
-            text = file.read()
-        return text
-
-    def _build_chat_path(self, conversation_id: ConversationId) -> Path:
+    def _build_chat_path(self, conversation_id: ConversationId) -> PathWrapper:
         return self._chats_dir / (conversation_id + "." + CHAT_EXT)
 
+    def _is_chat_file(self, path_wrapper: PathWrapper) -> bool:
+        assert self._file_manager.path_exists(path_wrapper)
+        if self._file_manager.path_is_dir(path_wrapper):
+            return False
+        return CHAT_NAME_PATTERN.match(path_wrapper.name) is not None
 
-def find_max_file_number(directory_path: Path) -> int | None:
-    assert directory_path.is_dir()
-    assert directory_path.exists()
+    def _find_max_file_number(self, directory_path: PathWrapper) -> int | None:
+        assert self._file_manager.path_is_dir(directory_path)
+        assert self._file_manager.path_exists(directory_path)
 
-    max_number = -1
-    ignored: list[Path] = []
-    for path in directory_path.iterdir():
-        if path.is_dir():
-            ignored.append(path)
-            continue
-        match = CHAT_NAME_PATTERN.match(path.name)
-        if not match:
-            ignored.append(path)
-            continue
-        number = int(path.stem)
-        if number > max_number:
-            max_number = number
-    if ignored:
-        print(f"Se ignoraron {len(ignored)} rutas")
-    if max_number < 0:
-        return None
-    return max_number
-
-
-def is_chat_file(path: Path) -> bool:
-    assert path.exists()
-    if path.is_dir():
-        return False
-    return CHAT_NAME_PATTERN.match(path.name) is not None
+        max_number = -1
+        ignored: list[PathWrapper] = []
+        for path_wrapper in self._file_manager.get_children(directory_path):
+            if self._file_manager.path_is_dir(path_wrapper):
+                ignored.append(path_wrapper)
+                continue
+            match = CHAT_NAME_PATTERN.match(path_wrapper.name)
+            if not match:
+                ignored.append(path_wrapper)
+                continue
+            number = int(path_wrapper.stem)
+            if number > max_number:
+                max_number = number
+        if ignored:
+            print(f"Se ignoraron {len(ignored)} rutas")
+        if max_number < 0:
+            return None
+        return max_number
 
 
-def create_temporary_delete_path(path: Path) -> Path:
-    return path.parent / ("_delete_" + path.name + ".tmp")
+def create_temporary_delete_path(path_wrapper: PathWrapper) -> PathWrapper:
+    return PathWrapper(path_wrapper.path_value.parent) / (
+        "_delete_" + path_wrapper.name + ".tmp"
+    )
