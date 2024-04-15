@@ -71,7 +71,7 @@ class Main:
             tools=tools,
             tool_choice="auto",
         )
-        self._repository.save(response.messages)
+        self._repository.save_messages(response.messages)
         self._messages.clear()
         self._messages.extend(response.messages)
         last_message = self._messages[-1]
@@ -157,7 +157,7 @@ class Main:
             tools=tools,
             tool_choice="none",
         )
-        self._repository.save(response.messages)
+        self._repository.save_messages(response.messages)
         return response
 
 
