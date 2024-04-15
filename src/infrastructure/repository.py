@@ -26,6 +26,17 @@ class ChatRepository:
         self._file_manager.mkdir_if_not_exists(self._chats_dir)
         self._move_chat_files_from_data_dir_to_chat_dir()
 
+    def save(self, complete_messages: Sequence[CompleteMessage]) -> None:
+        conversation_id = self._get_new_conversation_id()
+        conversation = create_conversation_texts(
+            complete_messages, conversation_id, get_current_time()
+        )
+        self._save_conversation(conversation_id, conversation)
+
+    def load_conversation_as_text(self, conversation_id: ConversationId) -> str:
+        filepath = self._build_chat_path(conversation_id)
+        return self._file_manager.read_file(filepath)
+
     def _move_chat_files_from_data_dir_to_chat_dir(self) -> None:
         for path_wrapper in self._file_manager.get_children(self.__data_dir):
             if not self._is_chat_file(path_wrapper):
@@ -42,17 +53,6 @@ class ChatRepository:
         self._file_manager.rename_path(path_wrapper, tmp_delete_path)
         assert not self._file_manager.path_exists(path_wrapper)
         self._file_manager.unlink_path(tmp_delete_path)
-
-    def save(self, complete_messages: Sequence[CompleteMessage]) -> None:
-        conversation_id = self._get_new_conversation_id()
-        conversation = create_conversation_texts(
-            complete_messages, conversation_id, get_current_time()
-        )
-        self._save_conversation(conversation_id, conversation)
-
-    def load_conversation_as_text(self, conversation_id: ConversationId) -> str:
-        filepath = self._build_chat_path(conversation_id)
-        return self._file_manager.read_file(filepath)
 
     def _get_new_conversation_id(self) -> ConversationId:
         max_number = self._find_max_file_number(self._chats_dir)
