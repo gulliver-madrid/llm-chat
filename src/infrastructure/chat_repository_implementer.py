@@ -34,16 +34,18 @@ class ChatRepositoryImplementer:
         self.is_initialized = True
 
     def move_chat_files_from_data_dir_to_chat_dir(self) -> None:
+        """
+        In the previous version, chat files were directly stored in the data directory.
+        This function migrates them to the chat directory, ensuring that the coherence
+        of the ids is maintained throughout the process.
+        """
         assert self.is_initialized
         for path_wrapper in self._file_manager.get_children(self.__data_dir):
             if not self._is_chat_file(path_wrapper):
                 continue
             new_id = self.get_new_conversation_id()
-            content = self._file_manager.read_file(path_wrapper)
             new_path = self.build_chat_path(new_id)
-            assert not self._file_manager.path_exists(new_path), new_path
-            self._file_manager.write_file(new_path, content)
-            self._file_remover.remove_file(path_wrapper)
+            self._move_content(path_wrapper, new_path)
 
     def build_chat_path(self, conversation_id: ConversationId) -> PathWrapper:
         filename = conversation_id + "." + CHAT_EXT
@@ -57,6 +59,12 @@ class ChatRepositoryImplementer:
             print("Warning: running short of chat id numbers")
         assert 0 <= new_number < too_much, new_number
         return cast_string_to_conversation_id(str(new_number).zfill(NUMBER_OF_DIGITS))
+
+    def _move_content(self, source: PathWrapper, dest: PathWrapper) -> None:
+        content = self._file_manager.read_file(source)
+        assert not self._file_manager.path_exists(dest), dest
+        self._file_manager.write_file(dest, content)
+        self._file_remover.remove_file(source)
 
     def _is_chat_file(self, path_wrapper: PathWrapper) -> bool:
         assert self._file_manager.path_exists(path_wrapper)
