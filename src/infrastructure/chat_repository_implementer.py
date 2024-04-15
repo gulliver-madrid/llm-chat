@@ -1,6 +1,7 @@
 import re
 from typing import Iterable
 
+from src.logging import configure_logger
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 from src.python_modules.FileSystemWrapper.safe_file_remover import SafeFileRemover
@@ -11,8 +12,13 @@ from src.models.serialization import (
     cast_string_to_conversation_id,
 )
 
+logger = configure_logger(__name__)
+
 CHAT_EXT = "chat"
 CHAT_NAME_PATTERN = re.compile(rf"^(\d{{{NUMBER_OF_DIGITS}}})\.{CHAT_EXT}$")
+
+TOO_MUCH_CHATS = 10**NUMBER_OF_DIGITS
+WARNING_THRESHOLD = TOO_MUCH_CHATS * 0.9
 
 
 class ChatRepositoryImplementer:
@@ -54,10 +60,9 @@ class ChatRepositoryImplementer:
     def get_new_conversation_id(self) -> ConversationId:
         max_number = self._find_max_file_number(self._chats_dir)
         new_number = (max_number + 1) if max_number is not None else 0
-        too_much = 10**NUMBER_OF_DIGITS
-        if new_number > too_much * 0.9:
-            print("Warning: running short of chat id numbers")
-        assert 0 <= new_number < too_much, new_number
+        if new_number > WARNING_THRESHOLD:
+            logger.warning("Warning: running short of chat id numbers")
+        assert 0 <= new_number < TOO_MUCH_CHATS, new_number
         return cast_string_to_conversation_id(str(new_number).zfill(NUMBER_OF_DIGITS))
 
     def _move_content(self, source: PathWrapper, dest: PathWrapper) -> None:
@@ -80,7 +85,7 @@ class ChatRepositoryImplementer:
 
         ignored_count = len(children) - len(chat_files)
         if ignored_count > 0:
-            print(f"Se ignoraron {ignored_count} rutas")
+            logger.info(f"Se ignoraron {ignored_count} rutas")
 
         return get_max_stem_value(chat_files)
 
