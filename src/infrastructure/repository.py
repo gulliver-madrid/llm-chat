@@ -21,11 +21,11 @@ class ChatRepository:
         chat_repository_implementer: "ChatRepositoryImplementer | None" = None,
     ) -> None:
         self._file_manager = file_manager or FileManager()
-        self.__data_dir = PathWrapper(Path(__file__).parent.parent.parent / "data")
-        self._chats_dir = self.__data_dir / "chats"
         self._chat_repository_implementer = (
             chat_repository_implementer or ChatRepositoryImplementer()
         )
+        self.__data_dir = PathWrapper(Path(__file__).parents[2] / "data")
+        self._chats_dir = self.__data_dir / "chats"
         self._chat_repository_implementer.init(
             self.__data_dir, self._chats_dir, self._file_manager
         )
