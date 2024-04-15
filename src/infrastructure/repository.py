@@ -85,16 +85,11 @@ class ChatRepository:
         max_number = -1
         ignored_count = 0
         for path_wrapper in self._file_manager.get_children(directory_path):
-            if self._file_manager.path_is_dir(path_wrapper):
-                ignored_count += 1
-                continue
-            match = CHAT_NAME_PATTERN.match(path_wrapper.name)
-            if not match:
+            if not self._is_chat_file(path_wrapper):
                 ignored_count += 1
                 continue
             number = int(path_wrapper.stem)
-            if number > max_number:
-                max_number = number
+            max_number = max(max_number, number)
         if ignored_count:
             print(f"Se ignoraron {ignored_count} rutas")
         if max_number < 0:
