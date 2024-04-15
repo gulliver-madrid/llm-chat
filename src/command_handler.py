@@ -37,7 +37,7 @@ from src.models.shared import (
 from src.settings import QUERY_NUMBER_LIMIT_WARNING
 from src.strategies import ActionStrategy, EstablishSystemPromptAction, ShowModelAction
 from src.view import View
-from src.views import print_interaction
+
 
 PRESS_ENTER_TO_CONTINUE = Raw("Pulsa Enter para continuar")
 
@@ -48,12 +48,12 @@ class ExitException(Exception): ...
 class CommandHandler:
     def __init__(
         self,
+        *,
         view: View,
         select_model_controler: SelectModelController,
         repository: ChatRepository,
         client_wrapper: ClientWrapper,
         time_manager: TimeManager,
-        *,
         prev_messages: list[CompleteMessage] | None = None,
     ):
         self._view = view
@@ -112,7 +112,7 @@ class CommandHandler:
         if not remaining_input:
             return
 
-        while (more := input()).lower() != "end":
+        while (more := self._view.input_extra_line()).lower() != "end":
             remaining_input += "\n" + more
 
         placeholders = find_unique_placeholders(remaining_input)
@@ -154,7 +154,7 @@ class CommandHandler:
 
     def _print_interaction(self, query: QueryText, query_result: QueryResult) -> None:
         assert self._model_wrapper.model
-        print_interaction(
+        self._view.print_interaction(
             self._time_manager,
             self._model_wrapper.model.model_name,
             Raw(query),
