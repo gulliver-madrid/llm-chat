@@ -21,18 +21,25 @@ class ChatRepository:
         self._chats_dir = self.__data_dir / "chats"
         self.__data_dir.mkdir(exist_ok=True)
         self._chats_dir.mkdir(exist_ok=True)
+        self._move_chat_files_from_data_dir_to_chat_dir()
+
+    def _move_chat_files_from_data_dir_to_chat_dir(self) -> None:
         chat_files_in_data_dir = list(self.__data_dir.iterdir())
         for path in chat_files_in_data_dir:
-            if is_chat_file(path):
-                new_id = self._get_new_conversation_id()
-                text = self._read_file(path)
-                new_path = self._build_chat_path(new_id)
-                assert not new_path.exists(), new_path
-                self._write_file(new_path, text)
-                tmp_delete_path_ = create_temporary_delete_path(path)
-                path.rename(tmp_delete_path_)
-                assert not path.exists()
-                tmp_delete_path_.unlink()
+            if not is_chat_file(path):
+                continue
+            new_id = self._get_new_conversation_id()
+            text = self._read_file(path)
+            new_path = self._build_chat_path(new_id)
+            assert not new_path.exists(), new_path
+            self._write_file(new_path, text)
+            self._remove_using_tmp_file(path)
+
+    def _remove_using_tmp_file(self, path: Path) -> None:
+        tmp_delete_path_ = create_temporary_delete_path(path)
+        path.rename(tmp_delete_path_)
+        assert not path.exists()
+        tmp_delete_path_.unlink()
 
     def save(self, complete_messages: Sequence[CompleteMessage]) -> None:
         conversation_id = self._get_new_conversation_id()
