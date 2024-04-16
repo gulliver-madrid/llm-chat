@@ -13,6 +13,7 @@ from src.infrastructure.llm_connection.client_wrapper import QueryResult
 from src.infrastructure.repository import ChatRepository
 from src.models.shared import CompleteMessage, Model, ModelName
 from src.view import View
+from tests.objects import TEXT_1
 
 
 class TestCommandHandlerBase:
@@ -136,6 +137,31 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
         prompt_for_user = calls[0].args[0]
         assert isinstance(prompt_for_user, Raw)
         assert "enter" in prompt_for_user.value.lower()
+
+    def test_debug_command_works(self) -> None:
+        remaining = "some text"
+        self.mock_view.input_extra_line.side_effect = self.user_prompt_lines
+        self.mock_client_wrapper.get_simple_response.return_value = QueryResult("", [])
+
+        self._select_model()
+
+        self.command_handler.process_action(Action(ActionType.DEBUG), remaining)
+
+        calls = self.mock_client_wrapper.get_simple_response.mock_calls
+        assert len(calls) == 1
+        assert calls[0].kwargs["debug"] == True
+
+    def test_load_conversation(self) -> None:
+        remaining = "42"
+        self.mock_repository.load_conversation_as_text.return_value = TEXT_1
+
+        self._select_model()
+
+        self.command_handler.process_action(
+            Action(ActionType.LOAD_CONVERSATION), remaining
+        )
+
+        self.mock_repository.load_conversation_as_text.assert_called_once()
 
 
 def get_simple_response_stub(
