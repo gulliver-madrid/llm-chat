@@ -38,14 +38,14 @@ def build_queries(raw_query: str, substitutions: Substitutions) -> list[QueryTex
     Returns:
         A list of queries with all placeholders replaced.
     """
-    match _get_placeholders_with_for(substitutions):
-        case []:
-            queries = [_replace_single_placeholders(raw_query, substitutions)]
-        case [placeholder]:
-            replacer = OneForReplacer(substitutions, placeholder)
-            queries = replacer.replace_placeholders_with_one_for(raw_query)
-        case _:
-            raise MultipleForNotSupported()
+    if (placeholders := _get_placeholders_with_for(substitutions)) == []:
+        queries = [_replace_single_placeholders(raw_query, substitutions)]
+    elif len(placeholders) == 1:
+        placeholder = placeholders[0]
+        replacer = OneForReplacer(substitutions, placeholder)
+        queries = replacer.replace_placeholders_with_one_for(raw_query)
+    else:
+        raise MultipleForNotSupported()
     return queries
 
 
