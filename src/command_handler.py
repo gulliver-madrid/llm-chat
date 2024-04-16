@@ -17,6 +17,7 @@ from src.io_helpers import (
     get_input,
     show_error_msg,
 )
+from src.models.messages_ops import add_user_query_in_place
 from src.models.model_wrapper import ModelWrapper
 from src.models.placeholders import (
     Placeholder,
@@ -31,7 +32,6 @@ from src.models.serialization import (
     convert_conversation_text_into_messages,
 )
 from src.models.shared import (
-    ChatMessage,
     CompleteMessage,
     extract_chat_messages,
 )
@@ -190,10 +190,7 @@ class CommandHandler:
         self, query: QueryText, debug: bool = False
     ) -> QueryResult:
         assert self._model_wrapper.model
-
-        self._prev_messages.append(
-            CompleteMessage(ChatMessage(role="user", content=query))
-        )
+        add_user_query_in_place(self._prev_messages, query)
         return self._client_wrapper.get_simple_response(
             self._model_wrapper.model, self._prev_messages, debug=debug
         )

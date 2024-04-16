@@ -9,6 +9,7 @@ from src.infrastructure.exceptions import (
     LLMChatException,
 )
 from src.logging import configure_logger
+from src.models.messages_ops import add_user_query_in_place
 from src.models.shared import (
     CompleteMessage,
     Model,
@@ -71,10 +72,7 @@ class ClientWrapper:
         """
 
         complete_messages = list(prev_messages) if prev_messages else []
-
-        complete_messages.append(
-            CompleteMessage(ChatMessage(role="user", content=query))
-        )
+        add_user_query_in_place(complete_messages, query)
         return self.get_simple_response(
             model,
             complete_messages,
