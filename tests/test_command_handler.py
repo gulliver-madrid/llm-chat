@@ -1,3 +1,4 @@
+from typing import Any, cast
 from unittest.mock import Mock
 
 import pytest
@@ -81,12 +82,10 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
 
     def test_chat_with_model(self) -> None:
         def get_simple_response_stub(
-            model: Model,
-            prev_messages: list[CompleteMessage] | None,
+            _model: Model,
+            messages: list[CompleteMessage],
             debug: bool = False,
         ) -> QueryResult:
-            assert prev_messages
-            messages = list(prev_messages)
             messages.append(
                 CompleteMessage(
                     ChatMessage("assistant", model_response),
@@ -112,14 +111,14 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
         self.mock_view.print_interaction.assert_called()
         calls = self.mock_view.print_interaction.mock_calls
         assert len(calls) == 1
-        assert calls[0].args[3] == Raw(model_response)
+        assert get_print_interaction_content_arg(calls[0]) == Raw(model_response)
         assert len(self.prev_messages_stub) == 2
 
     def test_chat_with_model_continue(self) -> None:
         """Simula una conversacion que continua (aunque el modelo repite lo mismo por simplificar)"""
 
         def get_simple_response_stub(
-            model: Model,
+            _model: Model,
             prev_messages: list[CompleteMessage] | None,
             debug: bool = False,
         ) -> QueryResult:
@@ -144,11 +143,11 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
             get_simple_response_stub
         )
 
-        remaining = "hello, how are you?"
+        user_prompt = "hello, how are you?"
         self._select_model()
 
         self.command_handler.process_action(
-            Action(ActionType.CONTINUE_CONVERSATION), remaining
+            Action(ActionType.CONTINUE_CONVERSATION), user_prompt
         )
         self.command_handler.process_action(
             Action(ActionType.CONTINUE_CONVERSATION), "then, again, how are you?"
@@ -156,6 +155,10 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
         self.mock_view.print_interaction.assert_called()
         calls = self.mock_view.print_interaction.mock_calls
         assert len(calls) == 2
-        assert calls[0].args[3] == Raw(model_response)
-        assert calls[1].args[3] == Raw(model_response)
+        assert get_print_interaction_content_arg(calls[0]) == Raw(model_response)
+        assert get_print_interaction_content_arg(calls[1]) == Raw(model_response)
         assert len(self.prev_messages_stub) == 4
+
+
+def get_print_interaction_content_arg(call: Any) -> Raw:
+    return cast(Raw, call.args[3])
