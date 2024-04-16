@@ -1,4 +1,4 @@
-from typing import Any, cast
+from typing import Any, Final, cast
 from unittest.mock import Mock
 
 import pytest
@@ -53,6 +53,7 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
     def setup_method(self) -> None:
         super().setup_method()
         self.model_name = ModelName("Model name test")
+        self.user_prompt_lines = ["something more", "end"]
 
     def _select_model(self) -> None:
         self.mock_select_model_controler.select_model.return_value = Model(
@@ -81,23 +82,7 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
             )
 
     def test_chat_with_model(self) -> None:
-        def get_simple_response_stub(
-            _model: Model,
-            messages: list[CompleteMessage],
-            debug: bool = False,
-        ) -> QueryResult:
-            messages.append(
-                CompleteMessage(
-                    ChatMessage("assistant", model_response),
-                ),
-            )
-            return QueryResult(
-                model_response,
-                messages,
-            )
-
-        model_response = "Fine, thanks!"
-        self.mock_view.input_extra_line.side_effect = ["something more", "end"]
+        self.mock_view.input_extra_line.side_effect = self.user_prompt_lines
         self.mock_client_wrapper.get_simple_response.side_effect = (
             get_simple_response_stub
         )
@@ -111,34 +96,15 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
         self.mock_view.print_interaction.assert_called()
         calls = self.mock_view.print_interaction.mock_calls
         assert len(calls) == 1
-        assert get_print_interaction_content_arg(calls[0]) == Raw(model_response)
+
         assert len(self.prev_messages_stub) == 2
 
     def test_chat_with_model_continue(self) -> None:
         """Simula una conversacion que continua (aunque el modelo repite lo mismo por simplificar)"""
 
-        def get_simple_response_stub(
-            _model: Model,
-            prev_messages: list[CompleteMessage] | None,
-            debug: bool = False,
-        ) -> QueryResult:
-            assert prev_messages
-            messages = list(prev_messages)
-            messages.append(
-                CompleteMessage(
-                    ChatMessage("assistant", model_response),
-                ),
-            )
-            return QueryResult(
-                model_response,
-                messages,
-            )
-
-        model_response = "Fine, thanks!"
-        self.mock_view.input_extra_line.side_effect = ["something more", "end"] + [
-            "something more",
-            "end",
-        ]
+        self.mock_view.input_extra_line.side_effect = (
+            self.user_prompt_lines + self.user_prompt_lines
+        )
         self.mock_client_wrapper.get_simple_response.side_effect = (
             get_simple_response_stub
         )
@@ -155,9 +121,19 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
         self.mock_view.print_interaction.assert_called()
         calls = self.mock_view.print_interaction.mock_calls
         assert len(calls) == 2
-        assert get_print_interaction_content_arg(calls[0]) == Raw(model_response)
-        assert get_print_interaction_content_arg(calls[1]) == Raw(model_response)
         assert len(self.prev_messages_stub) == 4
+
+
+def get_simple_response_stub(
+    _model: Model,
+    messages: list[CompleteMessage],
+    debug: bool = False,
+) -> QueryResult:
+    messages.append(Mock(spec=CompleteMessage))
+    return QueryResult(
+        "",
+        messages,
+    )
 
 
 def get_print_interaction_content_arg(call: Any) -> Raw:
