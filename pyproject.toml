@@ -5,6 +5,11 @@ description = "Text interface to interact with LLM models"
 authors = ["gulliver-madrid <49131885+gulliver-madrid@users.noreply.github.com>"]
 readme = "README.md"
 
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+
 [tool.poetry.dependencies]
 python = "^3.10"
 mistralai = "^0.1.3"
