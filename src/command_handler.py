@@ -108,7 +108,10 @@ class CommandHandler:
         if not remaining_input:
             return
 
-        while (more := self._view.input_extra_line()).lower() != "end":
+        while True:
+            more = self._view.input_extra_line()
+            if more.lower() == "end":
+                break
             remaining_input += "\n" + more
 
         placeholders = find_unique_placeholders(remaining_input)
