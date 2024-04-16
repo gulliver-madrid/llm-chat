@@ -73,32 +73,29 @@ class CommandHandler:
 
         action_strategy: ActionStrategy | None = None
 
-        match action.type:
-            case ActionType.EXIT:
-                raise ExitException()
-            case ActionType.HELP:
-                self._view.show_help()
-                get_input(PRESS_ENTER_TO_CONTINUE)
-                return
-            case ActionType.CHANGE_MODEL:
-                self.prompt_to_select_model()
-                return
-            case ActionType.DEBUG:
-                debug = True
-            case ActionType.LOAD_CONVERSATION | ActionType.LOAD_MESSAGES:
-                conversation_to_load = convert_digits_to_conversation_id(
-                    remaining_input
-                )
-            case ActionType.NEW_CONVERSATION:
-                new_conversation = True
-            case ActionType.CONTINUE_CONVERSATION:
-                pass
-            case ActionType.SHOW_MODEL:
-                action_strategy = ShowModelAction(self._view, self._model_wrapper)
-            case ActionType.SYSTEM_PROMPT:
-                action_strategy = EstablishSystemPromptAction(
-                    self._view, self._prev_messages
-                )
+        if action.type == ActionType.EXIT:
+            raise ExitException()
+        elif action.type == ActionType.HELP:
+            self._view.show_help()
+            get_input(PRESS_ENTER_TO_CONTINUE)
+            return
+        elif action.type == ActionType.CHANGE_MODEL:
+            self.prompt_to_select_model()
+            return
+        elif action.type == ActionType.DEBUG:
+            debug = True
+        elif action.type in (ActionType.LOAD_CONVERSATION, ActionType.LOAD_MESSAGES):
+            conversation_to_load = convert_digits_to_conversation_id(remaining_input)
+        elif action.type == ActionType.NEW_CONVERSATION:
+            new_conversation = True
+        elif action.type == ActionType.CONTINUE_CONVERSATION:
+            pass
+        elif action.type == ActionType.SHOW_MODEL:
+            action_strategy = ShowModelAction(self._view, self._model_wrapper)
+        elif action.type == ActionType.SYSTEM_PROMPT:
+            action_strategy = EstablishSystemPromptAction(
+                self._view, self._prev_messages
+            )
 
         if action_strategy:
             action_strategy.execute(remaining_input)
@@ -175,16 +172,15 @@ class CommandHandler:
         conversation: str,
     ) -> None:
         assert self._prev_messages
-        match action.type:
-            case ActionType.LOAD_CONVERSATION:
-                self._view.display_conversation(conversation_id, conversation)
-            case ActionType.LOAD_MESSAGES:
-                self._view.display_messages(
-                    conversation_id,
-                    extract_chat_messages(self._prev_messages),
-                )
-            case _:
-                raise ValueError(action.type)
+        if action.type == ActionType.LOAD_CONVERSATION:
+            self._view.display_conversation(conversation_id, conversation)
+        elif action.type == ActionType.LOAD_MESSAGES:
+            self._view.display_messages(
+                conversation_id,
+                extract_chat_messages(self._prev_messages),
+            )
+        else:
+            raise ValueError(action.type)
 
     def _get_simple_response_from_model(
         self, query: QueryText, debug: bool = False
