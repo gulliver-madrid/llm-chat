@@ -10,7 +10,7 @@ from src.infrastructure.ahora import TimeManager
 from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.llm_connection.client_wrapper import QueryResult
 from src.infrastructure.repository import ChatRepository
-from src.models.shared import CompleteMessage, Model, ModelName
+from src.models.shared import ChatMessage, CompleteMessage, Model, ModelName
 from src.view import View
 
 
@@ -80,10 +80,27 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
             )
 
     def test_chat_with_model(self) -> None:
+        def get_simple_response_stub(
+            model: Model,
+            prev_messages: list[CompleteMessage] | None,
+            debug: bool = False,
+        ) -> QueryResult:
+            assert prev_messages
+            messages = list(prev_messages)
+            messages.append(
+                CompleteMessage(
+                    ChatMessage("assistant", model_response),
+                ),
+            )
+            return QueryResult(
+                model_response,
+                messages,
+            )
+
         model_response = "Fine, thanks!"
         self.mock_view.input_extra_line.side_effect = ["something more", "end"]
-        self.mock_client_wrapper.get_simple_response_to_query.return_value = (
-            QueryResult(model_response, [])
+        self.mock_client_wrapper.get_simple_response.side_effect = (
+            get_simple_response_stub
         )
 
         remaining = "hello, how are you?"
@@ -96,3 +113,49 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
         calls = self.mock_view.print_interaction.mock_calls
         assert len(calls) == 1
         assert calls[0].args[3] == Raw(model_response)
+        assert len(self.prev_messages_stub) == 2
+
+    def test_chat_with_model_continue(self) -> None:
+        """Simula una conversacion que continua (aunque el modelo repite lo mismo por simplificar)"""
+
+        def get_simple_response_stub(
+            model: Model,
+            prev_messages: list[CompleteMessage] | None,
+            debug: bool = False,
+        ) -> QueryResult:
+            assert prev_messages
+            messages = list(prev_messages)
+            messages.append(
+                CompleteMessage(
+                    ChatMessage("assistant", model_response),
+                ),
+            )
+            return QueryResult(
+                model_response,
+                messages,
+            )
+
+        model_response = "Fine, thanks!"
+        self.mock_view.input_extra_line.side_effect = ["something more", "end"] + [
+            "something more",
+            "end",
+        ]
+        self.mock_client_wrapper.get_simple_response.side_effect = (
+            get_simple_response_stub
+        )
+
+        remaining = "hello, how are you?"
+        self._select_model()
+
+        self.command_handler.process_action(
+            Action(ActionType.CONTINUE_CONVERSATION), remaining
+        )
+        self.command_handler.process_action(
+            Action(ActionType.CONTINUE_CONVERSATION), "then, again, how are you?"
+        )
+        self.mock_view.print_interaction.assert_called()
+        calls = self.mock_view.print_interaction.mock_calls
+        assert len(calls) == 2
+        assert calls[0].args[3] == Raw(model_response)
+        assert calls[1].args[3] == Raw(model_response)
+        assert len(self.prev_messages_stub) == 4
