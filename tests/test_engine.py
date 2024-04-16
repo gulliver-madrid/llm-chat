@@ -66,5 +66,5 @@ class TestMainEngine:
         self.mock_command_interpreter.parse_user_input.assert_called_once_with(query)
         self.mock_command_handler.process_action.assert_not_called()
         self.mock_view.show_error_msg.assert_called_once_with(
-            Raw("Comando no válido: bad")
+            Raw("No valid command: bad")
         )
