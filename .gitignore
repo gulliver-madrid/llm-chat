@@ -4,3 +4,5 @@
 /data/
 */shop/config.toml
 .coverage
+.hammett-db
+.mutmut-cache
