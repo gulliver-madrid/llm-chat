@@ -11,6 +11,7 @@ from src.infrastructure.llm_connection import (
     ClientWrapper,
     QueryResult,
 )
+from src.infrastructure.llm_connection.client_wrapper import add_user_query_in_place
 from src.infrastructure.repository import ChatRepository
 from src.io_helpers import (
     ensure_escaped,
@@ -31,7 +32,6 @@ from src.models.serialization import (
     convert_conversation_text_into_messages,
 )
 from src.models.shared import (
-    ChatMessage,
     CompleteMessage,
     extract_chat_messages,
 )
@@ -140,8 +140,6 @@ class CommandHandler:
         messages = None
         for i, query in enumerate(queries):
             messages = self._answer_query(debug, i + 1, len(queries), query)
-        print(f"{messages=}")
-        print(f"{self._prev_messages=}")
         self._prev_messages[:] = messages or []
 
     def _answer_query(
@@ -192,10 +190,7 @@ class CommandHandler:
         self, query: QueryText, debug: bool = False
     ) -> QueryResult:
         assert self._model_wrapper.model
-
-        self._prev_messages.append(
-            CompleteMessage(ChatMessage(role="user", content=query))
-        )
+        add_user_query_in_place(self._prev_messages, query)
         return self._client_wrapper.get_simple_response(
             self._model_wrapper.model, self._prev_messages, debug=debug
         )
