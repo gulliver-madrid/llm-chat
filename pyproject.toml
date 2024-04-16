@@ -10,6 +10,10 @@ testpaths = [
     "tests",
 ]
 
+[tool.mutmut]
+paths_to_mutate="src"
+runner="pytest -x"
+
 [tool.poetry.dependencies]
 python = "^3.10"
 mistralai = "^0.1.3"
