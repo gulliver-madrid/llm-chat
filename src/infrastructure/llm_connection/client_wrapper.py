@@ -101,32 +101,28 @@ class ClientWrapper:
         # type annotated here for safety because MistralClient define messages type as list[Any]
         messages: list[ChatMessage] = extract_chat_messages(complete_messages)
 
-        match model.platform:
-
-            case Platform.OpenAI:
-                if random_seed is not None:
-                    raise LLMChatException(
-                        "Error: random_seed not currently supported with OpenAI API"
-                    )
-                if not self._openai_client_wrapper:
-                    raise ClientNotDefined("OpenAI", "OpenAI")
-                chat_msg = self._openai_client_wrapper.answer(
-                    model, messages, tools=tools
+        if model.platform == Platform.OpenAI:
+            if random_seed is not None:
+                raise LLMChatException(
+                    "Error: random_seed not currently supported with OpenAI API"
                 )
+            if not self._openai_client_wrapper:
+                raise ClientNotDefined("OpenAI", "OpenAI")
+            chat_msg = self._openai_client_wrapper.answer(model, messages, tools=tools)
 
-            case Platform.Mistral:
-                if not self._mistralai_client_wrapper:
-                    raise ClientNotDefined("Mistral AI", "Mistral")
-                chat_msg = self._mistralai_client_wrapper.answer(
-                    model,
-                    messages,
-                    tools=tools,
-                    tool_choice=tool_choice,
-                    random_seed=random_seed,
-                )
+        elif model.platform == Platform.Mistral:
+            if not self._mistralai_client_wrapper:
+                raise ClientNotDefined("Mistral AI", "Mistral")
+            chat_msg = self._mistralai_client_wrapper.answer(
+                model,
+                messages,
+                tools=tools,
+                tool_choice=tool_choice,
+                random_seed=random_seed,
+            )
 
-            case _:
-                raise ValueError(f"Missing platform in model: {model}")
+        else:
+            raise ValueError(f"Missing platform in model: {model}")
 
         if debug:
             print(f"{chat_msg=}")
