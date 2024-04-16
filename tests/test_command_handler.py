@@ -1,4 +1,4 @@
-from typing import Any, Final, cast
+from typing import Any, cast
 from unittest.mock import Mock
 
 import pytest
@@ -11,7 +11,7 @@ from src.infrastructure.ahora import TimeManager
 from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.llm_connection.client_wrapper import QueryResult
 from src.infrastructure.repository import ChatRepository
-from src.models.shared import ChatMessage, CompleteMessage, Model, ModelName
+from src.models.shared import CompleteMessage, Model, ModelName
 from src.view import View
 
 
@@ -122,6 +122,20 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
         calls = self.mock_view.print_interaction.mock_calls
         assert len(calls) == 2
         assert len(self.prev_messages_stub) == 4
+
+    def test_show_help_wait_user_press_enter(self) -> None:
+        remaining = ""
+        self._select_model()
+
+        self.command_handler.process_action(Action(ActionType.HELP), remaining)
+
+        assert len(self.prev_messages_stub) == 0
+        self.mock_view.simple_view.get_input.assert_called_once()
+        calls = self.mock_view.simple_view.get_input.mock_calls
+        assert len(calls) == 1
+        prompt_for_user = calls[0].args[0]
+        assert isinstance(prompt_for_user, Raw)
+        assert "enter" in prompt_for_user.value.lower()
 
 
 def get_simple_response_stub(

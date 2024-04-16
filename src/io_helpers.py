@@ -1,7 +1,7 @@
 import time
 from typing import NewType
 
-from rich import print
+import rich
 
 from src.generic_view import EscapedStr, Raw, StyledStr
 
@@ -42,23 +42,27 @@ def end_style_tag(s: StyleTag) -> str:
     return f"[/{s[1:-1]}]"
 
 
-def get_input(text: EscapedStr | Raw | None = None) -> str:
-    """Prompts the user to provide an input, in a styled way"""
+class SimpleView:
+    def print(self, texto: EscapedStr) -> None:
+        rich.print(texto)
 
-    if isinstance(text, Raw):
-        text = escape_for_rich(text)
-    text_with_breakline_before = f"\n{text}" if text else ""
-    print(
-        CALL_TO_ACTION + f"{text_with_breakline_before}\n> ",
-        end="",
-    )
-    return input()
+    def get_input(self, text: EscapedStr | Raw | None = None) -> str:
+        """Prompts the user to provide an input, in a styled way"""
+
+        if isinstance(text, Raw):
+            text = escape_for_rich(text)
+        text_with_breakline_before = f"\n{text}" if text else ""
+        rich.print(
+            CALL_TO_ACTION + f"{text_with_breakline_before}\n> ",
+            end="",
+        )
+        return input()
 
 
 def show_error_msg(text: EscapedStr | Raw) -> None:
     """Displays an error message with the given text and make a short pause before returning"""
     text = ensure_escaped(text)
-    print(ERROR + f"\n" + text)
+    rich.print(ERROR + f"\n" + text)
     time.sleep(1)
 
 
