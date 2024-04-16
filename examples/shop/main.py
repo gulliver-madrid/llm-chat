@@ -18,10 +18,10 @@ from examples.shop.tools import ToolsManager, tools
 from examples.shop.types import is_object_mapping, is_object_sequence, is_str_sequence
 
 from src.domain import ChatMessage
-from src.generic_view import GenericView, Raw
+from src.generic_view import Raw
 from src.infrastructure.llm_connection import ClientWrapper, QueryResult
 from src.infrastructure.repository import ChatRepository
-from src.io_helpers import display_neutral_msg, escape_for_rich, get_input
+from src.io_helpers import SimpleView, display_neutral_msg, escape_for_rich
 from src.logging import configure_logger, format_var
 from src.models.shared import CompleteMessage, Model, define_system_prompt
 from src.models_data import get_models
@@ -42,7 +42,7 @@ class Main:
         self._tools_manager = ToolsManager(self._shop_repository)
         self._use_system = self._config_reader.read_use_system_config()
         self._tool_calls_regex = create_tool_calls_regex()
-        self._view = GenericView()
+        self._view = SimpleView()
         self._display_model_name()
         self._prompt_generator = SystemPromptGenerator()
 
@@ -59,7 +59,9 @@ class Main:
             use_system=self._use_system,
         )
         self._messages.append(system_prompt)
-        user_query = get_input(Raw("Pregunta lo que quieras sobre nuestra tienda"))
+        user_query = self._view.get_input(
+            Raw("Pregunta lo que quieras sobre nuestra tienda")
+        )
         if user_query == "/exit":
             print("Conversación finalizada")
             quit()

@@ -7,7 +7,7 @@ from rich.markdown import Markdown
 from src.domain import ChatMessage
 from src.generic_view import EscapedStr, Raw
 from src.infrastructure.ahora import TimeManager
-from src.io_helpers import display_neutral_msg, get_input, show_error_msg
+from src.io_helpers import SimpleView, display_neutral_msg, show_error_msg
 from src.models.placeholders import Placeholder
 from src.models.serialization import ConversationId
 from src.models.shared import ModelName
@@ -35,6 +35,13 @@ Si empiezas el contenido de un placeholder con `/for` y pones las variantes sepa
 
 
 class View:
+
+    def __init__(self) -> None:
+        self._simple_view = SimpleView()
+
+    @property
+    def simple_view(self) -> SimpleView:
+        return self._simple_view
 
     def print_interaction(
         self, time_manager: TimeManager, model_name: ModelName, query: Raw, content: Raw
@@ -65,7 +72,9 @@ class View:
         """
         substitutions: dict[Placeholder, str] = {}
         for placeholder in unique_placeholders:
-            replacement = get_input(Raw("Por favor indica el valor de " + placeholder))
+            replacement = self.simple_view.get_input(
+                Raw("Por favor indica el valor de " + placeholder)
+            )
             substitutions[placeholder] = replacement
         return substitutions
 
@@ -75,7 +84,7 @@ class View:
             number_of_queries,
             "consultas. Quieres continuar? Y/n",
         )
-        user_input_continue = get_input()
+        user_input_continue = self.simple_view.get_input()
         return user_input_continue.lower() in ["", "y", "yes"]
 
     def write_object(self, obj: object) -> None:
