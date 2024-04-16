@@ -3,15 +3,15 @@ from typing import Sequence
 from rich import print
 
 
-from src.generic_view import GenericView, Raw
+from src.generic_view import Raw
 from src.io_helpers import (
     BLUE_VIOLET_COLOR,
     BOLD_STYLE,
     CALL_TO_ACTION,
     NEUTRAL_MSG,
+    SimpleView,
     apply_style_tag,
     escape_for_rich,
-    get_input,
     show_error_msg,
     to_styled,
 )
@@ -24,7 +24,7 @@ class SelectModelController:
         self._model_choice_parser = ModelChoiceParser(models)
         self._models = models
         self._default_model = self._models[0]
-        self._view = GenericView()
+        self._view = SimpleView()
 
     def select_model(self) -> Model:
         """
@@ -37,7 +37,7 @@ class SelectModelController:
 
             self._show_options()
 
-            user_choice = get_input(
+            user_choice = self._view.get_input(
                 apply_style_tag(
                     Raw(f"Introduce tu elección (1-{num_options})"), BOLD_STYLE
                 )

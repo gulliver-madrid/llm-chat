@@ -8,10 +8,7 @@ from src.controllers.select_model import SelectModelController
 from src.engine import setup_engine
 from src.generic_view import Raw
 from src.infrastructure.llm_connection import ClientWrapper
-from src.io_helpers import (
-    display_neutral_msg,
-    get_input,
-)
+from src.io_helpers import SimpleView, display_neutral_msg
 from src.models.shared import Model
 from src.models_data import get_models
 
@@ -26,6 +23,7 @@ PROGRAM_PROMPT = Raw(
 class Main:
     def __init__(self, models: Sequence[Model]) -> None:
         self._select_model_controler = SelectModelController(models)
+        self._view = SimpleView()
         load_dotenv()
         mistral_api_key = os.environ.get("MISTRAL_API_KEY")
         openai_api_key = os.environ.get("OPENAI_API_KEY")
@@ -42,7 +40,7 @@ class Main:
         self._engine.initiate()
 
         while True:
-            raw_query = get_input(PROGRAM_PROMPT)
+            raw_query = self._view.get_input(PROGRAM_PROMPT)
 
             if not raw_query:
                 continue
