@@ -133,22 +133,21 @@ class Main:
             function_name = tool_call.function.name
             function_params = json.loads(tool_call.function.arguments)
             assert is_object_mapping(function_params)
-            match function_name:
-                case "retrieve_product_prices":
-                    assert len(function_params) == 1, function_params
-                    assert "product_refs" in function_params
-                    product_refs = function_params.get("product_refs")
-                    assert is_str_sequence(product_refs)
-                    function_result = self._tools_manager.retrieve_product_prices(
-                        product_refs
-                    )
-                    assert isinstance(tool_call.id, str)
-                    tool_response_message = create_tool_response(
-                        function_name, function_result, tool_call.id
-                    )
-                    self._messages.append(CompleteMessage(tool_response_message))
-                case _:
-                    raise WrongFunctionName(function_name)
+            if function_name == "retrieve_product_prices":
+                assert len(function_params) == 1, function_params
+                assert "product_refs" in function_params
+                product_refs = function_params.get("product_refs")
+                assert is_str_sequence(product_refs)
+                function_result = self._tools_manager.retrieve_product_prices(
+                    product_refs
+                )
+                assert isinstance(tool_call.id, str)
+                tool_response_message = create_tool_response(
+                    function_name, function_result, tool_call.id
+                )
+                self._messages.append(CompleteMessage(tool_response_message))
+            else:
+                raise WrongFunctionName(function_name)
         response = self._client.get_simple_response(
             self._model,
             self._messages,
