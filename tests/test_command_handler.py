@@ -137,6 +137,19 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
         assert isinstance(prompt_for_user, Raw)
         assert "enter" in prompt_for_user.value.lower()
 
+    def test_debug_command_works(self) -> None:
+        remaining = "some text"
+        self.mock_view.input_extra_line.side_effect = self.user_prompt_lines
+        self.mock_client_wrapper.get_simple_response.return_value = QueryResult("", [])
+
+        self._select_model()
+
+        self.command_handler.process_action(Action(ActionType.DEBUG), remaining)
+
+        calls = self.mock_client_wrapper.get_simple_response.mock_calls
+        assert len(calls) == 1
+        assert calls[0].kwargs["debug"] == True
+
 
 def get_simple_response_stub(
     _model: Model,
