@@ -8,6 +8,7 @@ from src.infrastructure.exceptions import (
     LLMChatException,
 )
 from src.logging import configure_logger
+from src.models.messages_ops import add_user_query_in_place
 from src.models.shared import (
     ChatMessage,
     CompleteMessage,
@@ -28,10 +29,6 @@ logger = configure_logger(__name__)
 class QueryResult:
     content: str
     messages: list[CompleteMessage]
-
-
-def add_user_query_in_place(messages: list[CompleteMessage], query: str) -> None:
-    messages.append(CompleteMessage(ChatMessage(role="user", content=query)))
 
 
 prev_times: list[float] = []
