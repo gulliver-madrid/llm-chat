@@ -11,13 +11,13 @@ from src.infrastructure.llm_connection import (
     ClientWrapper,
     QueryResult,
 )
-from src.infrastructure.llm_connection.client_wrapper import add_user_query_in_place
 from src.infrastructure.repository import ChatRepository
 from src.io_helpers import (
     ensure_escaped,
     get_input,
     show_error_msg,
 )
+from src.models.messages_ops import add_user_query_in_place
 from src.models.model_wrapper import ModelWrapper
 from src.models.placeholders import (
     Placeholder,
