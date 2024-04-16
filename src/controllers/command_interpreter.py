@@ -24,7 +24,7 @@ class Action:
 
 class CommandNoValid(Exception):
     def __init__(self, wrong_command: str) -> None:
-        super().__init__(f"Comando no válido: {wrong_command}")
+        super().__init__(f"No valid command: {wrong_command}")
 
 
 command_map = {
