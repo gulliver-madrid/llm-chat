@@ -31,6 +31,7 @@ from src.models.serialization import (
     convert_conversation_text_into_messages,
 )
 from src.models.shared import (
+    ChatMessage,
     CompleteMessage,
     extract_chat_messages,
 )
@@ -139,6 +140,8 @@ class CommandHandler:
         messages = None
         for i, query in enumerate(queries):
             messages = self._answer_query(debug, i + 1, len(queries), query)
+        print(f"{messages=}")
+        print(f"{self._prev_messages=}")
         self._prev_messages[:] = messages or []
 
     def _answer_query(
@@ -189,8 +192,12 @@ class CommandHandler:
         self, query: QueryText, debug: bool = False
     ) -> QueryResult:
         assert self._model_wrapper.model
-        return self._client_wrapper.get_simple_response_to_query(
-            self._model_wrapper.model, query, self._prev_messages, debug=debug
+
+        self._prev_messages.append(
+            CompleteMessage(ChatMessage(role="user", content=query))
+        )
+        return self._client_wrapper.get_simple_response(
+            self._model_wrapper.model, self._prev_messages, debug=debug
         )
 
     def _should_cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
