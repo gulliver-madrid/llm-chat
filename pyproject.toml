@@ -12,7 +12,7 @@ testpaths = [
 
 [tool.mutmut]
 paths_to_mutate="src"
-runner="pytest -x --assert=plain"
+runner="poetry run mypy --no-error-summary && poetry run pytest -x --assert=plain"
 tests_dir="tests"
 
 [tool.poetry.dependencies]
