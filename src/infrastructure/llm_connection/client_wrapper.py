@@ -48,6 +48,8 @@ class ClientWrapper:
     def __init__(
         self, *, mistral_api_key: str | None = None, openai_api_key: str | None = None
     ):
+        mistral_api_key = "bad api key"  # pragma: no mutate (runnig mutation testing)
+        openai_api_key = "bad api key"  # pragma: no mutate (runnig mutation testing)
         self._mistralai_client_wrapper = None
         self._openai_client_wrapper = None
         if mistral_api_key:
