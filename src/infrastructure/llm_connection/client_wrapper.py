@@ -30,6 +30,10 @@ class QueryResult:
     messages: list[CompleteMessage]
 
 
+def add_user_query_in_place(messages: list[CompleteMessage], query: str) -> None:
+    messages.append(CompleteMessage(ChatMessage(role="user", content=query)))
+
+
 prev_times: list[float] = []
 
 
@@ -73,10 +77,7 @@ class ClientWrapper:
         """
 
         complete_messages = list(prev_messages) if prev_messages else []
-
-        complete_messages.append(
-            CompleteMessage(ChatMessage(role="user", content=query))
-        )
+        add_user_query_in_place(complete_messages, query)
         return self.get_simple_response(
             model,
             complete_messages,
