@@ -81,7 +81,7 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
 
     def test_chat_with_model(self) -> None:
         model_response = "Fine, thanks!"
-        self.mock_view.input_extra_line.return_value = "end"
+        self.mock_view.input_extra_line.side_effect = ["something more", "end"]
         self.mock_client_wrapper.get_simple_response_to_query.return_value = (
             QueryResult(model_response, [])
         )
