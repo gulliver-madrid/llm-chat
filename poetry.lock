@@ -34,6 +34,21 @@ test = ["anyio[trio]", "coverage[toml] (>=7)", "exceptiongroup (>=1.2.0)", "hypo
 trio = ["trio (>=0.23)"]
 
 [[package]]
+name = "astunparse"
+version = "1.6.3"
+description = "An AST unparser for Python"
+optional = false
+python-versions = "*"
+files = [
+    {file = "astunparse-1.6.3-py2.py3-none-any.whl", hash = "sha256:c2652417f2c8b5bb325c885ae329bdf3f86424075c4fd1a128674bc6fba4b8e8"},
+    {file = "astunparse-1.6.3.tar.gz", hash = "sha256:5ad93a8456f0d084c3456d059fd9a92cce667963232cbf763eac3bc5b7940872"},
+]
+
+[package.dependencies]
+six = ">=1.6.1,<2.0"
+wheel = ">=0.23.0,<1.0"
+
+[[package]]
 name = "certifi"
 version = "2024.2.2"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -154,6 +169,19 @@ files = [
     {file = "h11-0.14.0-py3-none-any.whl", hash = "sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761"},
     {file = "h11-0.14.0.tar.gz", hash = "sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d"},
 ]
+
+[[package]]
+name = "hammett"
+version = "0.9.4"
+description = "hammett is a fast python test runner"
+optional = false
+python-versions = "*"
+files = [
+    {file = "hammett-0.9.4.tar.gz", hash = "sha256:3bc445512a717744f944b27f001a777f9e3ff4f58d2cb8e4513f33a0c2e944ae"},
+]
+
+[package.dependencies]
+astunparse = "*"
 
 [[package]]
 name = "httpcore"
@@ -897,7 +925,21 @@ files = [
     {file = "tzdata-2024.1.tar.gz", hash = "sha256:2674120f8d891909751c38abcdfd386ac0a5a1127954fbc332af6b5ceae07efd"},
 ]
 
+[[package]]
+name = "wheel"
+version = "0.43.0"
+description = "A built-package format for Python"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "wheel-0.43.0-py3-none-any.whl", hash = "sha256:55c570405f142630c6b9f72fe09d9b67cf1477fcf543ae5b8dcb1f5b7377da81"},
+    {file = "wheel-0.43.0.tar.gz", hash = "sha256:465ef92c69fa5c5da2d1cf8ac40559a8c940886afcef87dcf14b9470862f1d85"},
+]
+
+[package.extras]
+test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "71fbc8cb68a1a2836b7d4cd2f938a00beac6b1332c88769d5fec246f6d973132"
+content-hash = "0a006a3754db9e077488732fead6b1d11d4c825aedf2c0904759feab61527255"
