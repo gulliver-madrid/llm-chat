@@ -14,7 +14,6 @@ from src.infrastructure.llm_connection import (
 from src.infrastructure.repository import ChatRepository
 from src.io_helpers import (
     ensure_escaped,
-    get_input,
     show_error_msg,
 )
 from src.models.messages_ops import add_user_query_in_place
@@ -78,7 +77,7 @@ class CommandHandler:
             raise ExitException()
         elif action.type == ActionType.HELP:
             self._view.show_help()
-            get_input(PRESS_ENTER_TO_CONTINUE)
+            self._view.simple_view.get_input(PRESS_ENTER_TO_CONTINUE)
             return
         elif action.type == ActionType.CHANGE_MODEL:
             self.prompt_to_select_model()
