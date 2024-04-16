@@ -12,7 +12,8 @@ testpaths = [
 
 [tool.mutmut]
 paths_to_mutate="src"
-runner="pytest -x"
+runner="pytest -x --assert=plain"
+tests_dir="tests"
 
 [tool.poetry.dependencies]
 python = "^3.10"
