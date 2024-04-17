@@ -169,7 +169,7 @@ class CommandHandler:
         conversation = self._repository.load_conversation_as_text(conversation_id)
         self._prev_messages[:] = convert_conversation_text_into_messages(conversation)
         self._display_loaded_conversation(action, conversation_id, conversation)
-        self._view.display_neutral_msg(Raw("La conversación ha sido cargada"))
+        self._view.display_neutral_msg(Raw("La conversacion ha sido cargada"))
 
     def _display_loaded_conversation(
         self,
