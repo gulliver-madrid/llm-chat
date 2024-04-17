@@ -11,6 +11,7 @@ from src.infrastructure.ahora import TimeManager
 from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.llm_connection.client_wrapper import QueryResult
 from src.infrastructure.repository import ChatRepository
+from src.models.serialization import ConversationId
 from src.models.shared import CompleteMessage, Model, ModelName
 from src.view import View
 from tests.objects import TEXT_1
@@ -162,6 +163,12 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
         )
 
         self.mock_repository.load_conversation_as_text.assert_called_once()
+        self.mock_view.display_conversation.assert_called_once()
+        calls = self.mock_view.display_conversation.mock_calls
+        assert calls[0].args[0] == ConversationId("0042")
+        self.mock_view.display_neutral_msg.assert_called_once_with(
+            Raw("La conversación ha sido cargada")
+        )
 
 
 def get_simple_response_stub(
