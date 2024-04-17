@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Final, Sequence
 
 from rich import print
 
@@ -18,12 +18,14 @@ from src.io_helpers import (
 from src.models.model_choice import ModelChoiceParser
 from src.models.shared import ModelName, Model
 
+INDEX_OF_DEFAULT_MODEL: Final = 0  # pragma: no mutate
+
 
 class SelectModelController:
     def __init__(self, models: Sequence[Model]) -> None:
         self._model_choice_parser = ModelChoiceParser(models)
         self._models = models
-        self._default_model = self._models[0]
+        self._default_model = self._models[INDEX_OF_DEFAULT_MODEL]
         self._view = SimpleView()
 
     def select_model(self) -> Model:
