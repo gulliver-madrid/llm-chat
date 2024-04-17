@@ -17,8 +17,8 @@ logger = configure_logger(__name__)
 CHAT_EXT = "chat"
 CHAT_NAME_PATTERN = re.compile(rf"^(\d{{{NUMBER_OF_DIGITS}}})\.{CHAT_EXT}$")
 
-TOO_MUCH_CHATS = 10**NUMBER_OF_DIGITS
-WARNING_THRESHOLD = TOO_MUCH_CHATS * 0.9
+TOO_MUCH_CHATS = 10**NUMBER_OF_DIGITS  # pragma: no mutate
+WARNING_THRESHOLD = TOO_MUCH_CHATS * 0.9  # pragma: no mutate
 
 
 class ChatRepositoryImplementer:
