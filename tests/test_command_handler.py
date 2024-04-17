@@ -261,7 +261,7 @@ def test_load_conversation(advanced_fixture: AdvancedFixture) -> None:
     calls = fixture.mock_view.display_conversation.mock_calls
     assert calls[0].args[0] == ConversationId("0042")
     fixture.mock_view.display_neutral_msg.assert_called_once_with(
-        Raw("La conversación ha sido cargada")
+        Raw("La conversacion ha sido cargada")
     )
 
 
