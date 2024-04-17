@@ -16,7 +16,8 @@ def pre_mutation(context: Any) -> None:
     lines: list[str] = []
     lines.append("\n" * 2 + context.filename)
     lines.append(context.current_source_line)
-    lines.append(f"mutation_id: {context.mutation_id}")
+    lines.append(f"index: {context.index}")
+    # lines.append(f"mutation_id: {context.mutation_id}")
     print("\n".join(lines))
     if "python_modules" in context.filename:
         print("skipped:", context.filename)
@@ -25,6 +26,8 @@ def pre_mutation(context: Any) -> None:
     if re.match(STYLE_TAGS_REGEX, context.current_source_line.strip()):
         context.skip = True
     elif is_enum_or_similar(context.current_source_line):
+        context.skip = True
+    elif context.current_source_line.strip().startswith("assert "):
         context.skip = True
     else:
         print("not skipped")
