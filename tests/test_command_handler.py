@@ -55,6 +55,8 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
     def setup_method(self) -> None:
         super().setup_method()
         self.model_name = ModelName("Model name test")
+        # if a line is not sent before the `end` command, there is a risk
+        # of creating an infinite loop when running the mutation tests
         self.user_prompt_lines = ["something more", "end"]
 
     def _select_model(self) -> None:
@@ -101,6 +103,35 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
 
         assert len(self.prev_messages_stub) == 2
 
+    def test_chat_with_model_using_placeholder(self) -> None:
+        """
+        Checks that substitutions are made in the user's message, and a model response is requested.
+        """
+        user_substitutions = {"$0something": "anything"}
+        self.mock_view.input_extra_line.side_effect = self.user_prompt_lines
+        self.mock_view.get_raw_substitutions_from_user.return_value = user_substitutions
+        self.mock_client_wrapper.get_simple_response.side_effect = (
+            get_simple_response_stub
+        )
+        remaining = "hello, how are you? What is $0something?"
+        expected_user_content_replaced = (
+            "hello, how are you? What is anything?\nsomething more"
+        )
+        self._select_model()
+
+        self.command_handler.process_action(
+            Action(ActionType.CONTINUE_CONVERSATION), remaining
+        )
+
+        self.mock_client_wrapper.get_simple_response.assert_called()
+        calls = self.mock_client_wrapper.get_simple_response.mock_calls
+        print(calls)
+        assert len(calls) == 1
+        messages = calls[0].args[1]
+        assert len(messages) == 2
+        user_message_replaced = messages[0]
+        assert user_message_replaced.chat_msg.content == expected_user_content_replaced
+
     def test_chat_with_model_continue(self) -> None:
         """Simula una conversacion que continua (aunque el modelo repite lo mismo por simplificar)"""
 
@@ -120,6 +151,7 @@ class TestCommandHandlerShowModel(TestCommandHandlerBase):
         self.command_handler.process_action(
             Action(ActionType.CONTINUE_CONVERSATION), "then, again, how are you?"
         )
+        self.mock_client_wrapper.get_simple_response.assert_called()
         self.mock_view.print_interaction.assert_called()
         calls = self.mock_view.print_interaction.mock_calls
         assert len(calls) == 2
