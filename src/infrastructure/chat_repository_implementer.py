@@ -36,6 +36,7 @@ class ChatRepositoryImplementer:
         assert not self.is_initialized
         self._file_manager = file_manager
         self._file_remover = SafeFileRemover(self._file_manager)
+        self._chat_detecter = ChatFileDetecter(self._file_manager)
         self.__data_dir = data_dir
         self._chats_dir = chats_dir
         self.is_initialized = True
@@ -47,12 +48,16 @@ class ChatRepositoryImplementer:
         of the ids is maintained throughout the process.
         """
         assert self.is_initialized
-        for path_wrapper in self._file_manager.get_children(self.__data_dir):
-            if not self._is_chat_file(path_wrapper):
-                continue
+        data_dir_children = self._file_manager.get_children(self.__data_dir)
+        files_to_move = (
+            path
+            for path in data_dir_children  # fmt
+            if self._chat_detecter.is_chat_file(path)
+        )
+        for path in files_to_move:
             new_id = self.get_new_conversation_id()
             new_path = self.build_chat_path(new_id)
-            self._move_content(path_wrapper, new_path)
+            self._move_content(path, new_path)
 
     def build_chat_path(self, conversation_id: ConversationId) -> PathWrapper:
         filename = conversation_id + "." + CHAT_EXT
@@ -72,12 +77,6 @@ class ChatRepositoryImplementer:
         self._file_manager.write_file(dest, content)
         self._file_remover.remove_file(source)
 
-    def _is_chat_file(self, path_wrapper: PathWrapper) -> bool:
-        assert self._file_manager.path_exists(path_wrapper)
-        if self._file_manager.path_is_dir(path_wrapper):
-            return False
-        return match_chat_file_pattern(path_wrapper.name)
-
     def _find_max_file_number(self, directory_path: PathWrapper) -> int | None:
         assert self._file_manager.path_is_dir(directory_path)
         children = self._file_manager.get_children(directory_path)
@@ -88,7 +87,18 @@ class ChatRepositoryImplementer:
     def _get_chat_files(
         self, path_wrappers: Iterable[PathWrapper]
     ) -> list[PathWrapper]:
-        return [p for p in path_wrappers if not self._is_chat_file(p)]
+        return [p for p in path_wrappers if not self._chat_detecter.is_chat_file(p)]
+
+
+class ChatFileDetecter:
+    def __init__(self, file_manager: FileManager):
+        self._file_manager = file_manager
+
+    def is_chat_file(self, path_wrapper: PathWrapper) -> bool:
+        assert self._file_manager.path_exists(path_wrapper)
+        if self._file_manager.path_is_dir(path_wrapper):
+            return False
+        return match_chat_file_pattern(path_wrapper.name)
 
 
 def get_max_stem_value(chat_files: Iterable[PathWrapper]) -> int | None:
