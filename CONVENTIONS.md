@@ -17,4 +17,6 @@
 
 7.  **Use of Dataclasses**: Classes that are primarily used for storing data should be defined as dataclasses, reducing the need for writing repetitive code.
 
+8.  Importante: usar solo caracteres ascii en las excepciones.
+
 These conventions aim to maintain clean, readable, and maintainable code, promoting good software development practices.
