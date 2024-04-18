@@ -37,6 +37,9 @@ class ChatRepositoryImplementer:
         self._file_manager = file_manager
         self._file_remover = SafeFileRemover(self._file_manager)
         self._chat_detecter = ChatFileDetecter(self._file_manager)
+        self._conversation_id_provider = FreeConversationIdProvider(
+            self._file_manager, self._chat_detecter, chats_dir
+        )
         self.__data_dir = data_dir
         self._chats_dir = chats_dir
         self.is_initialized = True
@@ -64,30 +67,13 @@ class ChatRepositoryImplementer:
         return self._chats_dir / filename
 
     def get_new_conversation_id(self) -> ConversationId:
-        max_number = self._find_max_file_number(self._chats_dir)
-        new_number = (max_number + 1) if max_number is not None else 0
-        if new_number > WARNING_THRESHOLD:
-            logger.warning("Warning: running short of chat id numbers")
-        assert 0 <= new_number < TOO_MUCH_CHATS, new_number
-        return convert_digits_to_conversation_id(str(new_number))
+        return self._conversation_id_provider.get_next_free_conversation_id()
 
     def _move_content(self, source: PathWrapper, dest: PathWrapper) -> None:
         content = self._file_manager.read_file(source)
         assert not self._file_manager.path_exists(dest), dest
         self._file_manager.write_file(dest, content)
         self._file_remover.remove_file(source)
-
-    def _find_max_file_number(self, directory_path: PathWrapper) -> int | None:
-        assert self._file_manager.path_is_dir(directory_path)
-        children = self._file_manager.get_children(directory_path)
-        chat_files = self._get_chat_files(children)
-        log_ignored_paths(children, chat_files)
-        return get_max_stem_value(chat_files)
-
-    def _get_chat_files(
-        self, path_wrappers: Iterable[PathWrapper]
-    ) -> list[PathWrapper]:
-        return [p for p in path_wrappers if not self._chat_detecter.is_chat_file(p)]
 
 
 class ChatFileDetecter:
@@ -99,6 +85,38 @@ class ChatFileDetecter:
         if self._file_manager.path_is_dir(path_wrapper):
             return False
         return match_chat_file_pattern(path_wrapper.name)
+
+
+class FreeConversationIdProvider:
+    def __init__(
+        self,
+        file_manager: FileManager,
+        chat_detecter: ChatFileDetecter,
+        chats_dir: PathWrapper,
+    ):
+        self._file_manager = file_manager
+        self._chat_detecter = chat_detecter
+        self._chats_dir = chats_dir
+
+    def get_next_free_conversation_id(self) -> ConversationId:
+        max_number = self._find_max_file_number(self._chats_dir)
+        new_number = (max_number + 1) if max_number is not None else 0
+        if new_number > WARNING_THRESHOLD:
+            logger.warning("Warning: running short of chat id numbers")
+        assert 0 <= new_number < TOO_MUCH_CHATS, new_number
+        return convert_digits_to_conversation_id(str(new_number))
+
+    def _find_max_file_number(self, directory_path: PathWrapper) -> int | None:
+        assert self._file_manager.path_is_dir(directory_path)
+        children = self._file_manager.get_children(directory_path)
+        chat_files = self._filter_chat_files(children)
+        log_ignored_paths(children, chat_files)
+        return get_max_stem_value(chat_files)
+
+    def _filter_chat_files(
+        self, path_wrappers: Iterable[PathWrapper]
+    ) -> list[PathWrapper]:
+        return [p for p in path_wrappers if not self._chat_detecter.is_chat_file(p)]
 
 
 def get_max_stem_value(chat_files: Iterable[PathWrapper]) -> int | None:
