@@ -116,7 +116,7 @@ class FreeConversationIdProvider:
     def _filter_chat_files(
         self, path_wrappers: Iterable[PathWrapper]
     ) -> list[PathWrapper]:
-        return [p for p in path_wrappers if not self._chat_detecter.is_chat_file(p)]
+        return [p for p in path_wrappers if self._chat_detecter.is_chat_file(p)]
 
 
 def get_max_stem_value(chat_files: Iterable[PathWrapper]) -> int | None:
