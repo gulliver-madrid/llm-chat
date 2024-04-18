@@ -1,10 +1,10 @@
 from unittest.mock import Mock
-from src.infrastructure.chat_repository_implementer import (
-    ChatRepositoryImplementer,
-    match_chat_file_pattern,
-)
+
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
+
+from src.infrastructure.chat_file_detecter import match_chat_file_pattern
+from src.infrastructure.chat_repository_implementer import ChatRepositoryImplementer
 
 
 def test_match_filename() -> None:
