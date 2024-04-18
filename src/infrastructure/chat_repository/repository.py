@@ -10,7 +10,7 @@ from src.models.serialization import (
     create_conversation_texts,
 )
 from src.models.shared import CompleteMessage
-from .chat_repository_implementer import ChatRepositoryImplementer
+from .implementer import ChatRepositoryImplementer
 
 
 class ChatRepository:

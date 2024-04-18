@@ -9,7 +9,7 @@ from src.controllers.select_model import SelectModelController
 from src.generic_view import Raw
 from src.infrastructure.ahora import TimeManager
 from src.infrastructure.llm_connection import ClientWrapper
-from src.infrastructure.repository import ChatRepository
+from src.infrastructure.chat_repository.repository import ChatRepository
 from src.models.shared import Model
 from src.view import View
 

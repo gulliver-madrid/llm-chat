@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+
 import pytest
+
 from src.controllers.command_interpreter import (
     ActionType,
     CommandInterpreter,
