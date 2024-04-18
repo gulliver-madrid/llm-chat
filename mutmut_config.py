@@ -23,6 +23,8 @@ def pre_mutation(context: Any) -> None:
         print("skipped:", context.filename)
         context.skip = True
         return
+    if re.search(r"\blogger\b", context.current_source_line):
+        context.skip = True
     if re.match(STYLE_TAGS_REGEX, context.current_source_line.strip()):
         context.skip = True
     elif is_enum_or_similar(context.current_source_line):
