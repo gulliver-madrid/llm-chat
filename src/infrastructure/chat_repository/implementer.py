@@ -13,7 +13,7 @@ logger = configure_logger(__name__)
 class ChatRepositoryImplementer:
     """Only access to disk using FileManager"""
 
-    is_initialized = False
+    is_initialized: bool = False
 
     def init(
         self,
