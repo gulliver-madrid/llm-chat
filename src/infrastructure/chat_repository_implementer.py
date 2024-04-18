@@ -79,6 +79,8 @@ class SafeFileContentMover:
 
 
 class ChatFileDetecter:
+    """Clase que identifica y filtra los chat files de un iterable de PathWrappers"""
+
     def __init__(self, file_manager: FileManager):
         self._file_manager = file_manager
 
@@ -95,6 +97,11 @@ class ChatFileDetecter:
 
 
 class FreeConversationIdProvider:
+    """
+    Clase especializada en proveer el siguiente ConversationId libre de acuerdo al contenido
+    del directorio de chats.
+    """
+
     def __init__(
         self,
         file_manager: FileManager,
