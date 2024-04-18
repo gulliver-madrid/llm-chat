@@ -80,4 +80,4 @@ def highlight_role(role_string: Raw) -> str:
 
 def display_neutral_msg(text: Raw | EscapedStr) -> None:
     text = ensure_escaped(text)
-    print(NEUTRAL_MSG + text)
+    rich.print(NEUTRAL_MSG + text)
