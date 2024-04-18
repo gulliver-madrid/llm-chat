@@ -35,8 +35,8 @@ class ChatRepositoryImplementer:
     ) -> None:
         assert not self.is_initialized
         self._file_manager = file_manager
-        self._file_remover = SafeFileRemover(self._file_manager)
         self._chat_detecter = ChatFileDetecter(self._file_manager)
+        self._content_mover = SafeFileContentMover(self._file_manager)
         self._conversation_id_provider = FreeConversationIdProvider(
             self._file_manager, self._chat_detecter, chats_dir
         )
@@ -52,15 +52,11 @@ class ChatRepositoryImplementer:
         """
         assert self.is_initialized
         data_dir_children = self._file_manager.get_children(self.__data_dir)
-        files_to_move = (
-            path
-            for path in data_dir_children  # fmt
-            if self._chat_detecter.is_chat_file(path)
-        )
+        files_to_move = self._chat_detecter.filter_chat_files(data_dir_children)
         for path in files_to_move:
             new_id = self.get_new_conversation_id()
             new_path = self.build_chat_path(new_id)
-            self._move_content(path, new_path)
+            self._content_mover.move_content(path, new_path)
 
     def build_chat_path(self, conversation_id: ConversationId) -> PathWrapper:
         filename = conversation_id + "." + CHAT_EXT
@@ -69,7 +65,13 @@ class ChatRepositoryImplementer:
     def get_new_conversation_id(self) -> ConversationId:
         return self._conversation_id_provider.get_next_free_conversation_id()
 
-    def _move_content(self, source: PathWrapper, dest: PathWrapper) -> None:
+
+class SafeFileContentMover:
+    def __init__(self, file_manager: FileManager):
+        self._file_manager = file_manager
+        self._file_remover = SafeFileRemover(self._file_manager)
+
+    def move_content(self, source: PathWrapper, dest: PathWrapper) -> None:
         content = self._file_manager.read_file(source)
         assert not self._file_manager.path_exists(dest), dest
         self._file_manager.write_file(dest, content)
@@ -80,7 +82,12 @@ class ChatFileDetecter:
     def __init__(self, file_manager: FileManager):
         self._file_manager = file_manager
 
-    def is_chat_file(self, path_wrapper: PathWrapper) -> bool:
+    def filter_chat_files(
+        self, path_wrappers: Iterable[PathWrapper]
+    ) -> list[PathWrapper]:
+        return [p for p in path_wrappers if self._is_chat_file(p)]
+
+    def _is_chat_file(self, path_wrapper: PathWrapper) -> bool:
         assert self._file_manager.path_exists(path_wrapper)
         if self._file_manager.path_is_dir(path_wrapper):
             return False
@@ -109,14 +116,9 @@ class FreeConversationIdProvider:
     def _find_max_file_number(self, directory_path: PathWrapper) -> int | None:
         assert self._file_manager.path_is_dir(directory_path)
         children = self._file_manager.get_children(directory_path)
-        chat_files = self._filter_chat_files(children)
+        chat_files = self._chat_detecter.filter_chat_files(children)
         log_ignored_paths(children, chat_files)
         return get_max_stem_value(chat_files)
-
-    def _filter_chat_files(
-        self, path_wrappers: Iterable[PathWrapper]
-    ) -> list[PathWrapper]:
-        return [p for p in path_wrappers if self._chat_detecter.is_chat_file(p)]
 
 
 def get_max_stem_value(chat_files: Iterable[PathWrapper]) -> int | None:
