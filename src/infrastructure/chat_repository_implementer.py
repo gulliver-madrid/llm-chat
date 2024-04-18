@@ -76,7 +76,7 @@ class ChatRepositoryImplementer:
         assert self._file_manager.path_exists(path_wrapper)
         if self._file_manager.path_is_dir(path_wrapper):
             return False
-        return CHAT_NAME_PATTERN.match(path_wrapper.name) is not None
+        return match_chat_file_pattern(path_wrapper.name)
 
     def _find_max_file_number(self, directory_path: PathWrapper) -> int | None:
         assert self._file_manager.path_is_dir(directory_path)
@@ -94,6 +94,12 @@ class ChatRepositoryImplementer:
 def get_max_stem_value(chat_files: Iterable[PathWrapper]) -> int | None:
     values = (int(p.stem) for p in chat_files)
     return max(values, default=None)
+
+
+def match_chat_file_pattern(filename: str) -> bool:
+    assert "/" not in filename
+    assert "\\" not in filename
+    return bool(CHAT_NAME_PATTERN.match(filename))
 
 
 def log_ignored_paths(
