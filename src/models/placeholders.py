@@ -22,7 +22,7 @@ class QueryBuildException(Exception): ...
 class MultipleForNotSupported(QueryBuildException):
     def __init__(self) -> None:
         super().__init__(
-            f"El uso de varios '{FOR_COMMAND_PREFFIX}' con los placeholders no está soportado"
+            f"El uso de varios '{FOR_COMMAND_PREFFIX}' con los placeholders no esta soportado"
         )
 
 
