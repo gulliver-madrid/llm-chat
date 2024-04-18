@@ -11,7 +11,7 @@ from src.infrastructure.llm_connection import (
     ClientWrapper,
     QueryResult,
 )
-from src.infrastructure.repository import ChatRepository
+from src.infrastructure.chat_repository.repository import ChatRepository
 from src.io_helpers import (
     ensure_escaped,
     show_error_msg,
