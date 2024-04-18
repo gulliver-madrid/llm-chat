@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 import re
 from typing import Iterable
 
@@ -79,14 +80,9 @@ class ChatRepositoryImplementer:
 
     def _find_max_file_number(self, directory_path: PathWrapper) -> int | None:
         assert self._file_manager.path_is_dir(directory_path)
-
         children = self._file_manager.get_children(directory_path)
         chat_files = self._get_chat_files(children)
-
-        ignored_count = len(children) - len(chat_files)
-        if ignored_count > 0:
-            logger.info(f"Se ignoraron {ignored_count} rutas")
-
+        log_ignored_paths(children, chat_files)
         return get_max_stem_value(chat_files)
 
     def _get_chat_files(
@@ -98,3 +94,11 @@ class ChatRepositoryImplementer:
 def get_max_stem_value(chat_files: Iterable[PathWrapper]) -> int | None:
     values = (int(p.stem) for p in chat_files)
     return max(values, default=None)
+
+
+def log_ignored_paths(
+    children: Sequence[PathWrapper], chat_files: Sequence[PathWrapper]
+) -> None:
+    ignored_count = len(children) - len(chat_files)
+    if ignored_count > 0:
+        logger.info(f"Se ignoraron {ignored_count} rutas")
