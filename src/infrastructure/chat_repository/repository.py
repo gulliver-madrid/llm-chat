@@ -1,5 +1,4 @@
-from pathlib import Path
-from typing import Sequence
+from collections.abc import Sequence
 
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
@@ -16,18 +15,21 @@ from .implementer import ChatRepositoryImplementer
 class ChatRepository:
     def __init__(
         self,
+        main_directory: PathWrapper,
         *,
         file_manager: FileManager | None = None,
         time_manager: TimeManager | None = None,
-        chat_repository_implementer: "ChatRepositoryImplementer | None" = None,
+        chat_repository_implementer: ChatRepositoryImplementer | None = None,
     ) -> None:
         self._file_manager = file_manager or FileManager()
         self._time_manager = time_manager or TimeManager()
         self._chat_repository_implementer = (
             chat_repository_implementer or ChatRepositoryImplementer()
         )
-        self.__data_dir = PathWrapper(Path(__file__).parents[2] / "data")
+        self.__data_dir = main_directory / "data"
+        print(self.__data_dir.name)
         self._chats_dir = self.__data_dir / "chats"
+        print(self._chats_dir.name)
         self._chat_repository_implementer.init(
             self.__data_dir, self._chats_dir, self._file_manager
         )
