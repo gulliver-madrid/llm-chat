@@ -5,7 +5,7 @@ from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
 from mistralai.exceptions import MistralConnectionException
 
 from src.infrastructure.exceptions import APIConnectionError
-from src.logging import configure_logger, format_var
+from src.setup_logging import configure_logger, format_var
 from src.models.shared import (
     ChatMessage,
     Model,
