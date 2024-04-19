@@ -1,6 +1,6 @@
 from collections.abc import Sequence
-from pathlib import Path
 
+from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.command_handler import CommandHandler
 from src.controllers.command_interpreter import (
@@ -12,18 +12,16 @@ from src.generic_view import Raw
 from src.infrastructure.ahora import TimeManager
 from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.chat_repository.repository import ChatRepository
+from src.infrastructure.main_path_provider import get_main_directory
 from src.models.shared import Model
-from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 from src.view import View
-
-MAIN_DIRECTORY = PathWrapper(Path(__file__).parents[1])
 
 
 def setup_engine(
     models: Sequence[Model], client_wrapper: ClientWrapper
 ) -> "MainEngine":
     select_model_controler = SelectModelController(models)
-    chat_repository = ChatRepository(MAIN_DIRECTORY)
+    chat_repository = ChatRepository(PathWrapper(get_main_directory()))
     view = View()
     command_interpreter = CommandInterpreter()
     command_handler = CommandHandler(

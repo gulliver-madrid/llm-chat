@@ -1,6 +1,7 @@
 import logging
-from pathlib import Path
 from pprint import pformat
+
+from src.infrastructure.main_path_provider import get_main_directory
 
 
 # Funcion para configurar un logger y enviar su salida a un archivo
@@ -12,7 +13,7 @@ def configure_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
     logger.setLevel(level)  # Establece el nivel del logger
 
     # Crea un FileHandler especifico para escribir en un archivo
-    path = Path("logs")
+    path = get_main_directory() / "logs"
     if not path.exists():
         path.mkdir()
     file_handler = logging.FileHandler(path / log_file_name, encoding="utf-8")
