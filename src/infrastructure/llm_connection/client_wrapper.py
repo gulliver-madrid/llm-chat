@@ -7,7 +7,7 @@ from src.infrastructure.exceptions import (
     TooManyRequests,
     LLMChatException,
 )
-from src.logging import configure_logger
+from src.setup_logging import configure_logger
 from src.models.messages_ops import add_user_query_in_place
 from src.models.shared import (
     ChatMessage,

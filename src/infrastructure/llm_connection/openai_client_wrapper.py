@@ -4,7 +4,7 @@ from typing import Any, Iterable, Sequence, cast
 
 from openai import OpenAI
 
-from src.logging import configure_logger, format_var
+from src.setup_logging import configure_logger, format_var
 from src.models.shared import (
     ChatMessage,
     Model,
