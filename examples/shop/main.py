@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 import re
 from typing import Any, Final, cast
 
@@ -25,6 +26,7 @@ from src.io_helpers import SimpleView, display_neutral_msg, escape_for_rich
 from src.logging import configure_logger, format_var
 from src.models.shared import CompleteMessage, Model, define_system_prompt
 from src.models_data import get_models
+from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 
 logger = configure_logger(__name__)
@@ -37,7 +39,7 @@ class Main:
         self._config_reader = ConfigReader()
         self._messages: Final[list[CompleteMessage]] = []
         self._model = self._get_model()
-        self._repository = ChatRepository()
+        self._repository = ChatRepository(PathWrapper(Path(__file__).parents[2]))
         self._shop_repository = ShopRepository()
         self._tools_manager = ToolsManager(self._shop_repository)
         self._use_system = self._config_reader.read_use_system_config()
