@@ -1,3 +1,4 @@
+# TODO: prevent this file to be mutated
 import logging
 from pprint import pformat
 
@@ -13,7 +14,7 @@ def configure_logger(name: str, level: int = logging.DEBUG) -> logging.Logger:
     logger.setLevel(level)  # Establece el nivel del logger
 
     # Crea un FileHandler especifico para escribir en un archivo
-    path = get_main_directory() / "logs"
+    path = get_main_directory() / "logs"  # pragma: no mutate
     if not path.exists():
         path.mkdir()
     file_handler = logging.FileHandler(path / log_file_name, encoding="utf-8")
