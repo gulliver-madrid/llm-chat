@@ -12,6 +12,7 @@ testpaths = [
 
 [tool.mutmut]
 paths_to_mutate="src"
+paths_to_exclude="src/python_modules,src/setup_logging.py"
 runner="poetry run hammett -x && poetry run mypy --no-error-summary"
 tests_dir="tests"
 
