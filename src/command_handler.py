@@ -51,6 +51,18 @@ class ModelManager:
         self.model_wrapper: Final = ModelWrapper()
         self.client_wrapper: Final = client_wrapper
 
+    def get_simple_response(
+        self,
+        query: QueryText,
+        complete_messages: list[CompleteMessage],
+        debug: bool = False,
+    ) -> QueryResult:
+        assert self.model_wrapper.model
+        add_user_query_in_place(complete_messages, query)
+        return self.client_wrapper.get_simple_response(
+            self.model_wrapper.model, complete_messages, debug=debug
+        )
+
 
 class CommandHandler:
     def __init__(
@@ -167,10 +179,11 @@ class CommandHandler:
         return query_result.messages if current == 1 else None
 
     def _print_interaction(self, query: QueryText, query_result: QueryResult) -> None:
-        assert self._model_manager.model_wrapper.model
+        model = self._model_manager.model_wrapper.model
+        assert model
         self._view.print_interaction(
             self._time_manager,
-            self._model_manager.model_wrapper.model.model_name,
+            model.model_name,
             Raw(query),
             Raw(query_result.content),
         )
@@ -204,10 +217,8 @@ class CommandHandler:
     def _get_simple_response_from_model(
         self, query: QueryText, debug: bool = False
     ) -> QueryResult:
-        assert self._model_manager.model_wrapper.model
-        add_user_query_in_place(self._prev_messages, query)
-        return self._model_manager.client_wrapper.get_simple_response(
-            self._model_manager.model_wrapper.model, self._prev_messages, debug=debug
+        return self._model_manager.get_simple_response(
+            query, self._prev_messages, debug
         )
 
     def _should_cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
