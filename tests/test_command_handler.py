@@ -298,7 +298,7 @@ def test_extra_lines_without_delay(
     model_name = ModelName("Model name test")
     model = Model(None, model_name)
 
-    fixture.command_handler._model_wrapper.change(  # pyright: ignore [reportPrivateUsage]
+    fixture.command_handler._model_manager.model_wrapper.change(  # pyright: ignore [reportPrivateUsage]
         model
     )
     fixture.mock_view.input_extra_line = input_extra_line
@@ -324,7 +324,7 @@ def test_extra_lines_with_delay(command_handler_fixture: CommandHandlerFixture) 
     model_name = ModelName("Model name test")
     model = Model(None, model_name)
 
-    fixture.command_handler._model_wrapper.change(  # pyright: ignore [reportPrivateUsage]
+    fixture.command_handler._model_manager.model_wrapper.change(  # pyright: ignore [reportPrivateUsage]
         model
     )
     fixture.mock_view.input_extra_line = input_extra_line
