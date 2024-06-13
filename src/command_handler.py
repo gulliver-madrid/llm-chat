@@ -123,7 +123,7 @@ class CommandHandler:
         if not remaining_input:
             return
 
-        remaining_input = self.get_extra_lines(remaining_input)
+        remaining_input = self._get_extra_lines(remaining_input)
 
         placeholders = find_unique_placeholders(remaining_input)
 
@@ -139,7 +139,7 @@ class CommandHandler:
             self._prev_messages.clear()
         self._answer_queries(queries, debug)
 
-    def get_extra_lines(self, remaining_input: str) -> str:
+    def _get_extra_lines(self, remaining_input: str) -> str:
         while True:
             more, elapsed = self._view.input_extra_line()
 
