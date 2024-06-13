@@ -109,11 +109,7 @@ class CommandHandler:
         if not remaining_input:
             return
 
-        while True:
-            more = self._view.input_extra_line()
-            if more.lower() == "end":
-                break
-            remaining_input += "\n" + more
+        remaining_input = self.get_extra_lines(remaining_input)
 
         placeholders = find_unique_placeholders(remaining_input)
 
@@ -128,6 +124,14 @@ class CommandHandler:
         if new_conversation:
             self._prev_messages.clear()
         self._answer_queries(queries, debug)
+
+    def get_extra_lines(self, remaining_input: str) -> str:
+        while True:
+            more = self._view.input_extra_line()
+            if more.lower() == "end":
+                break
+            remaining_input += "\n" + more
+        return remaining_input
 
     def prompt_to_select_model(self) -> None:
         self._model_wrapper.change(self._select_model_controler.select_model())
