@@ -66,6 +66,21 @@ class ModelManager:
 
 
 class CommandHandler:
+    __slots__ = (
+        "_view",
+        "_time_manager",
+        "_select_model_controler",
+        "_model_manager",
+        "_repository",
+        "_prev_messages",
+    )
+    _view: Final[View]
+    _time_manager: Final[TimeManager]
+    _select_model_controler: Final[SelectModelController]
+    _model_manager: Final[ModelManager]
+    _repository: Final[ChatRepository]
+    _prev_messages: Final[list[CompleteMessage]]
+
     def __init__(
         self,
         *,
@@ -77,13 +92,11 @@ class CommandHandler:
         prev_messages: list[CompleteMessage] | None = None,
     ):
         self._view = view
-        self._time_manager: Final = time_manager
+        self._time_manager = time_manager
         self._select_model_controler = select_model_controler
         self._model_manager = ModelManager(client_wrapper)
         self._repository = repository
-        self._prev_messages: Final[list[CompleteMessage]] = (
-            prev_messages if prev_messages is not None else []
-        )
+        self._prev_messages = prev_messages if prev_messages is not None else []
 
     def process_action(self, action: Action, remaining_input: str) -> None:
         debug = False
