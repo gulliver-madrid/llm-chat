@@ -78,6 +78,11 @@ class CommandHandler:
         self._repository = repository
         self._prev_messages = prev_messages if prev_messages is not None else []
 
+    def prompt_to_select_model(self) -> None:
+        self._model_manager.model_wrapper.change(
+            self._select_model_controler.select_model()
+        )
+
     def process_action(self, action: Action, remaining_input: str) -> None:
         debug = False
         new_conversation = False
@@ -123,7 +128,7 @@ class CommandHandler:
         if not remaining_input:
             return
 
-        remaining_input = self.get_extra_lines(remaining_input)
+        remaining_input = self._get_extra_lines(remaining_input)
 
         placeholders = find_unique_placeholders(remaining_input)
 
@@ -138,49 +143,6 @@ class CommandHandler:
         if new_conversation:
             self._prev_messages.clear()
         self._answer_queries(queries, debug)
-
-    def get_extra_lines(self, remaining_input: str) -> str:
-        while True:
-            more, elapsed = self._view.input_extra_line()
-
-            if elapsed >= DELIBERATE_INPUT_TIME and more.lower() == "end":
-                break
-            remaining_input += "\n" + more
-        return remaining_input
-
-    def prompt_to_select_model(self) -> None:
-        self._model_manager.model_wrapper.change(
-            self._select_model_controler.select_model()
-        )
-
-    def _answer_queries(
-        self, queries: Sequence[QueryText], debug: bool = False
-    ) -> None:
-        """If there are multiple queries, the conversation ends after executing them."""
-        assert queries
-        messages = None
-        for i, query in enumerate(queries):
-            messages = self._answer_query(debug, i + 1, len(queries), query)
-        self._prev_messages[:] = messages or []
-
-    def _answer_query(
-        self, debug: bool, current: int, total: int, query: QueryText
-    ) -> list[CompleteMessage] | None:
-        self._view.display_processing_query_text(current=current, total=total)
-        query_result = self._get_simple_response_from_model(query, debug)
-        self._print_interaction(query, query_result)
-        self._repository.save_messages(query_result.messages)
-        return query_result.messages if current == 1 else None
-
-    def _print_interaction(self, query: QueryText, query_result: QueryResult) -> None:
-        model = self._model_manager.model_wrapper.model
-        assert model
-        self._view.print_interaction(
-            self._time_manager,
-            model.model_name,
-            Raw(query),
-            Raw(query_result.content),
-        )
 
     def _load_conversation(
         self, action: Action, conversation_id: ConversationId
@@ -208,18 +170,14 @@ class CommandHandler:
         else:
             raise ValueError(action.type)
 
-    def _get_simple_response_from_model(
-        self, query: QueryText, debug: bool = False
-    ) -> QueryResult:
-        return self._model_manager.get_simple_response(
-            query, self._prev_messages, debug=debug
-        )
+    def _get_extra_lines(self, remaining_input: str) -> str:
+        while True:
+            more, elapsed = self._view.input_extra_line()
 
-    def _should_cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
-        return (
-            number_of_queries > QUERY_NUMBER_LIMIT_WARNING
-            and not self._view.confirm_launching_many_queries(number_of_queries)
-        )
+            if elapsed >= DELIBERATE_INPUT_TIME and more.lower() == "end":
+                break
+            remaining_input += "\n" + more
+        return remaining_input
 
     def _define_final_queries(
         self, remaining_input: str, placeholders: list[Placeholder]
@@ -236,3 +194,45 @@ class CommandHandler:
 
         self._view.write_object("Placeholders sustituidos exitosamente")
         return queries
+
+    def _should_cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
+        return (
+            number_of_queries > QUERY_NUMBER_LIMIT_WARNING
+            and not self._view.confirm_launching_many_queries(number_of_queries)
+        )
+
+    def _answer_queries(
+        self, queries: Sequence[QueryText], debug: bool = False
+    ) -> None:
+        """If there are multiple queries, the conversation ends after executing them."""
+        assert queries
+        messages = None
+        for i, query in enumerate(queries):
+            messages = self._answer_query(debug, i + 1, len(queries), query)
+        self._prev_messages[:] = messages or []
+
+    def _answer_query(
+        self, debug: bool, current: int, total: int, query: QueryText
+    ) -> list[CompleteMessage] | None:
+        self._view.display_processing_query_text(current=current, total=total)
+        query_result = self._get_simple_response_from_model(query, debug)
+        self._print_interaction(query, query_result)
+        self._repository.save_messages(query_result.messages)
+        return query_result.messages if current == 1 else None
+
+    def _get_simple_response_from_model(
+        self, query: QueryText, debug: bool = False
+    ) -> QueryResult:
+        return self._model_manager.get_simple_response(
+            query, self._prev_messages, debug=debug
+        )
+
+    def _print_interaction(self, query: QueryText, query_result: QueryResult) -> None:
+        model = self._model_manager.model_wrapper.model
+        assert model
+        self._view.print_interaction(
+            self._time_manager,
+            model.model_name,
+            Raw(query),
+            Raw(query_result.content),
+        )
