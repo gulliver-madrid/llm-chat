@@ -40,6 +40,7 @@ from src.view import View
 
 
 PRESS_ENTER_TO_CONTINUE = Raw("Pulsa Enter para continuar")
+DELIBERATE_INPUT_TIME = 0.02
 
 
 class ExitException(Exception): ...
@@ -127,8 +128,9 @@ class CommandHandler:
 
     def get_extra_lines(self, remaining_input: str) -> str:
         while True:
-            more = self._view.input_extra_line()
-            if more.lower() == "end":
+            more, elapsed = self._view.input_extra_line()
+
+            if elapsed >= DELIBERATE_INPUT_TIME and more.lower() == "end":
                 break
             remaining_input += "\n" + more
         return remaining_input
