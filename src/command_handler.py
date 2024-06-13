@@ -46,6 +46,12 @@ DELIBERATE_INPUT_TIME = 0.02
 class ExitException(Exception): ...
 
 
+class ModelManager:
+    def __init__(self, client_wrapper: ClientWrapper):
+        self.model_wrapper: Final = ModelWrapper()
+        self.client_wrapper: Final = client_wrapper
+
+
 class CommandHandler:
     def __init__(
         self,
@@ -59,10 +65,9 @@ class CommandHandler:
     ):
         self._view = view
         self._time_manager: Final = time_manager
-        self._model_wrapper: Final = ModelWrapper()
         self._select_model_controler = select_model_controler
+        self._model_manager = ModelManager(client_wrapper)
         self._repository = repository
-        self._client_wrapper = client_wrapper
         self._prev_messages: Final[list[CompleteMessage]] = (
             prev_messages if prev_messages is not None else []
         )
@@ -93,7 +98,9 @@ class CommandHandler:
             # TODO: maybe use ActionType.NEW_CONVERSATION when there is no previous messages
             pass
         elif action.type == ActionType.SHOW_MODEL:
-            action_strategy = ShowModelAction(self._view, self._model_wrapper)
+            action_strategy = ShowModelAction(
+                self._view, self._model_manager.model_wrapper
+            )
         elif action.type == ActionType.SYSTEM_PROMPT:
             action_strategy = EstablishSystemPromptAction(
                 self._view, self._prev_messages
@@ -136,7 +143,9 @@ class CommandHandler:
         return remaining_input
 
     def prompt_to_select_model(self) -> None:
-        self._model_wrapper.change(self._select_model_controler.select_model())
+        self._model_manager.model_wrapper.change(
+            self._select_model_controler.select_model()
+        )
 
     def _answer_queries(
         self, queries: Sequence[QueryText], debug: bool = False
@@ -158,10 +167,10 @@ class CommandHandler:
         return query_result.messages if current == 1 else None
 
     def _print_interaction(self, query: QueryText, query_result: QueryResult) -> None:
-        assert self._model_wrapper.model
+        assert self._model_manager.model_wrapper.model
         self._view.print_interaction(
             self._time_manager,
-            self._model_wrapper.model.model_name,
+            self._model_manager.model_wrapper.model.model_name,
             Raw(query),
             Raw(query_result.content),
         )
@@ -195,10 +204,10 @@ class CommandHandler:
     def _get_simple_response_from_model(
         self, query: QueryText, debug: bool = False
     ) -> QueryResult:
-        assert self._model_wrapper.model
+        assert self._model_manager.model_wrapper.model
         add_user_query_in_place(self._prev_messages, query)
-        return self._client_wrapper.get_simple_response(
-            self._model_wrapper.model, self._prev_messages, debug=debug
+        return self._model_manager.client_wrapper.get_simple_response(
+            self._model_manager.model_wrapper.model, self._prev_messages, debug=debug
         )
 
     def _should_cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
