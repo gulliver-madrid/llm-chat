@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.command_handler import CommandHandler
+from src.command_handler import DELIBERATE_INPUT_TIME, CommandHandler
 from src.controllers.command_interpreter import Action, ActionType
 from src.controllers.select_model import SelectModelController
 from src.generic_view import Raw
@@ -77,7 +77,9 @@ class AdvancedFixture(CommandHandlerFixture):
         self.model_name = ModelName("Model name test")
         # if a line is not sent before the `end` command, there is a risk
         # of creating an infinite loop when running the mutation tests
-        self.user_prompt_lines = ["something more", "end"]
+        self.user_prompt_lines = [
+            (line, DELIBERATE_INPUT_TIME) for line in ["something more", "end"]
+        ]
         self._select_model()
 
     def _select_model(self) -> None:
@@ -280,18 +282,44 @@ def get_print_interaction_content_arg(call: Any) -> Raw:
     return cast(Raw, call.args[3])
 
 
-def test_extra_lines(command_handler_fixture: CommandHandlerFixture) -> None:
+def test_extra_lines_without_delay(
+    command_handler_fixture: CommandHandlerFixture,
+) -> None:
+    # Here RuntimeError is raised because `end` is interpreted as part of a
+    # multiline copy-paste
     fixture = command_handler_fixture
-    lines = [
-        "second line",
-        "third line",
-        "fourth line",
-    ]
+    lines = ["do", "  something", "end", "more"]
 
-    def input_extra_line() -> str:
+    def input_extra_line() -> tuple[str, float]:
         if lines:
-            return lines.pop()
-        return "end"
+            return (lines.pop(0), 0)
+        raise RuntimeError
+
+    model_name = ModelName("Model name test")
+    model = Model(None, model_name)
+
+    fixture.command_handler._model_wrapper.change(  # pyright: ignore [reportPrivateUsage]
+        model
+    )
+    fixture.mock_view.input_extra_line = input_extra_line
+    fixture.mock_client_wrapper.get_simple_response.side_effect = (
+        get_simple_response_stub
+    )
+    with pytest.raises(RuntimeError):
+        fixture.command_handler.process_action(
+            Action(ActionType.CONTINUE_CONVERSATION), "something"
+        )
+
+
+def test_extra_lines_with_delay(command_handler_fixture: CommandHandlerFixture) -> None:
+    # RuntimeError is not raised because `end` is interpreted as deliberated command
+    fixture = command_handler_fixture
+    lines = ["second line", "third line", "fourth line", "end"]
+
+    def input_extra_line() -> tuple[str, float]:
+        if lines:
+            return (lines.pop(), DELIBERATE_INPUT_TIME)
+        raise RuntimeError
 
     model_name = ModelName("Model name test")
     model = Model(None, model_name)
