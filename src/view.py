@@ -1,3 +1,4 @@
+import time
 from rich import print
 from rich.console import Console
 from rich.markdown import Markdown
@@ -48,8 +49,11 @@ class View:
         """Prints an interaction between user and model"""
         print(get_interaction_styled_view(time_manager, model_name, query, content))
 
-    def input_extra_line(self) -> str:
-        return input()
+    def input_extra_line(self) -> tuple[str, float]:
+        prev_time = time.time()
+        line = input()
+        elapsed = time.time() - prev_time
+        return line, elapsed
 
     def show_help(self) -> None:
         console = Console()
