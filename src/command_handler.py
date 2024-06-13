@@ -173,8 +173,8 @@ class CommandHandler:
     def _get_extra_lines(self, remaining_input: str) -> str:
         while True:
             more, elapsed = self._view.input_extra_line()
-
-            if elapsed >= DELIBERATE_INPUT_TIME and more.lower() == "end":
+            should_end = (elapsed >= DELIBERATE_INPUT_TIME) and (more == "end")
+            if should_end:
                 break
             remaining_input += "\n" + more
         return remaining_input
