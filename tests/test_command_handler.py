@@ -278,3 +278,31 @@ def get_simple_response_stub(
 
 def get_print_interaction_content_arg(call: Any) -> Raw:
     return cast(Raw, call.args[3])
+
+
+def test_extra_lines(command_handler_fixture: CommandHandlerFixture) -> None:
+    fixture = command_handler_fixture
+    lines = [
+        "second line",
+        "third line",
+        "fourth line",
+    ]
+
+    def input_extra_line() -> str:
+        if lines:
+            return lines.pop()
+        return "end"
+
+    model_name = ModelName("Model name test")
+    model = Model(None, model_name)
+
+    fixture.command_handler._model_wrapper.change(  # pyright: ignore [reportPrivateUsage]
+        model
+    )
+    fixture.mock_view.input_extra_line = input_extra_line
+    fixture.mock_client_wrapper.get_simple_response.side_effect = (
+        get_simple_response_stub
+    )
+    fixture.command_handler.process_action(
+        Action(ActionType.CONTINUE_CONVERSATION), "something"
+    )
