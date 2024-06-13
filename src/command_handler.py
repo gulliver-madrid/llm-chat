@@ -55,6 +55,7 @@ class ModelManager:
         self,
         query: QueryText,
         complete_messages: list[CompleteMessage],
+        *,
         debug: bool = False,
     ) -> QueryResult:
         assert self.model_wrapper.model
@@ -218,7 +219,7 @@ class CommandHandler:
         self, query: QueryText, debug: bool = False
     ) -> QueryResult:
         return self._model_manager.get_simple_response(
-            query, self._prev_messages, debug
+            query, self._prev_messages, debug=debug
         )
 
     def _should_cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
