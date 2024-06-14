@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import NewType, Sequence, cast
 
-from src.models.parsed_line import ParsedLine, TagType
+from src.models.serde.deserialize import ParsedLine, TagType
 from src.models.shared import ChatMessage, CompleteMessage, Model, ModelName
 from src.models_data import get_models
 

@@ -3,7 +3,7 @@ from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 from src.python_modules.FileSystemWrapper.safe_file_remover import SafeFileRemover
 
 from src.setup_logging import configure_logger
-from src.models.serialization import ConversationId
+from src.models.serde.serialize import ConversationId
 from .chat_file_detecter import CHAT_EXT, ChatFileDetecter
 from .conversation_id_provider import FreeConversationIdProvider
 

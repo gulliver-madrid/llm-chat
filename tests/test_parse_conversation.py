@@ -1,4 +1,4 @@
-from src.models.serialization import (
+from src.models.serde.serialize import (
     Conversation,
     deserialize_conversation_text_into_messages,
     convert_text_to_conversation_object,

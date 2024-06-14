@@ -6,7 +6,7 @@ from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.infrastructure.chat_repository.chat_file_detecter import ChatFileDetecter
 from src.setup_logging import configure_logger
-from src.models.serialization import (
+from src.models.serde.serialize import (
     NUMBER_OF_DIGITS,
     ConversationId,
     convert_digits_to_conversation_id,

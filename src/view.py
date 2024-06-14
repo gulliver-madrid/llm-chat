@@ -9,7 +9,7 @@ from src.generic_view import EscapedStr, Raw
 from src.infrastructure.ahora import TimeManager
 from src.io_helpers import SimpleView, display_neutral_msg, show_error_msg
 from src.models.placeholders import Placeholder
-from src.models.serialization import ConversationId
+from src.models.serde.serialize import ConversationId
 from src.models.shared import ChatMessage, ModelName
 from src.views import get_interaction_styled_view
 
