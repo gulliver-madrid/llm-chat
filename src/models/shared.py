@@ -4,6 +4,7 @@ from typing import NewType, Sequence
 
 __all__ = ["ModelName", "Model", "ChatMessage", "CompleteMessage"]
 
+ConversationId = NewType("ConversationId", str)
 ModelName = NewType("ModelName", str)
 
 

@@ -5,10 +5,10 @@ from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.infrastructure.ahora import TimeManager
 from src.models.serde.serialize import (
-    ConversationId,
     serialize_conversation,
 )
-from src.models.shared import CompleteMessage
+from src.models.shared import CompleteMessage, ConversationId
+
 from .implementer import ChatRepositoryImplementer
 
 
