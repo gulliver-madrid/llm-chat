@@ -29,6 +29,7 @@ class RoleInfo:
 
 
 tag_types: Final[Mapping[str, TagType]] = dict(META=TagType.META, ROLE=TagType.ROLE)
+possible_roles: Final = ("system", "user", "assistant")
 
 
 @dataclass
@@ -55,11 +56,13 @@ class ParsedLine:
         assert self.is_tag()
         pattern = re.compile(r"^\[(META|ROLE)( [A-Z]+)? (.*)\]$")
         match = pattern.match(self.line)
-        assert match, self
+        if not match:
+            raise ValueError(self)
         second = match.groups()[2]
         second = second.strip()
         property_match = re.match(r"([a-z_]+)=([ .\-:_a-z0-9]+)", second)
-        assert property_match
+        if not property_match:
+            raise ValueError(self)
         groups = property_match.groups()
         return (groups[0], groups[1])
 
@@ -69,16 +72,19 @@ class ParsedLine:
         assert self.match
         pattern = re.compile(r"^\[ROLE ([A-Z]+)(.*)\]$")
         match = pattern.match(self.line)
-        assert match
+        if not match:
+            raise ValueError(pattern)
         first = match.groups()[0]
-        assert isinstance(first, str)  # malformed tag
-        assert first == first.upper()
-        assert (role := first.lower()) in ("system", "user", "assistant"), first
+        if not isinstance(first, str) or not first.isupper():
+            raise ValueError(first)
+        if (role := first.lower()) not in possible_roles:
+            raise ValueError(first)
         second = match.groups()[1].strip()
         if not second:
             return RoleInfo(role)
         model_match = re.match(r"model=([.-_a-z0-9]+)", second)
-        assert model_match, second
+        if not model_match:
+            raise ValueError(second)
         model_name = ModelName(model_match.groups()[0])
         return RoleInfo(role, model_name)
 
