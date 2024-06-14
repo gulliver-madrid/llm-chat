@@ -6,6 +6,7 @@ from src.domain import ChatMessage
 
 __all__ = ["ModelName", "Model", "CompleteMessage"]
 
+ConversationId = NewType("ConversationId", str)
 ModelName = NewType("ModelName", str)
 
 

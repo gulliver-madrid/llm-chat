@@ -4,11 +4,11 @@ from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.infrastructure.ahora import TimeManager
-from src.models.serialization import (
-    ConversationId,
-    create_conversation_texts,
+from src.models.serde.serialize import (
+    serialize_conversation,
 )
-from src.models.shared import CompleteMessage
+from src.models.shared import CompleteMessage, ConversationId
+
 from .implementer import ChatRepositoryImplementer
 
 
@@ -38,7 +38,7 @@ class ChatRepository:
     def save_messages(self, complete_messages: Sequence[CompleteMessage]) -> None:
         conversation_id = self._chat_repository_implementer.get_new_conversation_id()
         current_time = self._time_manager.get_current_time()
-        conversation = create_conversation_texts(
+        conversation = serialize_conversation(
             complete_messages, conversation_id, current_time
         )
         self._save_conversation(conversation_id, conversation)
