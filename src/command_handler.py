@@ -24,13 +24,13 @@ from src.models.placeholders import (
     build_queries,
     find_unique_placeholders,
 )
-from src.models.serialization import (
-    ConversationId,
+from src.models.serde.serialize import (
     convert_digits_to_conversation_id,
-    convert_conversation_text_into_messages,
 )
+from src.models.serde.deserialize import deserialize_conversation_text_into_messages
 from src.models.shared import (
     CompleteMessage,
+    ConversationId,
     extract_chat_messages,
 )
 from src.settings import QUERY_NUMBER_LIMIT_WARNING
@@ -149,7 +149,9 @@ class CommandHandler:
     ) -> None:
         """Load a conversation based in its id"""
         conversation = self._repository.load_conversation_as_text(conversation_id)
-        self._prev_messages[:] = convert_conversation_text_into_messages(conversation)
+        self._prev_messages[:] = deserialize_conversation_text_into_messages(
+            conversation
+        )
         self._display_loaded_conversation(action, conversation_id, conversation)
         self._view.display_neutral_msg(Raw("La conversacion ha sido cargada"))
 

@@ -1,4 +1,4 @@
-from src.models.parsed_line import ParsedLine, TagType
+from src.models.serde.deserialize import ParsedLine, TagType
 
 NO_TAGS = [
     "",

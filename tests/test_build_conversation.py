@@ -1,10 +1,10 @@
 import unittest
 
-from src.models.serialization import (
-    ConversationId,
+from src.models.serde.serialize import (
     convert_digits_to_conversation_id,
-    create_conversation_texts,
+    serialize_conversation,
 )
+from src.models.shared import ConversationId
 from tests.objects import COMPLETE_MESSAGES_1, TEXT_1
 
 
@@ -12,7 +12,7 @@ class TestCreateConversationTexts(unittest.TestCase):
 
     def test_create_conversation_texts(self) -> None:
         expected_conversation_text = TEXT_1
-        result = create_conversation_texts(
+        result = serialize_conversation(
             COMPLETE_MESSAGES_1, ConversationId("0001"), "2024-03-16 14:50:15"
         )
         self.assertEqual(expected_conversation_text, result)
