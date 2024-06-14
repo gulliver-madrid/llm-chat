@@ -10,7 +10,7 @@ from src.generic_view import Raw
 from src.infrastructure.ahora import TimeManager
 from src.infrastructure.chat_repository.repository import ChatRepository
 from src.infrastructure.llm_connection import ClientWrapper, QueryResult
-from src.models.serialization import ConversationId
+from src.models.serde.serialize import ConversationId
 from src.models.shared import CompleteMessage, Model, ModelName
 from src.view import View
 from tests.objects import TEXT_1

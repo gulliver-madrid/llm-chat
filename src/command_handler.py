@@ -24,7 +24,7 @@ from src.models.placeholders import (
     build_queries,
     find_unique_placeholders,
 )
-from src.models.serialization import (
+from src.models.serde.serialize import (
     ConversationId,
     convert_digits_to_conversation_id,
     deserialize_conversation_text_into_messages,

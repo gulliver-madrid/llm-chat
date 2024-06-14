@@ -4,7 +4,7 @@ from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.infrastructure.ahora import TimeManager
-from src.models.serialization import (
+from src.models.serde.serialize import (
     ConversationId,
     serialize_conversation,
 )
