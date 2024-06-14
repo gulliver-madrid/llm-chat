@@ -1,10 +1,9 @@
-from src.models.serde.serialize import (
-    Conversation,
+from src.models.serde.deserialize import (
     deserialize_conversation_text_into_messages,
-    convert_text_to_conversation_object,
-    ConversationId,
+    deserialize_into_conversation_object,
 )
-from src.models.shared import ChatMessage
+from src.models.serde.shared import Conversation
+from src.models.shared import ChatMessage, ConversationId
 from tests.objects import COMPLETE_MESSAGES_1, COMPLETE_MESSAGES_2, TEXT_1, TEXT_2
 
 
@@ -30,7 +29,7 @@ CASES = [
 
 def test_parse_conversation_from_text() -> None:
     for text, expected_conversation in CASES:
-        conversation = convert_text_to_conversation_object(
+        conversation = deserialize_into_conversation_object(
             text, preserve_model=True, check_model_exists=False
         )
         assert conversation == expected_conversation

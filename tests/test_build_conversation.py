@@ -1,10 +1,10 @@
 import unittest
 
 from src.models.serde.serialize import (
-    ConversationId,
     convert_digits_to_conversation_id,
     serialize_conversation,
 )
+from src.models.shared import ConversationId
 from tests.objects import COMPLETE_MESSAGES_1, TEXT_1
 
 

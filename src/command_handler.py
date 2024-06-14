@@ -25,12 +25,12 @@ from src.models.placeholders import (
     find_unique_placeholders,
 )
 from src.models.serde.serialize import (
-    ConversationId,
     convert_digits_to_conversation_id,
-    deserialize_conversation_text_into_messages,
 )
+from src.models.serde.deserialize import deserialize_conversation_text_into_messages
 from src.models.shared import (
     CompleteMessage,
+    ConversationId,
     extract_chat_messages,
 )
 from src.settings import QUERY_NUMBER_LIMIT_WARNING
