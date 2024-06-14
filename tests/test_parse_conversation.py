@@ -1,6 +1,6 @@
 from src.models.serialization import (
     Conversation,
-    convert_conversation_text_into_messages,
+    deserialize_conversation_text_into_messages,
     convert_text_to_conversation_object,
     ConversationId,
 )
@@ -41,7 +41,7 @@ def test_parse_messages_from_text() -> None:
         (TEXT_1, COMPLETE_MESSAGES_1),
         (TEXT_2, COMPLETE_MESSAGES_2),
     ]:
-        result = convert_conversation_text_into_messages(
+        result = deserialize_conversation_text_into_messages(
             text, preserve_model=True, check_model_exists=False
         )
         assert result == messages

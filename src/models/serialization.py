@@ -21,7 +21,7 @@ class Conversation:
     messages: Sequence[CompleteMessage]
 
 
-class ConversationBuilder:
+class SerializedConversationBuilder:
     def __init__(self) -> None:
         self._texts: list[str] = []
 
@@ -41,7 +41,7 @@ class ConversationBuilder:
         return "\n".join(self._texts)
 
 
-def convert_conversation_text_into_messages(
+def deserialize_conversation_text_into_messages(
     text: str, *, preserve_model: bool = False, check_model_exists: bool = True
 ) -> list[CompleteMessage]:
     lines = text.split("\n")
@@ -94,13 +94,13 @@ def determine_model(
     return found_model
 
 
-def create_conversation_texts(
+def serialize_conversation(
     complete_messages: Sequence[CompleteMessage],
     conversation_id: ConversationId,
     current_time: str,
 ) -> str:
     number_of_messages = len(complete_messages)
-    builder = ConversationBuilder()
+    builder = SerializedConversationBuilder()
     builder.add_meta_tag("id", conversation_id)
     builder.add_line_break()
     builder.add_meta_tag("schema_version", SCHEMA_VERSION)
@@ -156,7 +156,7 @@ def convert_text_to_conversation_object(
         SCHEMA_VERSION,
         number_of_messages,
         current_time,
-        convert_conversation_text_into_messages(
+        deserialize_conversation_text_into_messages(
             text, preserve_model=preserve_model, check_model_exists=check_model_exists
         ),
     )
