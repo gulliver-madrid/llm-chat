@@ -6,7 +6,7 @@ import pytest
 from src.command_handler import DELIBERATE_INPUT_TIME, CommandHandler
 from src.controllers.command_interpreter import Action, ActionType
 from src.controllers.select_model import SelectModelController
-from src.infrastructure.ahora import TimeManager
+from src.infrastructure.now import TimeManager
 from src.infrastructure.chat_repository.repository import ChatRepository
 from src.infrastructure.llm_connection import ClientWrapper, QueryResult
 from src.models.shared import CompleteMessage, ConversationId, Model, ModelName

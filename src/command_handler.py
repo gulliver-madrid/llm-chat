@@ -5,7 +5,7 @@ from src.controllers.command_interpreter import (
     ActionType,
 )
 from src.controllers.select_model import SelectModelController
-from src.infrastructure.ahora import TimeManager
+from src.infrastructure.now import TimeManager
 from src.infrastructure.llm_connection import (
     ClientWrapper,
     QueryResult,
