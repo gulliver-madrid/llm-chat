@@ -5,7 +5,7 @@ from rich.markdown import Markdown
 
 from typing import Mapping, Sequence
 
-from src.infrastructure.ahora import TimeManager
+from src.infrastructure.now import TimeManager
 from src.models.placeholders import Placeholder
 from src.models.shared import ChatMessage, ConversationId, ModelName
 
