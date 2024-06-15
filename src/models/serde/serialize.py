@@ -1,8 +1,9 @@
 from typing import Sequence, cast
 
-from src.models.serde.deserialize import TagType
-from src.models.serde.shared import SCHEMA_VERSION
 from src.models.shared import CompleteMessage, ConversationId
+
+from .deserialize import TagType
+from .shared import SCHEMA_VERSION
 
 
 NUMBER_OF_DIGITS = 4
