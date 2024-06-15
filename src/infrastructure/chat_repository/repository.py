@@ -4,9 +4,7 @@ from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.infrastructure.ahora import TimeManager
-from src.models.serde.serialize import (
-    serialize_conversation,
-)
+from src.models.serde import serialize_conversation
 from src.models.shared import CompleteMessage, ConversationId
 
 from .implementer import ChatRepositoryImplementer

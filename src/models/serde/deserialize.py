@@ -3,7 +3,6 @@ from enum import Enum
 import re
 from typing import Final, Mapping
 
-from src.models.serde.shared import SCHEMA_VERSION, Conversation
 from src.models.shared import (
     ChatMessage,
     CompleteMessage,
@@ -12,6 +11,8 @@ from src.models.shared import (
     ModelName,
 )
 from src.models_data import get_models
+
+from .shared import SCHEMA_VERSION, Conversation
 
 
 class TagType(Enum):
