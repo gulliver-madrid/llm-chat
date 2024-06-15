@@ -4,9 +4,7 @@ from typing import Iterable
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
-from src.models.serde.serialize import (
-    NUMBER_OF_DIGITS,
-)
+from src.models.serde import NUMBER_OF_DIGITS
 
 CHAT_EXT = "chat"
 CHAT_NAME_PATTERN = re.compile(rf"^(\d{{{NUMBER_OF_DIGITS}}})\.{CHAT_EXT}$")
