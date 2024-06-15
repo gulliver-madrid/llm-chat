@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
 
-from src.generic_view import Raw
 from src.models.model_wrapper import ModelWrapper
 from src.models.shared import CompleteMessage, define_system_prompt
-from src.view import View
+from src.view import Raw, View
 
 
 class ActionStrategy(ABC):

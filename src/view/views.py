@@ -1,7 +1,8 @@
-from src.generic_view import Raw
 from src.infrastructure.ahora import TimeManager
-from src.io_helpers import escape_for_rich, highlight_role
 from src.models.shared import ModelName
+
+from .io_helpers import escape_for_rich, highlight_role
+from .generic_view import Raw
 
 
 def get_interaction_styled_view(
