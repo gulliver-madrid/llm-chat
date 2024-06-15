@@ -1,6 +1,6 @@
 import unittest
 
-from src.models.serde.serialize import (
+from src.models.serde import (
     convert_digits_to_conversation_id,
     serialize_conversation,
 )

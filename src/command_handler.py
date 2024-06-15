@@ -24,10 +24,10 @@ from src.models.placeholders import (
     build_queries,
     find_unique_placeholders,
 )
-from src.models.serde.serialize import (
+from src.models.serde import (
     convert_digits_to_conversation_id,
+    deserialize_conversation_text_into_messages,
 )
-from src.models.serde.deserialize import deserialize_conversation_text_into_messages
 from src.models.shared import (
     CompleteMessage,
     ConversationId,

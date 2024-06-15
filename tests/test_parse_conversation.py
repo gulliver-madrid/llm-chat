@@ -1,9 +1,9 @@
 from src.domain import ChatMessage
-from src.models.serde.deserialize import (
+from src.models.serde import (
     deserialize_conversation_text_into_messages,
-    deserialize_into_conversation_object,
+    Conversation,
 )
-from src.models.serde.shared import Conversation
+from src.models.serde.deserialize import deserialize_into_conversation_object
 from src.models.shared import ConversationId
 from tests.objects import COMPLETE_MESSAGES_1, COMPLETE_MESSAGES_2, TEXT_1, TEXT_2
 
