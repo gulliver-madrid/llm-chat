@@ -6,11 +6,10 @@ from typing import Sequence
 from src.command_handler import ExitException
 from src.controllers.select_model import SelectModelController
 from src.engine import setup_engine
-from src.generic_view import Raw
 from src.infrastructure.llm_connection import ClientWrapper
-from src.io_helpers import SimpleView, display_neutral_msg
 from src.models.shared import Model
 from src.models_data import get_models
+from src.view import Raw, SimpleView, display_neutral_msg
 
 
 PROGRAM_PROMPT = Raw(

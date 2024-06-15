@@ -5,17 +5,12 @@ from src.controllers.command_interpreter import (
     ActionType,
 )
 from src.controllers.select_model import SelectModelController
-from src.generic_view import Raw
 from src.infrastructure.ahora import TimeManager
 from src.infrastructure.llm_connection import (
     ClientWrapper,
     QueryResult,
 )
 from src.infrastructure.chat_repository.repository import ChatRepository
-from src.io_helpers import (
-    ensure_escaped,
-    show_error_msg,
-)
 from src.model_manager import ModelManager
 from src.models.placeholders import (
     Placeholder,
@@ -35,7 +30,12 @@ from src.models.shared import (
 )
 from src.settings import QUERY_NUMBER_LIMIT_WARNING
 from src.strategies import ActionStrategy, EstablishSystemPromptAction, ShowModelAction
-from src.view import View
+from src.view import (
+    Raw,
+    View,
+    ensure_escaped,
+    show_error_msg,
+)
 
 
 PRESS_ENTER_TO_CONTINUE = Raw("Pulsa Enter para continuar")
