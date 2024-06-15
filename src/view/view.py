@@ -6,7 +6,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 
 from src.domain import ChatMessage
-from src.infrastructure.ahora import TimeManager
+from src.infrastructure.now import TimeManager
 from src.models.placeholders import Placeholder
 from src.models.shared import ConversationId, ModelName
 

@@ -1,4 +1,4 @@
-from src.infrastructure.ahora import TimeManager
+from src.infrastructure.now import TimeManager
 from src.models.shared import ModelName
 
 from .io_helpers import escape_for_rich, highlight_role

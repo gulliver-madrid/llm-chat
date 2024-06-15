@@ -8,7 +8,7 @@ from src.controllers.command_interpreter import (
     CommandNoValid,
 )
 from src.controllers.select_model import SelectModelController
-from src.infrastructure.ahora import TimeManager
+from src.infrastructure.now import TimeManager
 from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.chat_repository.repository import ChatRepository
 from src.infrastructure.main_path_provider import get_main_directory
