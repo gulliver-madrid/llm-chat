@@ -3,7 +3,7 @@ from typing import NewType
 
 import rich
 
-from src.generic_view import EscapedStr, Raw, StyledStr
+from .generic_view import EscapedStr, Raw, StyledStr
 
 
 StyleTag = NewType("StyleTag", str)

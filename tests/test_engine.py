@@ -6,8 +6,7 @@ from src.command_handler import CommandHandler
 from src.controllers.command_interpreter import CommandInterpreter, CommandNoValid
 from src.controllers.select_model import SelectModelController
 from src.engine import MainEngine
-from src.generic_view import Raw
-from src.view import View
+from src.view import Raw, View
 
 
 class EngineFixture:

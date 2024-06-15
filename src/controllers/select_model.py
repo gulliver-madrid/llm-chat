@@ -3,20 +3,20 @@ from typing import Final, Sequence
 from rich import print
 
 
-from src.generic_view import Raw
-from src.io_helpers import (
+from src.models.model_choice import ModelChoiceParser
+from src.models.shared import ModelName, Model
+from src.view import (
     BLUE_VIOLET_COLOR,
     BOLD_STYLE,
     CALL_TO_ACTION,
     NEUTRAL_MSG,
+    Raw,
     SimpleView,
     apply_style_tag,
     escape_for_rich,
     show_error_msg,
     to_styled,
 )
-from src.models.model_choice import ModelChoiceParser
-from src.models.shared import ModelName, Model
 
 INDEX_OF_DEFAULT_MODEL: Final = 0  # pragma: no mutate
 
