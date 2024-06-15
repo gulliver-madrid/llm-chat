@@ -1,6 +1,6 @@
-from src.generic_view import Raw
 from src.infrastructure.exceptions import LLMChatException
-from src.io_helpers import show_error_msg
+from src.view import Raw, show_error_msg
+
 from examples.shop.main import Main
 
 
