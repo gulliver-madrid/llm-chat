@@ -8,6 +8,7 @@ __all__ = ["ModelName", "Model", "CompleteMessage"]
 
 ConversationId = NewType("ConversationId", str)
 ModelName = NewType("ModelName", str)
+SchemaVersionId = NewType("SchemaVersionId", str)
 
 
 class Platform(Enum):
@@ -37,3 +38,9 @@ def define_system_prompt(prompt: str, *, use_system: bool = True) -> CompleteMes
     return CompleteMessage(
         chat_msg=ChatMessage("system" if use_system else "user", prompt)
     )
+
+
+@dataclass
+class ConversationText:
+    text: str
+    schema_version: SchemaVersionId
