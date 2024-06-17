@@ -26,6 +26,7 @@ from src.models.serde import (
 from src.models.shared import (
     CompleteMessage,
     ConversationId,
+    ConversationText,
     extract_chat_messages,
 )
 from src.settings import QUERY_NUMBER_LIMIT_WARNING
@@ -148,18 +149,20 @@ class CommandHandler:
         self, action: Action, conversation_id: ConversationId
     ) -> None:
         """Load a conversation based in its id"""
-        conversation = self._repository.load_conversation_as_text(conversation_id)
-        self._prev_messages[:] = deserialize_conversation_text_into_messages(
-            conversation
+        conversation_text = self._repository.load_conversation_as_conversation_text(
+            conversation_id
         )
-        self._display_loaded_conversation(action, conversation_id, conversation)
+        self._prev_messages[:] = deserialize_conversation_text_into_messages(
+            conversation_text
+        )
+        self._display_loaded_conversation(action, conversation_id, conversation_text)
         self._view.display_neutral_msg(Raw("La conversacion ha sido cargada"))
 
     def _display_loaded_conversation(
         self,
         action: Action,
         conversation_id: ConversationId,
-        conversation: str,
+        conversation: ConversationText,
     ) -> None:
         assert self._prev_messages
         if action.type == ActionType.LOAD_CONVERSATION:

@@ -1,16 +1,17 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from src.models.shared import CompleteMessage, ConversationId
+
+from src.models.shared import CompleteMessage, ConversationId, SchemaVersionId
 
 
-SCHEMA_VERSION = "0.2"
+SCHEMA_VERSION = SchemaVersionId("0.2")
 
 
 @dataclass(frozen=True)
 class Conversation:
     id: ConversationId
-    schema_version: str
+    schema_version: SchemaVersionId
     number_of_messages: int
     current_time: str
     messages: Sequence[CompleteMessage]
