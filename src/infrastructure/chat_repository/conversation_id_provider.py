@@ -5,12 +5,12 @@ from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.infrastructure.chat_repository.chat_file_detecter import ChatFileDetecter
-from src.setup_logging import configure_logger
-from src.models.serde import (
+from src.models.shared import ConversationId
+from src.serde import (
     NUMBER_OF_DIGITS,
     convert_digits_to_conversation_id,
 )
-from src.models.shared import ConversationId
+from src.setup_logging import configure_logger
 
 logger = configure_logger(__name__)
 
