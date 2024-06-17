@@ -1,6 +1,5 @@
 from collections.abc import Sequence
 
-from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )
@@ -20,11 +19,11 @@ class ChatRepository:
         self,
         main_directory: PathWrapper,
         *,
-        file_manager: FileManagerProtocol | None = None,
+        file_manager: FileManagerProtocol,
         time_manager: TimeManager | None = None,
         chat_repository_implementer: ChatRepositoryImplementer | None = None,
     ) -> None:
-        self._file_manager = file_manager or FileManager()
+        self._file_manager = file_manager
         self._time_manager = time_manager or TimeManager()
         self._chat_repository_implementer = (
             chat_repository_implementer or ChatRepositoryImplementer()
