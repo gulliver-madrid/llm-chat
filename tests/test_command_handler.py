@@ -9,7 +9,14 @@ from src.controllers.select_model import SelectModelController
 from src.infrastructure.now import TimeManager
 from src.infrastructure.chat_repository.repository import ChatRepository
 from src.infrastructure.llm_connection import ClientWrapper, QueryResult
-from src.models.shared import CompleteMessage, ConversationId, Model, ModelName
+from src.models.serde.shared import SCHEMA_VERSION
+from src.models.shared import (
+    CompleteMessage,
+    ConversationId,
+    ConversationText,
+    Model,
+    ModelName,
+)
 from src.view import Raw, View
 
 from tests.objects import TEXT_1
@@ -250,13 +257,15 @@ def test_load_conversation(advanced_fixture: AdvancedFixture) -> None:
     """
     fixture = advanced_fixture
     remaining = "42"
-    fixture.mock_repository.load_conversation_as_text.return_value = TEXT_1
+    fixture.mock_repository.load_conversation_as_conversation_text.return_value = (
+        ConversationText(TEXT_1, SCHEMA_VERSION)
+    )
 
     fixture.command_handler.process_action(
         Action(ActionType.LOAD_CONVERSATION), remaining
     )
 
-    fixture.mock_repository.load_conversation_as_text.assert_called_once()
+    fixture.mock_repository.load_conversation_as_conversation_text.assert_called_once()
     fixture.mock_view.display_conversation.assert_called_once()
     calls = fixture.mock_view.display_conversation.mock_calls
     assert calls[0].args[0] == ConversationId("0042")

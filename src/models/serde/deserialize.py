@@ -7,6 +7,7 @@ from src.models.shared import (
     ChatMessage,
     CompleteMessage,
     ConversationId,
+    ConversationText,
     Model,
     ModelName,
 )
@@ -90,11 +91,17 @@ class ParsedLine:
 
 
 def deserialize_into_conversation_object(
-    text: str, *, preserve_model: bool = False, check_model_exists: bool = True
+    conversation_text: ConversationText,
+    *,
+    preserve_model: bool = False,
+    check_model_exists: bool = True,
 ) -> Conversation:
     conversation_id = None
     number_of_messages = None
     current_time = None
+
+    assert conversation_text.schema_version == SCHEMA_VERSION
+    text = conversation_text.text
 
     lines = text.split("\n")
     for line in lines:
@@ -125,14 +132,22 @@ def deserialize_into_conversation_object(
         number_of_messages,
         current_time,
         deserialize_conversation_text_into_messages(
-            text, preserve_model=preserve_model, check_model_exists=check_model_exists
+            conversation_text,
+            preserve_model=preserve_model,
+            check_model_exists=check_model_exists,
         ),
     )
 
 
 def deserialize_conversation_text_into_messages(
-    text: str, *, preserve_model: bool = False, check_model_exists: bool = True
+    conversation_text: ConversationText,
+    *,
+    preserve_model: bool = False,
+    check_model_exists: bool = True,
 ) -> list[CompleteMessage]:
+    assert conversation_text.schema_version == SCHEMA_VERSION
+    text = conversation_text.text
+
     lines = text.split("\n")
     role_tags_indexes: list[int] = []
     for i, line in enumerate(lines):
