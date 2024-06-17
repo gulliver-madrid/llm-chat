@@ -1,6 +1,9 @@
 from collections.abc import Sequence
 
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
+from src.python_modules.FileSystemWrapper.file_manager_protocol import (
+    FileManagerProtocol,
+)
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.domain import CompleteMessage, ConversationId, ConversationText
@@ -17,7 +20,7 @@ class ChatRepository:
         self,
         main_directory: PathWrapper,
         *,
-        file_manager: FileManager | None = None,
+        file_manager: FileManagerProtocol | None = None,
         time_manager: TimeManager | None = None,
         chat_repository_implementer: ChatRepositoryImplementer | None = None,
     ) -> None:

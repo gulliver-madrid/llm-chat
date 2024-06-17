@@ -1,9 +1,12 @@
-from src.python_modules.FileSystemWrapper.file_manager import FileManager
+from src.python_modules.FileSystemWrapper.file_manager_protocol import (
+    FileManagerProtocol,
+)
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 from src.python_modules.FileSystemWrapper.safe_file_remover import SafeFileRemover
 
 from src.domain import ConversationId
 from src.setup_logging import configure_logger
+
 from .chat_file_detecter import CHAT_EXT, ChatFileDetecter
 from .conversation_id_provider import FreeConversationIdProvider
 
@@ -11,7 +14,7 @@ logger = configure_logger(__name__)
 
 
 class ChatRepositoryImplementer:
-    """Only access to disk using FileManager"""
+    """Only access to disk using an object that implements FileManagerProtocol"""
 
     is_initialized: bool = False
 
@@ -19,7 +22,7 @@ class ChatRepositoryImplementer:
         self,
         data_dir: PathWrapper,
         chats_dir: PathWrapper,
-        file_manager: FileManager,
+        file_manager: FileManagerProtocol,
     ) -> None:
         assert not self.is_initialized
         self._file_manager = file_manager
@@ -65,7 +68,7 @@ class ChatRepositoryImplementer:
 
 
 class SafeFileContentMover:
-    def __init__(self, file_manager: FileManager):
+    def __init__(self, file_manager: FileManagerProtocol):
         self._file_manager = file_manager
         self._file_remover = SafeFileRemover(self._file_manager)
 
