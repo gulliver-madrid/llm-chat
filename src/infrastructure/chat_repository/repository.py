@@ -1,11 +1,13 @@
 from collections.abc import Sequence
 
+from src.models.serde.deserialize import deserialize_conversation_text_into_messages
+from src.models.serde.shared import SCHEMA_VERSION
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.infrastructure.now import TimeManager
 from src.models.serde import serialize_conversation
-from src.models.shared import CompleteMessage, ConversationId
+from src.models.shared import CompleteMessage, ConversationId, ConversationText
 
 from .implementer import ChatRepositoryImplementer
 
@@ -25,13 +27,14 @@ class ChatRepository:
             chat_repository_implementer or ChatRepositoryImplementer()
         )
         self.__data_dir = main_directory / "data"
-        print(self.__data_dir.name)
         self._chats_dir = self.__data_dir / "chats"
-        print(self._chats_dir.name)
         self._chat_repository_implementer.init(
             self.__data_dir, self._chats_dir, self._file_manager
         )
         self._setup_file_system()
+
+    def get_conversation_ids(self) -> list[ConversationId]:
+        raise NotImplementedError
 
     def save_messages(self, complete_messages: Sequence[CompleteMessage]) -> None:
         conversation_id = self._chat_repository_implementer.get_new_conversation_id()
@@ -41,9 +44,17 @@ class ChatRepository:
         )
         self._save_conversation(conversation_id, conversation)
 
-    def load_conversation_as_text(self, conversation_id: ConversationId) -> str:
+    def load_conversation(
+        self, conversation_id: ConversationId
+    ) -> list[CompleteMessage]:
+        conversation = self.load_conversation_as_conversation_text(conversation_id)
+        return deserialize_conversation_text_into_messages(conversation)
+
+    def load_conversation_as_conversation_text(
+        self, conversation_id: ConversationId
+    ) -> ConversationText:
         filepath = self._chat_repository_implementer.build_chat_path(conversation_id)
-        return self._file_manager.read_file(filepath)
+        return ConversationText(self._file_manager.read_file(filepath), SCHEMA_VERSION)
 
     def _setup_file_system(self) -> None:
         self._file_manager.mkdir_if_not_exists(self.__data_dir)

@@ -7,7 +7,7 @@ from typing import Mapping, Sequence
 
 from src.infrastructure.now import TimeManager
 from src.models.placeholders import Placeholder
-from src.models.shared import ChatMessage, ConversationId, ModelName
+from src.models.shared import ChatMessage, ConversationId, ConversationText, ModelName
 
 from .generic_view import EscapedStr, Raw
 from .io_helpers import SimpleView, display_neutral_msg, show_error_msg
@@ -97,10 +97,10 @@ class View:
         display_neutral_msg(texto)
 
     def display_conversation(
-        self, conversation_id: ConversationId, conversation: str
+        self, conversation_id: ConversationId, conversation: ConversationText
     ) -> None:
         self.write_object(f"### Esta es la conversacion con id {conversation_id}")
-        self.write_object(conversation)
+        self.write_object(conversation.text)
 
     def display_messages(
         self,
