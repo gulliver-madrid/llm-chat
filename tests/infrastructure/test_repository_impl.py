@@ -1,6 +1,9 @@
 from unittest.mock import Mock
 
-from src.python_modules.FileSystemWrapper.file_manager import FileManager
+
+from src.python_modules.FileSystemWrapper.file_manager_protocol import (
+    FileManagerProtocol,
+)
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.infrastructure.chat_repository.chat_file_detecter import (
@@ -22,6 +25,6 @@ def test_match_filename() -> None:
 def test_chat_repository_impl_initialization() -> None:
     repository = ChatRepositoryImplementer()
     repository.init(
-        Mock(spec=PathWrapper), Mock(spec=PathWrapper), Mock(spec=FileManager)
+        Mock(spec=PathWrapper), Mock(spec=PathWrapper), Mock(spec=FileManagerProtocol)
     )
     assert repository.is_initialized

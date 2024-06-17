@@ -1,11 +1,13 @@
-from .file_manager import FileManager
+from .file_manager_protocol import (
+    FileManagerProtocol,
+)
 from .path_wrapper import PathWrapper
 
 
 class SafeFileRemover:
-    """Only access to disk using FileManager"""
+    """Only access to disk using an object that implements FileManagerProtocol"""
 
-    def __init__(self, file_manager: FileManager) -> None:
+    def __init__(self, file_manager: FileManagerProtocol) -> None:
         self._file_manager = file_manager
 
     def remove_file(self, path_wrapper: PathWrapper) -> None:

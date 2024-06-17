@@ -1,7 +1,10 @@
 from typing import Sequence
 from unittest.mock import MagicMock, Mock
 
-from src.python_modules.FileSystemWrapper.file_manager import FileManager
+
+from src.python_modules.FileSystemWrapper.file_manager_protocol import (
+    FileManagerProtocol,
+)
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.infrastructure.chat_repository.implementer import (
@@ -11,7 +14,7 @@ from src.infrastructure.chat_repository.implementer import (
 
 
 def test_move_chat_files_from_data_dir_to_chat_dir() -> None:
-    mock_file_manager = Mock(spec=FileManager)
+    mock_file_manager = Mock(spec=FileManagerProtocol)
     mock_data_dir = Mock(spec=PathWrapper)
     mock_chat_dir = MagicMock(spec=PathWrapper)
     repository_implementer = ChatRepositoryImplementer()
