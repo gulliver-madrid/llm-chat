@@ -5,10 +5,9 @@ from rich import print
 from rich.console import Console
 from rich.markdown import Markdown
 
-from src.domain import ChatMessage
+from src.domain import ChatMessage, ConversationId, ConversationText, ModelName
 from src.infrastructure.now import TimeManager
 from src.models.placeholders import Placeholder
-from src.models.shared import ConversationId, ConversationText, ModelName
 
 from .generic_view import EscapedStr, Raw
 from .io_helpers import SimpleView, display_neutral_msg, show_error_msg

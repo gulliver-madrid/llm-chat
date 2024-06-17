@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 
+from src.domain import CompleteMessage
 from src.models.model_wrapper import ModelWrapper
-from src.models.shared import CompleteMessage, define_system_prompt
+from src.models.shared import define_system_prompt
 from src.view import Raw, View
 
 

@@ -3,8 +3,8 @@ from typing import Final, Sequence
 from rich import print
 
 
+from src.domain import ModelName, Model
 from src.models.model_choice import ModelChoiceParser
-from src.models.shared import ModelName, Model
 from src.view import (
     BLUE_VIOLET_COLOR,
     BOLD_STYLE,

@@ -1,5 +1,5 @@
-from src.domain import ChatMessage
-from src.models.shared import (
+from src.domain import (
+    ChatMessage,
     ConversationId,
     ConversationText,
     SchemaVersionId,

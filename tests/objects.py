@@ -1,5 +1,4 @@
-from src.domain import ChatMessage
-from src.models.shared import CompleteMessage, Model, ModelName
+from src.domain import ChatMessage, CompleteMessage, Model, ModelName
 
 
 TEXT_1 = """\

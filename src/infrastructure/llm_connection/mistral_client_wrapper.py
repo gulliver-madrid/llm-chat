@@ -4,13 +4,13 @@ from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
 from mistralai.exceptions import MistralConnectionException
 
-from src.domain import ChatMessage
-from src.infrastructure.exceptions import APIConnectionError
-from src.setup_logging import configure_logger, format_var
-from src.models.shared import (
+from src.domain import (
+    ChatMessage,
     Model,
     Platform,
 )
+from src.infrastructure.exceptions import APIConnectionError
+from src.setup_logging import configure_logger, format_var
 
 logger = configure_logger(__name__)
 

@@ -3,8 +3,8 @@ from enum import Enum
 import re
 from typing import Final, Mapping
 
-from src.domain import ChatMessage
-from src.models.shared import (
+from src.domain import (
+    ChatMessage,
     CompleteMessage,
     ConversationId,
     ConversationText,
