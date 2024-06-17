@@ -30,7 +30,7 @@ class RoleInfo:
 
 
 tag_types: Final[Mapping[str, TagType]] = dict(META=TagType.META, ROLE=TagType.ROLE)
-possible_roles: Final = ("system", "user", "assistant")
+possible_roles: Final = ("system", "user", "assistant", "tool")
 
 
 @dataclass
@@ -79,7 +79,7 @@ class ParsedLine:
         if not isinstance(first, str) or not first.isupper():
             raise ValueError(first)
         if (role := first.lower()) not in possible_roles:
-            raise ValueError(first)
+            raise ValueError("Role unknown: " + first)
         second = match.groups()[1].strip()
         if not second:
             return RoleInfo(role)
