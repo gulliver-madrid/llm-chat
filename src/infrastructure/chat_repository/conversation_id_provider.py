@@ -1,7 +1,10 @@
 from collections.abc import Sequence
 from typing import Iterable
 
-from src.python_modules.FileSystemWrapper.file_manager import FileManager
+
+from src.python_modules.FileSystemWrapper.file_manager_protocol import (
+    FileManagerProtocol,
+)
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.domain import ConversationId
@@ -26,7 +29,7 @@ class FreeConversationIdProvider:
 
     def __init__(
         self,
-        file_manager: FileManager,
+        file_manager: FileManagerProtocol,
         chat_detecter: ChatFileDetecter,
         chats_dir: PathWrapper,
     ):

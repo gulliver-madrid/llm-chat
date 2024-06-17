@@ -1,7 +1,10 @@
 import re
 from typing import Iterable
 
-from src.python_modules.FileSystemWrapper.file_manager import FileManager
+
+from src.python_modules.FileSystemWrapper.file_manager_protocol import (
+    FileManagerProtocol,
+)
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.serde import NUMBER_OF_DIGITS
@@ -13,7 +16,7 @@ CHAT_NAME_PATTERN = re.compile(rf"^(\d{{{NUMBER_OF_DIGITS}}})\.{CHAT_EXT}$")
 class ChatFileDetecter:
     """Clase que identifica y filtra los chat files de un iterable de PathWrappers"""
 
-    def __init__(self, file_manager: FileManager):
+    def __init__(self, file_manager: FileManagerProtocol):
         self._file_manager = file_manager
 
     def filter_chat_files(
