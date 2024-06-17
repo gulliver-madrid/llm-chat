@@ -1,6 +1,6 @@
 from typing import Sequence, cast
 
-from src.models.shared import CompleteMessage, ConversationId
+from src.domain import CompleteMessage, ConversationId
 
 from .deserialize import TagType
 from .shared import SCHEMA_VERSION

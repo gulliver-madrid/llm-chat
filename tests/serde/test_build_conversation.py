@@ -1,6 +1,6 @@
 import unittest
 
-from src.models.shared import ConversationId
+from src.domain import ConversationId
 from src.serde import (
     convert_digits_to_conversation_id,
     serialize_conversation,

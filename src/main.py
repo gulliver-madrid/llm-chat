@@ -5,9 +5,9 @@ from typing import Sequence
 
 from src.command_handler import ExitException
 from src.controllers.select_model import SelectModelController
+from src.domain import Model
 from src.engine import setup_engine
 from src.infrastructure.llm_connection import ClientWrapper
-from src.models.shared import Model
 from src.models_data import get_models
 from src.view import Raw, SimpleView, display_neutral_msg
 

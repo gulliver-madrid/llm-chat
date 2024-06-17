@@ -3,7 +3,7 @@ from enum import Enum
 import re
 from typing import Final, Mapping
 
-from src.models.shared import (
+from src.domain import (
     ChatMessage,
     CompleteMessage,
     ConversationId,
@@ -11,6 +11,7 @@ from src.models.shared import (
     Model,
     ModelName,
 )
+
 from src.models_data import get_models
 
 from .shared import SCHEMA_VERSION, Conversation

@@ -6,12 +6,14 @@ from typing import Any, Final, cast
 
 from dotenv import load_dotenv
 
+from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
+
+from src.domain import ChatMessage, CompleteMessage, Model
 from src.infrastructure.llm_connection import ClientWrapper, QueryResult
 from src.infrastructure.chat_repository.repository import ChatRepository
-from src.setup_logging import configure_logger, format_var
-from src.models.shared import ChatMessage, CompleteMessage, Model, define_system_prompt
+from src.models.shared import define_system_prompt
 from src.models_data import get_models
-from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
+from src.setup_logging import configure_logger, format_var
 from src.view import Raw, SimpleView, display_neutral_msg, escape_for_rich
 
 from examples.shop.function_calling import (
