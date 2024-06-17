@@ -9,7 +9,6 @@ from src.controllers.select_model import SelectModelController
 from src.infrastructure.now import TimeManager
 from src.infrastructure.chat_repository.repository import ChatRepository
 from src.infrastructure.llm_connection import ClientWrapper, QueryResult
-from src.models.serde.shared import SCHEMA_VERSION
 from src.models.shared import (
     CompleteMessage,
     ConversationId,
@@ -17,6 +16,7 @@ from src.models.shared import (
     Model,
     ModelName,
 )
+from src.serde.shared import SCHEMA_VERSION
 from src.view import Raw, View
 
 from tests.objects import TEXT_1

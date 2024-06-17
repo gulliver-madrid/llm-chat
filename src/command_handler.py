@@ -19,15 +19,15 @@ from src.models.placeholders import (
     build_queries,
     find_unique_placeholders,
 )
-from src.models.serde import (
-    convert_digits_to_conversation_id,
-    deserialize_conversation_text_into_messages,
-)
 from src.models.shared import (
     CompleteMessage,
     ConversationId,
     ConversationText,
     extract_chat_messages,
+)
+from src.serde import (
+    convert_digits_to_conversation_id,
+    deserialize_conversation_text_into_messages,
 )
 from src.settings import QUERY_NUMBER_LIMIT_WARNING
 from src.strategies import ActionStrategy, EstablishSystemPromptAction, ShowModelAction
