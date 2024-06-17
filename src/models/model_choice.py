@@ -1,6 +1,6 @@
 from typing import NoReturn, Sequence
 
-from src.models.shared import Model
+from src.domain import Model
 
 
 class ModelChoiceParser:

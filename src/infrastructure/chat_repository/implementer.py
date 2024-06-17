@@ -2,7 +2,7 @@ from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 from src.python_modules.FileSystemWrapper.safe_file_remover import SafeFileRemover
 
-from src.models.shared import ConversationId
+from src.domain import ConversationId
 from src.setup_logging import configure_logger
 from .chat_file_detecter import CHAT_EXT, ChatFileDetecter
 from .conversation_id_provider import FreeConversationIdProvider

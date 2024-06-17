@@ -5,12 +5,17 @@ from src.controllers.command_interpreter import (
     ActionType,
 )
 from src.controllers.select_model import SelectModelController
-from src.infrastructure.now import TimeManager
+from src.domain import (
+    CompleteMessage,
+    ConversationId,
+    ConversationText,
+)
+from src.infrastructure.chat_repository.repository import ChatRepository
 from src.infrastructure.llm_connection import (
     ClientWrapper,
     QueryResult,
 )
-from src.infrastructure.chat_repository.repository import ChatRepository
+from src.infrastructure.now import TimeManager
 from src.model_manager import ModelManager
 from src.models.placeholders import (
     Placeholder,
@@ -20,9 +25,6 @@ from src.models.placeholders import (
     find_unique_placeholders,
 )
 from src.models.shared import (
-    CompleteMessage,
-    ConversationId,
-    ConversationText,
     extract_chat_messages,
 )
 from src.serde import (

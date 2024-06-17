@@ -4,8 +4,8 @@ from typing import Iterable
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
+from src.domain import ConversationId
 from src.infrastructure.chat_repository.chat_file_detecter import ChatFileDetecter
-from src.models.shared import ConversationId
 from src.serde import (
     NUMBER_OF_DIGITS,
     convert_digits_to_conversation_id,
