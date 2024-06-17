@@ -109,6 +109,16 @@ class CommandHandler:
         elif action.type == ActionType.CONTINUE_CONVERSATION:
             # TODO: maybe use ActionType.NEW_CONVERSATION when there is no previous messages
             pass
+        elif action.type == ActionType.CHECK_DATA:
+            ids = self._repository.get_conversation_ids()
+            print(f"{len(ids)=}")
+            for id_ in ids:
+                try:
+                    self._repository.load_conversation(id_)
+                except Exception as err:
+                    print(type(err))
+                    print(err)
+                    raise
         elif action.type == ActionType.SHOW_MODEL:
             action_strategy = ShowModelAction(
                 self._view, self._model_manager.model_wrapper

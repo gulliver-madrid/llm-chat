@@ -12,6 +12,7 @@ class ActionType(Enum):
     HELP = "HELP"
     NEW_CONVERSATION = "NEW_CONVERSATION"
     CONTINUE_CONVERSATION = "CONTINUE_CONVERSATION"
+    CHECK_DATA = "CHECK_DATA"
     LOAD_CONVERSATION = "LOAD_CONVERSATION"
     LOAD_MESSAGES = "LOAD_MESSAGES"
     SYSTEM_PROMPT = "SYSTEM_PROMPT"
@@ -33,6 +34,7 @@ command_map = {
     ActionType.DEBUG: ("d", "debug"),
     ActionType.LOAD_CONVERSATION: ("load",),
     ActionType.LOAD_MESSAGES: ("load_msgs",),
+    ActionType.CHECK_DATA: ("check",),
     ActionType.NEW_CONVERSATION: ("new",),
     ActionType.CHANGE_MODEL: ("change",),
     ActionType.SHOW_MODEL: ("show",),
