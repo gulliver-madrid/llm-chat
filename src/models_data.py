@@ -1,6 +1,6 @@
 from typing import Final, Mapping, Sequence
 
-from src.models.shared import Model, ModelName, Platform
+from src.domain import Model, ModelName, Platform
 
 models_data: Final[Mapping[Platform, Sequence[str]]] = {
     Platform.Mistral: (

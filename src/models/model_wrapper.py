@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from src.models.shared import Model
+from src.domain import Model
 
 
 @dataclass

@@ -3,8 +3,8 @@ from collections.abc import Sequence
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
+from src.domain import CompleteMessage, ConversationId, ConversationText
 from src.infrastructure.now import TimeManager
-from src.models.shared import CompleteMessage, ConversationId, ConversationText
 from src.serde import serialize_conversation
 from src.serde.deserialize import deserialize_conversation_text_into_messages
 from src.serde.shared import SCHEMA_VERSION
