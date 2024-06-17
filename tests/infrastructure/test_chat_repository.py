@@ -1,7 +1,10 @@
 from typing import Any
 from unittest.mock import MagicMock, Mock
 
-from src.python_modules.FileSystemWrapper.file_manager import FileManager
+
+from src.python_modules.FileSystemWrapper.file_manager_protocol import (
+    FileManagerProtocol,
+)
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.infrastructure.chat_repository.implementer import ChatRepositoryImplementer
@@ -9,7 +12,7 @@ from src.infrastructure.chat_repository.repository import ChatRepository
 
 
 def test_create_chat_repository_trigger_filesystem_setup() -> None:
-    file_manager_mock = Mock(spec=FileManager)
+    file_manager_mock = Mock(spec=FileManagerProtocol)
     file_manager_mock.get_children.return_value = []
     chat_repository_implementer_mock = Mock(spec=ChatRepositoryImplementer)
     main_directory_mock = MagicMock(spec=PathWrapper)
