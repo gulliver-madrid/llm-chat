@@ -34,7 +34,7 @@ class ChatRepository:
         self._setup_file_system()
 
     def get_conversation_ids(self) -> list[ConversationId]:
-        raise NotImplementedError
+        return self._chat_repository_implementer.get_conversation_ids()
 
     def save_messages(self, complete_messages: Sequence[CompleteMessage]) -> None:
         conversation_id = self._chat_repository_implementer.get_new_conversation_id()

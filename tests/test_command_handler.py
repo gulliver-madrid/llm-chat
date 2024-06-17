@@ -250,6 +250,36 @@ def test_debug_command_works(advanced_fixture: AdvancedFixture) -> None:
     assert calls[0].kwargs["debug"] == True
 
 
+def test_check_command_no_data(command_handler_fixture: CommandHandlerFixture) -> None:
+    fixture = command_handler_fixture
+    fixture.mock_repository.get_conversation_ids.return_value = []
+    fixture.command_handler.process_action(Action(ActionType.CHECK_DATA), "")
+
+
+def test_check_command_with_right_data(
+    command_handler_fixture: CommandHandlerFixture,
+) -> None:
+    fixture = command_handler_fixture
+    fixture.mock_repository.get_conversation_ids.return_value = [ConversationId("01")]
+    fixture.command_handler.process_action(Action(ActionType.CHECK_DATA), "")
+
+
+def test_check_command_with_wrong_data(
+    command_handler_fixture: CommandHandlerFixture,
+) -> None:
+    fixture = command_handler_fixture
+    fixture.mock_repository.get_conversation_ids.return_value = [ConversationId("01")]
+
+    def load_conversation(id_: ConversationId) -> ConversationText:
+        if id_ == "01":
+            raise RuntimeError()
+        return ConversationText("", SCHEMA_VERSION)
+
+    fixture.mock_repository.load_conversation = load_conversation
+    with pytest.raises(RuntimeError):
+        fixture.command_handler.process_action(Action(ActionType.CHECK_DATA), "")
+
+
 def test_load_conversation(advanced_fixture: AdvancedFixture) -> None:
     """
     Tests the loading of a specific conversation by ID, checking calls to retrieval

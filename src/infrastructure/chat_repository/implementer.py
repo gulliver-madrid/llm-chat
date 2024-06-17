@@ -32,6 +32,16 @@ class ChatRepositoryImplementer:
         self._chats_dir = chats_dir
         self.is_initialized = True
 
+    def get_conversation_ids(self) -> list[ConversationId]:
+        assert self.is_initialized
+        children = self._file_manager.get_children(self._chats_dir)
+        paths = self._chat_detecter.filter_chat_files(children)
+        ids: list[ConversationId] = []
+        for path in paths:
+            id_as_text = path.name.split(".")[0]
+            ids.append(ConversationId(id_as_text))
+        return ids
+
     def move_chat_files_from_data_dir_to_chat_dir(self) -> None:
         """
         In the previous version, chat files were directly stored in the data directory.
