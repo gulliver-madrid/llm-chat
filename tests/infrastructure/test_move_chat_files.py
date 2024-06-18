@@ -9,16 +9,16 @@ from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.infrastructure.chat_repository.implementer import (
     ChatRepositoryImplementer,
+    DataLocation,
     SafeFileContentMover,
 )
 
 
 def test_move_chat_files_from_data_dir_to_chat_dir() -> None:
     mock_file_manager = Mock(spec=FileManagerProtocol)
-    mock_data_dir = Mock(spec=PathWrapper)
-    mock_chat_dir = MagicMock(spec=PathWrapper)
+    mock_data_location = MagicMock(spec=DataLocation)
     repository_implementer = ChatRepositoryImplementer()
-    repository_implementer.init(mock_data_dir, mock_chat_dir, mock_file_manager)
+    repository_implementer.init(mock_data_location, mock_file_manager)
     content_mover = Mock(spec=SafeFileContentMover)
     repository_implementer._content_mover = (  # pyright: ignore [reportPrivateUsage]
         content_mover
@@ -29,9 +29,9 @@ def test_move_chat_files_from_data_dir_to_chat_dir() -> None:
     files[1].name = "0001.chat"
 
     def mock_get_children(data_dir: PathWrapper) -> Sequence[PathWrapper]:
-        if data_dir is mock_data_dir:
+        if data_dir is mock_data_location.data_dir:
             return files
-        elif data_dir is mock_chat_dir:
+        elif data_dir is mock_data_location.chats_dir:
             return []
         else:
             raise ValueError()
@@ -46,7 +46,7 @@ def test_move_chat_files_from_data_dir_to_chat_dir() -> None:
     mock_file_manager.path_is_dir.side_effect = mock_is_dir
 
     mock_dest_path = Mock(spec=PathWrapper)
-    mock_chat_dir.__truediv__.return_value = mock_dest_path
+    mock_data_location.chats_dir.__truediv__.return_value = mock_dest_path
 
     repository_implementer.move_chat_files_from_data_dir_to_chat_dir()
 
