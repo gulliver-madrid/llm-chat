@@ -10,7 +10,7 @@ from src.domain import (
     ConversationId,
     ConversationText,
 )
-from src.infrastructure.chat_repository.repository import ChatRepository
+from src.infrastructure.chat_repository.protocol import ChatRepositoryProtocol
 from src.infrastructure.llm_connection import (
     ClientWrapper,
     QueryResult,
@@ -61,7 +61,7 @@ class CommandHandler:
     _time_manager: Final[TimeManager]
     _select_model_controler: Final[SelectModelController]
     _model_manager: Final[ModelManager]
-    _repository: Final[ChatRepository]
+    _repository: Final[ChatRepositoryProtocol]
     _prev_messages: Final[list[CompleteMessage]]
 
     def __init__(
@@ -69,7 +69,7 @@ class CommandHandler:
         *,
         view: View,
         select_model_controler: SelectModelController,
-        repository: ChatRepository,
+        repository: ChatRepositoryProtocol,
         client_wrapper: ClientWrapper,
         time_manager: TimeManager,
         prev_messages: list[CompleteMessage] | None = None,
