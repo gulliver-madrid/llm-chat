@@ -10,10 +10,11 @@ from src.controllers.command_interpreter import (
 )
 from src.controllers.select_model import SelectModelController
 from src.domain import Model
-from src.infrastructure.now import TimeManager
-from src.infrastructure.llm_connection import ClientWrapper
+from src.infrastructure.chat_repository.implementer import ChatRepositoryImplementer
 from src.infrastructure.chat_repository.repository import ChatRepository
 from src.infrastructure.main_path_provider import get_main_directory
+from src.infrastructure.now import TimeManager
+from src.infrastructure.llm_connection import ClientWrapper
 from src.view import Raw, View
 
 
@@ -22,7 +23,10 @@ def setup_engine(
 ) -> "MainEngine":
     select_model_controler = SelectModelController(models)
     chat_repository = ChatRepository(
-        PathWrapper(get_main_directory()), file_manager=FileManager()
+        PathWrapper(get_main_directory()),
+        file_manager=FileManager(),
+        time_manager=TimeManager(),
+        chat_repository_implementer=ChatRepositoryImplementer(),
     )
     view = View()
     command_interpreter = CommandInterpreter()

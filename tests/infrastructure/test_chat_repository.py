@@ -2,6 +2,7 @@ from typing import Any
 from unittest.mock import MagicMock, Mock
 
 
+from src.infrastructure.now import TimeManager
 from src.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )
@@ -29,6 +30,7 @@ def test_create_chat_repository_trigger_filesystem_setup() -> None:
         main_directory_mock,
         file_manager=file_manager_mock,
         chat_repository_implementer=chat_repository_implementer_mock,
+        time_manager=Mock(spec=TimeManager),
     )
 
     file_manager_mock.mkdir_if_not_exists.assert_called()
