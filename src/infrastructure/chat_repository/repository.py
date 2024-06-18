@@ -1,5 +1,7 @@
 from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
+from src.infrastructure.chat_repository.protocol import ChatRepositoryProtocol
 from src.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )
@@ -68,3 +70,8 @@ class ChatRepository:
     ) -> None:
         filepath = self._chat_repository_implementer.build_chat_path(conversation_id)
         self._file_manager.write_file(filepath, conversation_as_text)
+
+
+if TYPE_CHECKING:
+    repository: ChatRepository
+    protocol: ChatRepositoryProtocol = repository  # pyright: ignore
