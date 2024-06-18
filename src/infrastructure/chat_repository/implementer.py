@@ -1,3 +1,4 @@
+from typing import Final
 from src.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )
@@ -13,6 +14,20 @@ from .conversation_id_provider import FreeConversationIdProvider
 logger = configure_logger(__name__)
 
 
+class DataLocation:
+    def __init__(self, main_directory: PathWrapper):
+        self._data_dir: Final = main_directory / "data"
+        self._chats_dir: Final = self.data_dir / "chats"
+
+    @property
+    def data_dir(self) -> PathWrapper:
+        return self._data_dir
+
+    @property
+    def chats_dir(self) -> PathWrapper:
+        return self._chats_dir
+
+
 class ChatRepositoryImplementer:
     """Only access to disk using an object that implements FileManagerProtocol"""
 
@@ -20,8 +35,7 @@ class ChatRepositoryImplementer:
 
     def init(
         self,
-        data_dir: PathWrapper,
-        chats_dir: PathWrapper,
+        data_location: DataLocation,
         file_manager: FileManagerProtocol,
     ) -> None:
         assert not self.is_initialized
@@ -29,10 +43,10 @@ class ChatRepositoryImplementer:
         self._chat_detecter = ChatFileDetecter(self._file_manager)
         self._content_mover = SafeFileContentMover(self._file_manager)
         self._conversation_id_provider = FreeConversationIdProvider(
-            self._file_manager, self._chat_detecter, chats_dir
+            self._file_manager, self._chat_detecter, data_location.chats_dir
         )
-        self.__data_dir = data_dir
-        self._chats_dir = chats_dir
+        self.__data_dir = data_location.data_dir
+        self._chats_dir = data_location.chats_dir
         self.is_initialized = True
 
     def get_conversation_ids(self) -> list[ConversationId]:
