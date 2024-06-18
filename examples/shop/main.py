@@ -11,6 +11,7 @@ from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.domain import ChatMessage, CompleteMessage, Model
 from src.infrastructure.llm_connection import ClientWrapper, QueryResult
+from src.infrastructure.chat_repository.protocol import ChatRepositoryProtocol
 from src.infrastructure.chat_repository.repository import ChatRepository
 from src.models.shared import define_system_prompt
 from src.models_data import get_models
@@ -35,6 +36,7 @@ logger = configure_logger(__name__)
 
 class Main:
     _client: ClientWrapper
+    _repository: ChatRepositoryProtocol
 
     def __init__(self) -> None:
         self._config_reader = ConfigReader()
