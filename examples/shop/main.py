@@ -10,9 +10,11 @@ from src.python_modules.FileSystemWrapper.file_manager import FileManager
 from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
 
 from src.domain import ChatMessage, CompleteMessage, Model
-from src.infrastructure.llm_connection import ClientWrapper, QueryResult
+from src.infrastructure.chat_repository.implementer import ChatRepositoryImplementer
 from src.infrastructure.chat_repository.protocol import ChatRepositoryProtocol
 from src.infrastructure.chat_repository.repository import ChatRepository
+from src.infrastructure.llm_connection import ClientWrapper, QueryResult
+from src.infrastructure.now import TimeManager
 from src.models.shared import define_system_prompt
 from src.models_data import get_models
 from src.setup_logging import configure_logger, format_var
@@ -43,7 +45,10 @@ class Main:
         self._messages: Final[list[CompleteMessage]] = []
         self._model = self._get_model()
         self._repository = ChatRepository(
-            PathWrapper(Path(__file__).parents[2]), file_manager=FileManager()
+            PathWrapper(Path(__file__).parents[2]),
+            file_manager=FileManager(),
+            time_manager=TimeManager(),
+            chat_repository_implementer=ChatRepositoryImplementer(),
         )
         self._shop_repository = ShopRepository()
         self._tools_manager = ToolsManager(self._shop_repository)
