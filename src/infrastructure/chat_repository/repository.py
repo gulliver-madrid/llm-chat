@@ -22,12 +22,12 @@ class ChatRepository:
         main_directory: PathWrapper,
         *,
         file_manager: FileManagerProtocol,
-        time_manager: TimeManager | None = None,
-        chat_repository_implementer: ChatRepositoryImplementer | None = None,
+        time_manager: TimeManager,
+        chat_repository_implementer: ChatRepositoryImplementer,
     ) -> None:
         self._file_manager = file_manager
-        self._time_manager = time_manager or TimeManager()
-        self._implementer = chat_repository_implementer or ChatRepositoryImplementer()
+        self._time_manager = time_manager
+        self._implementer = chat_repository_implementer
         self._data_location = DataLocation(main_directory)
         self._implementer.init(
             self._data_location,
