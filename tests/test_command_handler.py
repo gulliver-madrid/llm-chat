@@ -13,7 +13,7 @@ from src.domain import (
     Model,
     ModelName,
 )
-from src.infrastructure.chat_repository.repository import ChatRepository
+from src.infrastructure.chat_repository.protocol import ChatRepositoryProtocol
 from src.infrastructure.llm_connection import ClientWrapper, QueryResult
 from src.infrastructure.now import TimeManager
 from src.serde.shared import SCHEMA_VERSION
@@ -34,7 +34,7 @@ class CommandHandlerFixture:
         """
         self.mock_view = Mock(spec=View)
         self.mock_select_model_controler = Mock(spec=SelectModelController)
-        self.mock_repository = Mock(spec=ChatRepository)
+        self.mock_repository = Mock(spec=ChatRepositoryProtocol)
         self.mock_time_manager = Mock(spec=TimeManager)
         self.mock_time_manager.get_current_time.return_value = "2024-03-01 01:30:00"
         self.mock_client_wrapper = Mock(spec=ClientWrapper)
