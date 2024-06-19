@@ -1,9 +1,8 @@
+from pathlib import PurePath
 from typing import Final
 from src.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )
-from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
-from src.python_modules.FileSystemWrapper.safe_file_remover import SafeFileRemover
 
 from src.domain import ConversationId
 from src.setup_logging import configure_logger
@@ -15,16 +14,16 @@ logger = configure_logger(__name__)
 
 
 class DataLocation:
-    def __init__(self, main_directory: PathWrapper):
+    def __init__(self, main_directory: PurePath):
         self._data_dir: Final = main_directory / "data"
         self._chats_dir: Final = self.data_dir / "chats"
 
     @property
-    def data_dir(self) -> PathWrapper:
+    def data_dir(self) -> PurePath:
         return self._data_dir
 
     @property
-    def chats_dir(self) -> PathWrapper:
+    def chats_dir(self) -> PurePath:
         return self._chats_dir
 
 
@@ -57,7 +56,7 @@ class ChatRepositoryImplementer:
             ids.append(ConversationId(id_as_text))
         return ids
 
-    def build_chat_path(self, conversation_id: ConversationId) -> PathWrapper:
+    def build_chat_path(self, conversation_id: ConversationId) -> PurePath:
         filename = conversation_id + "." + CHAT_EXT
         return self._chats_dir / filename
 

@@ -1,8 +1,8 @@
-from pathlib import Path
+from pathlib import PurePath
 
 
-_MAIN_DIRECTORY = Path(__file__).parents[2]
+_MAIN_DIRECTORY = PurePath(__file__).parents[2]
 
 
-def get_main_directory() -> Path:
+def get_main_directory() -> PurePath:
     return _MAIN_DIRECTORY

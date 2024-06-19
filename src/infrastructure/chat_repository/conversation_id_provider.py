@@ -1,11 +1,12 @@
 from collections.abc import Sequence
+from pathlib import PurePath
 from typing import Iterable
 
 
 from src.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )
-from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
+
 
 from src.domain import ConversationId
 from src.infrastructure.chat_repository.chat_file_detecter import ChatFileDetecter
@@ -31,7 +32,7 @@ class FreeConversationIdProvider:
         self,
         file_manager: FileManagerProtocol,
         chat_detecter: ChatFileDetecter,
-        chats_dir: PathWrapper,
+        chats_dir: PurePath,
     ):
         self._file_manager = file_manager
         self._chat_detecter = chat_detecter
@@ -45,7 +46,7 @@ class FreeConversationIdProvider:
         assert 0 <= new_number < TOO_MUCH_CHATS, new_number
         return convert_digits_to_conversation_id(str(new_number))
 
-    def _find_max_file_number(self, directory_path: PathWrapper) -> int | None:
+    def _find_max_file_number(self, directory_path: PurePath) -> int | None:
         assert self._file_manager.path_is_dir(directory_path)
         children = self._file_manager.get_children(directory_path)
         chat_files = self._chat_detecter.filter_chat_files(children)
@@ -53,13 +54,13 @@ class FreeConversationIdProvider:
         return get_max_stem_value(chat_files)
 
 
-def get_max_stem_value(chat_files: Iterable[PathWrapper]) -> int | None:
+def get_max_stem_value(chat_files: Iterable[PurePath]) -> int | None:
     values = (int(p.stem) for p in chat_files)
     return max(values, default=None)
 
 
 def log_ignored_paths(
-    children: Sequence[PathWrapper], chat_files: Sequence[PathWrapper]
+    children: Sequence[PurePath], chat_files: Sequence[PurePath]
 ) -> None:
     ignored_count = len(children) - len(chat_files)
     if ignored_count > 0:
