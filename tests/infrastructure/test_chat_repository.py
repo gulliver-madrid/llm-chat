@@ -14,7 +14,6 @@ from src.infrastructure.chat_repository.repository import ChatRepository
 def test_create_chat_repository_trigger_filesystem_setup() -> None:
     file_manager_mock = Mock(spec=FileManagerProtocol)
     file_manager_mock.get_children.return_value = []
-    chat_repository_implementer_mock = Mock(spec=ChatRepositoryImplementer)
     main_directory_mock = MagicMock(spec=PurePath)
 
     def truediv(self: Any, name: str) -> Any:
@@ -28,7 +27,6 @@ def test_create_chat_repository_trigger_filesystem_setup() -> None:
     ChatRepository(
         main_directory_mock,
         file_manager=file_manager_mock,
-        chat_repository_implementer=chat_repository_implementer_mock,
         time_manager=Mock(spec=TimeManager),
     )
 

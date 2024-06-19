@@ -10,7 +10,6 @@ from src.python_modules.FileSystemWrapper.file_manager import FileManager
 
 
 from src.domain import ChatMessage, CompleteMessage, Model
-from src.infrastructure.chat_repository.implementer import ChatRepositoryImplementer
 from src.infrastructure.chat_repository.protocol import ChatRepositoryProtocol
 from src.infrastructure.chat_repository.repository import ChatRepository
 from src.infrastructure.llm_connection import ClientWrapper, QueryResult
@@ -48,7 +47,6 @@ class Main:
             PurePath(__file__).parents[2],
             file_manager=FileManager(),
             time_manager=TimeManager(),
-            chat_repository_implementer=ChatRepositoryImplementer(),
         )
         self._shop_repository = ShopRepository()
         self._tools_manager = ToolsManager(self._shop_repository)
