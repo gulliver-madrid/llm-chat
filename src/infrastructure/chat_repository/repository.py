@@ -61,7 +61,6 @@ class ChatRepository:
     def _setup_file_system(self) -> None:
         self._file_manager.mkdir_if_not_exists(self._data_location.data_dir)
         self._file_manager.mkdir_if_not_exists(self._data_location.chats_dir)
-        self._implementer.move_chat_files_from_data_dir_to_chat_dir()
 
     def _save_conversation(
         self, conversation_id: ConversationId, conversation_as_text: str

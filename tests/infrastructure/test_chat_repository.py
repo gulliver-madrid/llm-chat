@@ -38,5 +38,3 @@ def test_create_chat_repository_trigger_filesystem_setup() -> None:
     calls = file_manager_mock.mkdir_if_not_exists.mock_calls
     assert calls[0].args[0].name == "data"
     assert calls[1].args[0].name == "chats"
-
-    chat_repository_implementer_mock.move_chat_files_from_data_dir_to_chat_dir.assert_called_once()
