@@ -1,13 +1,13 @@
 import json
 import os
-from pathlib import Path
+from pathlib import PurePath
 import re
 from typing import Any, Final, cast
 
 from dotenv import load_dotenv
 
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
-from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
+
 
 from src.domain import ChatMessage, CompleteMessage, Model
 from src.infrastructure.chat_repository.implementer import ChatRepositoryImplementer
@@ -45,7 +45,7 @@ class Main:
         self._messages: Final[list[CompleteMessage]] = []
         self._model = self._get_model()
         self._repository = ChatRepository(
-            PathWrapper(Path(__file__).parents[2]),
+            PurePath(__file__).parents[2],
             file_manager=FileManager(),
             time_manager=TimeManager(),
             chat_repository_implementer=ChatRepositoryImplementer(),

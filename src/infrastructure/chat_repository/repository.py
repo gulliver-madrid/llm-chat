@@ -1,11 +1,12 @@
 from collections.abc import Sequence
+from pathlib import PurePath
 from typing import TYPE_CHECKING
 
 from src.infrastructure.chat_repository.protocol import ChatRepositoryProtocol
 from src.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )
-from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
+
 
 from src.domain import CompleteMessage, ConversationId, ConversationText
 from src.infrastructure.now import TimeManager
@@ -19,7 +20,7 @@ from .implementer import ChatRepositoryImplementer, DataLocation
 class ChatRepository:
     def __init__(
         self,
-        main_directory: PathWrapper,
+        main_directory: PurePath,
         *,
         file_manager: FileManagerProtocol,
         time_manager: TimeManager,
