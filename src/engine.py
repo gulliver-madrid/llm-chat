@@ -1,7 +1,8 @@
 from collections.abc import Sequence
 
+
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
-from src.python_modules.FileSystemWrapper.path_wrapper import PathWrapper
+
 
 from src.command_handler import CommandHandler
 from src.controllers.command_interpreter import (
@@ -23,7 +24,7 @@ def setup_engine(
 ) -> "MainEngine":
     select_model_controler = SelectModelController(models)
     chat_repository = ChatRepository(
-        PathWrapper(get_main_directory()),
+        get_main_directory(),
         file_manager=FileManager(),
         time_manager=TimeManager(),
         chat_repository_implementer=ChatRepositoryImplementer(),
