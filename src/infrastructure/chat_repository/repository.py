@@ -24,11 +24,10 @@ class ChatRepository:
         *,
         file_manager: FileManagerProtocol,
         time_manager: TimeManager,
-        chat_repository_implementer: ChatRepositoryImplementer,
     ) -> None:
         self._file_manager = file_manager
         self._time_manager = time_manager
-        self._implementer = chat_repository_implementer
+        self._implementer = ChatRepositoryImplementer()
         self._data_location = DataLocation(main_directory)
         self._implementer.init(
             self._data_location,

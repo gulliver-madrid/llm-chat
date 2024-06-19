@@ -11,7 +11,6 @@ from src.controllers.command_interpreter import (
 )
 from src.controllers.select_model import SelectModelController
 from src.domain import Model
-from src.infrastructure.chat_repository.implementer import ChatRepositoryImplementer
 from src.infrastructure.chat_repository.repository import ChatRepository
 from src.infrastructure.main_path_provider import get_main_directory
 from src.infrastructure.now import TimeManager
@@ -27,7 +26,6 @@ def setup_engine(
         get_main_directory(),
         file_manager=FileManager(),
         time_manager=TimeManager(),
-        chat_repository_implementer=ChatRepositoryImplementer(),
     )
     view = View()
     command_interpreter = CommandInterpreter()
