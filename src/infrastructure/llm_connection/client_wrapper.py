@@ -1,5 +1,5 @@
 import time
-from typing import Any, Sequence
+from typing import TYPE_CHECKING, Any, Sequence
 
 from src.domain import (
     ChatMessage,
@@ -15,6 +15,7 @@ from src.infrastructure.exceptions import (
 )
 from src.models.messages_ops import add_user_query_in_place
 from src.models.shared import extract_chat_messages
+from src.protocols import ClientWrapperProtocol
 from src.setup_logging import configure_logger
 
 from .mistral_client_wrapper import MistralClientWrapper
@@ -119,3 +120,8 @@ class ClientWrapper:
             breakpoint()
         complete_messages.append(CompleteMessage(chat_msg, model))
         return QueryResult(chat_msg.content, complete_messages)
+
+
+if TYPE_CHECKING:
+    client_wrapper: ClientWrapper
+    protocol: ClientWrapperProtocol = client_wrapper  # pyright: ignore
