@@ -1,12 +1,12 @@
 from src.domain import ModelName
-from src.infrastructure.now import TimeManager
+from src.protocols import TimeManagerProtocol
 
 from .generic_view import Raw
 from .io_helpers import escape_for_rich, highlight_role
 
 
 def get_interaction_styled_view(
-    time_manager: TimeManager, model: ModelName, query: Raw, content: Raw
+    time_manager: TimeManagerProtocol, model: ModelName, query: Raw, content: Raw
 ) -> str:
     """Returns the styled representation of an interaction between user and model"""
     lines: list[str] = []
