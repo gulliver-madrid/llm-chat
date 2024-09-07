@@ -1,13 +1,18 @@
 from collections.abc import Sequence
-from typing import Any, Protocol
+from typing import Any, Mapping, Protocol, Sequence
 
 from src.domain import (
+    ChatMessage,
     CompleteMessage,
     ConversationId,
     ConversationText,
     Model,
+    ModelName,
     QueryResult,
 )
+from src.models.placeholders import Placeholder
+from src.view.generic_view import EscapedStr, Raw
+from src.view.io_helpers import SimpleView
 
 
 class ClientWrapperProtocol(Protocol):
@@ -40,3 +45,34 @@ class ChatRepositoryProtocol(Protocol):
 
 class TimeManagerProtocol(Protocol):
     def get_current_time(self) -> str: ...
+
+
+class ViewProtocol(Protocol):
+    @property
+    def simple_view(self) -> SimpleView: ...
+    def print_interaction(
+        self,
+        time_manager: TimeManagerProtocol,
+        model_name: ModelName,
+        query: Raw,
+        content: Raw,
+    ) -> None: ...
+    def get_raw_substitutions_from_user(
+        self,
+        unique_placeholders: Sequence[Placeholder],
+    ) -> Mapping[Placeholder, str]: ...
+    def confirm_launching_many_queries(self, number_of_queries: int) -> bool: ...
+    def write_object(self, obj: object) -> None: ...
+    def show_help(self) -> None: ...
+    def input_extra_line(self) -> tuple[str, float]: ...
+    def display_neutral_msg(self, texto: Raw) -> None: ...
+    def display_conversation(
+        self, conversation_id: ConversationId, conversation: ConversationText
+    ) -> None: ...
+    def display_messages(
+        self,
+        conversation_id: ConversationId,
+        prev_messages: Sequence[ChatMessage],
+    ) -> None: ...
+    def display_processing_query_text(self, *, current: int, total: int) -> None: ...
+    def show_error_msg(self, text: EscapedStr | Raw) -> None: ...

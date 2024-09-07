@@ -18,7 +18,8 @@ from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.now import TimeManager
 from src.protocols import ChatRepositoryProtocol
 from src.serde.shared import SCHEMA_VERSION
-from src.view import Raw, View
+from src.view import Raw
+from src.view.view import View
 from tests.objects import TEXT_1
 
 
