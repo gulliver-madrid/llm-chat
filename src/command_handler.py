@@ -2,8 +2,13 @@ from typing import Final, Sequence
 
 from src.controllers.command_interpreter import Action, ActionType
 from src.controllers.select_model import SelectModelController
-from src.domain import CompleteMessage, ConversationId, ConversationText
-from src.infrastructure.llm_connection import ClientWrapper, QueryResult
+from src.domain import (
+    CompleteMessage,
+    ConversationId,
+    ConversationText,
+    QueryResult,
+)
+from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.now import TimeManager
 from src.model_manager import ModelManager
 from src.models.placeholders import (
