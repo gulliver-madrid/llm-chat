@@ -36,3 +36,7 @@ class ChatRepositoryProtocol(Protocol):
     def load_conversation_as_conversation_text(
         self, conversation_id: ConversationId
     ) -> ConversationText: ...
+
+
+class TimeManagerProtocol(Protocol):
+    def get_current_time(self) -> str: ...
