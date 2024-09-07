@@ -1,7 +1,7 @@
 from src.infrastructure.exceptions import LLMChatException
 from src.view import Raw, show_error_msg
 
-from examples.shop.main import Main
+from .main import Main
 
 if __name__ == "__main__":
     main = Main()
