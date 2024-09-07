@@ -11,7 +11,7 @@ from src.infrastructure.chat_repository.repository import ChatRepository
 from src.infrastructure.main_path_provider import get_main_directory
 from src.infrastructure.now import TimeManager
 from src.protocols import ClientWrapperProtocol
-from src.view import View
+from src.view.view import View
 
 
 def setup_engine(

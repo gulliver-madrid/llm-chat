@@ -1,5 +1,5 @@
 import time
-from typing import Mapping, Sequence
+from typing import TYPE_CHECKING, Mapping, Sequence
 
 from rich import print
 from rich.console import Console
@@ -131,3 +131,10 @@ def define_processing_query_text(*, current: int, total: int) -> str:
         extra = f"número {current } de {total}"
         text = " ".join([text, extra])
     return text
+
+
+if TYPE_CHECKING:
+    from src.protocols import ViewProtocol
+
+    view: View
+    protocol: ViewProtocol = view  # pyright: ignore
