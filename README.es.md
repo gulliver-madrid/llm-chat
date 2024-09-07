@@ -1,9 +1,17 @@
 # LLM-Chat: Interfaz de Texto para Grandes Modelos de Lenguaje (LLMs)
 
-[Advertencia: ¡Riesgo de Force Push!](#advertencia-¡riesgo-de-force-push) • [Descargo de Responsabilidad](#descargo-de-responsabilidad) • [Instalación](#instalación) • [Uso](#uso) • [Actualización de Gestión de Proyecto](#🚀-actualización-de-gestión-de-proyecto)
+[Advertencia: ¡Riesgo de Force Push!](#advertencia-¡riesgo-de-force-push)
+
+## Índice
+- [Descargo de Responsabilidad](#descargo-de-responsabilidad)
+- [Instalación](#instalación)
+- [Uso](#uso)
+- [Actualización de Gestión de Proyecto](#actualización-de-gestión-de-proyecto)
+- [Licencia](#licencia)
+- [Agradecimientos](#agradecimientos)
 
 Este proyecto proporciona una interfaz de texto para interactuar con los modelos de [Mistral AI](https://mistral.ai/) y [OpenAI](https://www.openai.com/). La aplicación permite a los usuarios seleccionar un modelo, ingresar una pregunta y recibir la respuesta del modelo.
-
+,
 ## Nota
 Hasta ahora este proyecto solo permitía acceder a los modelos de Mistral. Ahora es posible acceder también a varios modelos de OpenAI. Estamos actualizando la documentación en consecuencia, pero el proceso de actualización aún no está completado.
 
@@ -131,14 +139,14 @@ Esta aplicación ofrece las siguientes funcionalidades:
 - Carga de conversaciones previas, en su estado original o editadas por el usuario.
 
 
-### Desarrollo
+## Desarrollo
 
-#### Advertencia: ¡Riesgo de Force Push!
+### Advertencia: ¡Riesgo de Force Push!
 
 Si tiene cambios locales que no desea perder, por favor no use `git pull` o `git fetch`. Estos comandos pueden sobrescribir cambios locales.
 
 
-#### 🚀 Actualización de Gestión de Proyecto
+### Actualización de Gestión de Proyecto
 
 Para mejorar cómo gestionamos las versiones y documentamos los cambios, estamos haciendo algunos cambios importantes:
 
@@ -148,7 +156,7 @@ Para mejorar cómo gestionamos las versiones y documentamos los cambios, estamos
 
 Gracias por su comprensión y paciencia mientras hacemos estas mejoras. Si tiene alguna pregunta o necesita ayuda para navegar los cambios, no dude en comunicarse.
 
-#### Dependencias de desarrollo
+### Dependencias de desarrollo
 
 Este proyecto utiliza [Poetry](https://python-poetry.org/) para la gestión de paquetes y el manejo de dependencias. Para configurar el entorno de desarrollo e instalar las herramientas requeridas, ejecute:
 
@@ -158,11 +166,11 @@ poetry install --with dev
 
 Las dependencias de desarrollo incluyen `mypy` para la comprobación estática de tipos.
 
-### Licencia
+## Licencia
 
 Este proyecto está licenciado bajo la [Licencia GPLv3](https://www.gnu.org/licenses/quick-guide-gplv3.html).
 
-### Agradecimientos
+## Agradecimientos
 
 Este proyecto se construye utilizando las siguientes bibliotecas de código abierto:
 

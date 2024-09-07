@@ -2,8 +2,15 @@
 
 [[leer en español](README.es.md)]
 
+[Warning: Risk of Force Push!](#warning-risk-of-force-push)
 
-[Warning: Risk of Force Push!](#warning-risk-of-force-push) • [Disclaimer](#disclaimer) • [Installation](#installation) • [Usage](#usage) • [Project Management Update](#🚀-project-management-update)
+## Table of Contents
+- [Disclaimer](#disclaimer)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Project Management Update](#project-management-update)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
 This project provides a text interface to interact with the models of [Mistral AI](https://mistral.ai/) and [OpenAI](https://www.openai.com/). The application allows users to select a model, enter a question, and receive the model's response.
 
@@ -134,13 +141,13 @@ This application offers the following features:
 - Loading of previous conversations, in their original state or edited by the user.
 
 
-### Development
+## Development
 
-#### Warning: Risk of Force Push!
+### Warning: Risk of Force Push!
 
 If you have local changes that you don’t want to lose, please don't use `git pull` or `git fetch`. These commands can overwrite local changes.
 
-#### 🚀 Project Management Update
+### Project Management Update
 
 To improve how we manage versions and document changes, we're making some important changes:
 
@@ -150,7 +157,7 @@ To improve how we manage versions and document changes, we're making some import
 
 Thanks for your understanding and patience as we make these improvements. If you have any questions or need help navigating the changes, feel free to reach out.
 
-#### Development dependencies
+### Development dependencies
 
 This project uses [Poetry](https://python-poetry.org/) for package management and dependency handling. To set up the development environment and
 install required tools, run:
@@ -161,12 +168,12 @@ poetry install --with dev
 
 The development dependencies include `mypy` for static type checking.
 
-### License
+## License
 
 This project is licensed under the [GPLv3 License](https://www.gnu.org/licenses/quick-guide-gplv3.html).
 
 
-### Acknowledgements
+## Acknowledgements
 
 This project is built using the following open-source libraries:
 
