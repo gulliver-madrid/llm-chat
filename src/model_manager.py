@@ -1,14 +1,14 @@
 from typing import Final
 
 from src.domain import CompleteMessage, QueryResult
-from src.infrastructure.llm_connection import ClientWrapper
 from src.models.messages_ops import add_user_query_in_place
 from src.models.model_wrapper import ModelWrapper
 from src.models.placeholders import QueryText
+from src.protocols import ClientWrapperProtocol
 
 
 class ModelManager:
-    def __init__(self, client_wrapper: ClientWrapper):
+    def __init__(self, client_wrapper: ClientWrapperProtocol):
         self.model_wrapper: Final = ModelWrapper()
         self.client_wrapper: Final = client_wrapper
 

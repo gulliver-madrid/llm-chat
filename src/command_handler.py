@@ -8,7 +8,6 @@ from src.domain import (
     ConversationText,
     QueryResult,
 )
-from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.now import TimeManager
 from src.model_manager import ModelManager
 from src.models.placeholders import (
@@ -19,7 +18,7 @@ from src.models.placeholders import (
     find_unique_placeholders,
 )
 from src.models.shared import extract_chat_messages
-from src.protocols import ChatRepositoryProtocol
+from src.protocols import ChatRepositoryProtocol, ClientWrapperProtocol
 from src.serde import (
     convert_digits_to_conversation_id,
     deserialize_conversation_text_into_messages,
@@ -61,7 +60,7 @@ class CommandHandler:
         view: View,
         select_model_controler: SelectModelController,
         repository: ChatRepositoryProtocol,
-        client_wrapper: ClientWrapper,
+        client_wrapper: ClientWrapperProtocol,
         time_manager: TimeManager,
         prev_messages: list[CompleteMessage] | None = None,
     ):

@@ -8,13 +8,15 @@ from src.controllers.select_model import SelectModelController
 from src.domain import Model
 from src.engine import MainEngine
 from src.infrastructure.chat_repository.repository import ChatRepository
-from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.main_path_provider import get_main_directory
 from src.infrastructure.now import TimeManager
+from src.protocols import ClientWrapperProtocol
 from src.view import View
 
 
-def setup_engine(models: Sequence[Model], client_wrapper: ClientWrapper) -> MainEngine:
+def setup_engine(
+    models: Sequence[Model], client_wrapper: ClientWrapperProtocol
+) -> MainEngine:
     """Returns a default MainEngine"""
     select_model_controler = SelectModelController(models)
     chat_repository = ChatRepository(

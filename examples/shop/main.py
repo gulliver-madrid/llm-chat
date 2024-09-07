@@ -14,7 +14,7 @@ from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.now import TimeManager
 from src.models.shared import define_system_prompt
 from src.models_data import get_models
-from src.protocols import ChatRepositoryProtocol
+from src.protocols import ChatRepositoryProtocol, ClientWrapperProtocol
 from src.setup_logging import configure_logger, format_var
 from src.view import Raw, SimpleView, display_neutral_msg, escape_for_rich
 
@@ -38,7 +38,7 @@ logger = configure_logger(__name__)
 
 
 class Main:
-    _client: ClientWrapper
+    _client: ClientWrapperProtocol
     _repository: ChatRepositoryProtocol
 
     def __init__(self) -> None:
