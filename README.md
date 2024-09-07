@@ -2,19 +2,23 @@
 
 [[leer en español](README.es.md)]
 
+[Warning: Risk of Force Push!](#warning-risk-of-force-push)
 
-[Warning: Risk of Force Push!](#warning-risk-of-force-push) • [Disclaimer](#disclaimer) • [Installation](#installation) • [Usage](#usage) • [Project Management Update](#🚀-project-management-update)
+## Table of Contents
+- [Disclaimer](#disclaimer)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Project Management Update](#project-management-update)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
-This project provides a text interface to interact with the models of [Mistral AI](https://mistral.ai/) and [OpenAI](https://www.openai.com/). The application allows users to select a model, enter a question, and receive the model's response.
-
-## Note
-So far, this project only allowed access to Mistral models. Now it is also possible to access several OpenAI models. We are updating the documentation accordingly, but the updating process is not yet complete.
+This project provides a text interface to interact with the models of several AI companies (currently there is support for [Mistral AI](https://mistral.ai/) and [OpenAI](https://www.openai.com/) models). The application allows users to select a model, enter a question, and receive the model's response.
 
 ## Disclaimer
 This project is not affiliated, associated, authorized, or in any way officially connected with Mistral AI, OpenAI, or any of their subsidiaries or affiliates. The names "Mistral AI" and "OpenAI" as well as related names, trademarks, logos, and images are trademarks of their respective owners. The official website of Mistral AI can be found at [https://mistral.ai/] and OpenAI at [https://www.openai.com/].
 
 ## Prerequisites
-To successfully use this project, an API key from Mistral AI or OpenAI (or both) is required. Obtaining these API keys may incur financial costs and must be purchased directly from Mistral AI or OpenAI respectively. Please visit the official websites of Mistral AI and OpenAI for more information on how to obtain their API keys.
+To successfully use this project, an API key from one of the companies supported is required. Obtaining these API keys may incur financial costs and must be purchased directly from such company. Please visit the official websites of Mistral AI and OpenAI for more information on how to obtain their API keys.
 
 ## Installation
 
@@ -33,7 +37,7 @@ poetry install
 In the `pyproject.toml` file, within the `[tool.poetry.dependencies]` section, dependencies are listed. You can install them using pip, either globally or within a virtual environment:
 
 ```
-pip install mistralai openai rich [...rest of the dependencies]
+pip install mistralai openai rich python-dotenv tomlkit
 ```
 
 ## Execution
@@ -71,7 +75,7 @@ python src/main.py
 
 ## Usage
 
-This application allows you to interact with Mistral's and OpenAI's LLM models conversationally. After launching the application, it will prompt you to choose between the available models or proceed with the default model. Once a model is selected, you can start typing your query. If it spans multiple lines, just continue typing until you have finished formulating your question. To indicate that you have finished entering your question, type `end` on a new line. The model will then process your input and provide a response. After receiving a response, you are free to start a new query following the same process.
+This application allows you to interact with several LLM comercial models conversationally. After launching the application, it will prompt you to choose between the available models or proceed with the default model. Once a model is selected, you can start typing your query. If it spans multiple lines, just continue typing until you have finished formulating your question. To indicate that you have finished entering your question, type `end` on a new line. The model will then process your input and provide a response. After receiving a response, you are free to start a new query following the same process.
 
 Conversations will be automatically recorded in the `data/chats` directory. You can load a recorded conversation to continue it using the `/load` command followed by the numerical id of the conversation. If you want to edit the text of a conversation before loading it, simply edit the file, taking care to respect its general format. You can also copy the content into a new file, in which case you will need to assign it the next available id number as its name. It is not necessary to change the id contained within the file, or any other metadata.
 
@@ -134,13 +138,13 @@ This application offers the following features:
 - Loading of previous conversations, in their original state or edited by the user.
 
 
-### Development
+## Development
 
-#### Warning: Risk of Force Push!
+### Warning: Risk of Force Push!
 
 If you have local changes that you don’t want to lose, please don't use `git pull` or `git fetch`. These commands can overwrite local changes.
 
-#### 🚀 Project Management Update
+### Project Management Update
 
 To improve how we manage versions and document changes, we're making some important changes:
 
@@ -150,7 +154,7 @@ To improve how we manage versions and document changes, we're making some import
 
 Thanks for your understanding and patience as we make these improvements. If you have any questions or need help navigating the changes, feel free to reach out.
 
-#### Development dependencies
+### Development dependencies
 
 This project uses [Poetry](https://python-poetry.org/) for package management and dependency handling. To set up the development environment and
 install required tools, run:
@@ -161,12 +165,12 @@ poetry install --with dev
 
 The development dependencies include `mypy` for static type checking.
 
-### License
+## License
 
 This project is licensed under the [GPLv3 License](https://www.gnu.org/licenses/quick-guide-gplv3.html).
 
 
-### Acknowledgements
+## Acknowledgements
 
 This project is built using the following open-source libraries:
 
