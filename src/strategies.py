@@ -3,7 +3,8 @@ from abc import ABC, abstractmethod
 from src.domain import CompleteMessage
 from src.models.model_wrapper import ModelWrapper
 from src.models.shared import define_system_prompt
-from src.view import Raw, View
+from src.protocols import ViewProtocol
+from src.view import Raw
 
 
 class ActionStrategy(ABC):
@@ -13,7 +14,7 @@ class ActionStrategy(ABC):
 
 
 class EstablishSystemPromptAction(ActionStrategy):
-    def __init__(self, view: View, prev_messages: list[CompleteMessage]):
+    def __init__(self, view: ViewProtocol, prev_messages: list[CompleteMessage]):
         self._view = view
         self._prev_messages = prev_messages
 
@@ -24,7 +25,7 @@ class EstablishSystemPromptAction(ActionStrategy):
 
 
 class ShowModelAction(ActionStrategy):
-    def __init__(self, view: View, model_wrapper: ModelWrapper):
+    def __init__(self, view: ViewProtocol, model_wrapper: ModelWrapper):
         self._view = view
         self._model_wrapper = model_wrapper
 

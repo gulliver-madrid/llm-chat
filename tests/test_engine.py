@@ -9,7 +9,8 @@ from src.controllers.command_interpreter import (
 )
 from src.controllers.select_model import SelectModelController
 from src.engine import MainEngine
-from src.view import Raw, View
+from src.view import Raw
+from src.view.view import View
 
 
 class EngineFixture:

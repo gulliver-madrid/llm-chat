@@ -21,6 +21,7 @@ from src.protocols import (
     ChatRepositoryProtocol,
     ClientWrapperProtocol,
     TimeManagerProtocol,
+    ViewProtocol,
 )
 from src.serde import (
     convert_digits_to_conversation_id,
@@ -32,7 +33,7 @@ from src.strategies import (
     EstablishSystemPromptAction,
     ShowModelAction,
 )
-from src.view import Raw, View, ensure_escaped, show_error_msg
+from src.view import Raw, ensure_escaped, show_error_msg
 
 PRESS_ENTER_TO_CONTINUE = Raw("Pulsa Enter para continuar")
 DELIBERATE_INPUT_TIME = 0.02
@@ -50,7 +51,7 @@ class CommandHandler:
         "_repository",
         "_prev_messages",
     )
-    _view: Final[View]
+    _view: Final[ViewProtocol]
     _time_manager: Final[TimeManagerProtocol]
     _select_model_controler: Final[SelectModelController]
     _model_manager: Final[ModelManager]
@@ -60,7 +61,7 @@ class CommandHandler:
     def __init__(
         self,
         *,
-        view: View,
+        view: ViewProtocol,
         select_model_controler: SelectModelController,
         repository: ChatRepositoryProtocol,
         client_wrapper: ClientWrapperProtocol,
