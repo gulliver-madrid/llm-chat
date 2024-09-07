@@ -13,9 +13,9 @@ from src.domain import (
     Model,
     ModelName,
 )
-from src.infrastructure.chat_repository.protocol import ChatRepositoryProtocol
 from src.infrastructure.llm_connection import ClientWrapper, QueryResult
 from src.infrastructure.now import TimeManager
+from src.protocols import ChatRepositoryProtocol
 from src.serde.shared import SCHEMA_VERSION
 from src.view import Raw, View
 from tests.objects import TEXT_1
