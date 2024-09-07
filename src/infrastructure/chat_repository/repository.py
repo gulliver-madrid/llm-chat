@@ -7,8 +7,8 @@ from src.python_modules.FileSystemWrapper.file_manager_protocol import (
 )
 
 from src.domain import CompleteMessage, ConversationId, ConversationText
-from src.infrastructure.chat_repository.protocol import ChatRepositoryProtocol
 from src.infrastructure.now import TimeManager
+from src.protocols import ChatRepositoryProtocol
 from src.serde import serialize_conversation
 from src.serde.deserialize import deserialize_conversation_text_into_messages
 from src.serde.shared import SCHEMA_VERSION

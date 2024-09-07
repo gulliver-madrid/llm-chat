@@ -3,7 +3,6 @@ from typing import Final, Sequence
 from src.controllers.command_interpreter import Action, ActionType
 from src.controllers.select_model import SelectModelController
 from src.domain import CompleteMessage, ConversationId, ConversationText
-from src.infrastructure.chat_repository.protocol import ChatRepositoryProtocol
 from src.infrastructure.llm_connection import ClientWrapper, QueryResult
 from src.infrastructure.now import TimeManager
 from src.model_manager import ModelManager
@@ -15,6 +14,7 @@ from src.models.placeholders import (
     find_unique_placeholders,
 )
 from src.models.shared import extract_chat_messages
+from src.protocols import ChatRepositoryProtocol
 from src.serde import (
     convert_digits_to_conversation_id,
     deserialize_conversation_text_into_messages,
