@@ -4,13 +4,14 @@ from src.domain import (
     ConversationText,
     SchemaVersionId,
 )
-from src.serde import (
-    deserialize_conversation_text_into_messages,
-    Conversation,
-)
+from src.serde import Conversation, deserialize_conversation_text_into_messages
 from src.serde.deserialize import deserialize_into_conversation_object
-
-from tests.objects import COMPLETE_MESSAGES_1, COMPLETE_MESSAGES_2, TEXT_1, TEXT_2
+from tests.objects import (
+    COMPLETE_MESSAGES_1,
+    COMPLETE_MESSAGES_2,
+    TEXT_1,
+    TEXT_2,
+)
 
 
 def create_chat_msg(role: str, content: str) -> ChatMessage:

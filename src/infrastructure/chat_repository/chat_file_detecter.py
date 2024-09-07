@@ -1,12 +1,10 @@
-from pathlib import PurePath
 import re
+from pathlib import PurePath
 from typing import Iterable
-
 
 from src.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )
-
 
 from src.serde import NUMBER_OF_DIGITS
 

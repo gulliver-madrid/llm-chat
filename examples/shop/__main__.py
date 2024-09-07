@@ -3,7 +3,6 @@ from src.view import Raw, show_error_msg
 
 from examples.shop.main import Main
 
-
 if __name__ == "__main__":
     main = Main()
     try:

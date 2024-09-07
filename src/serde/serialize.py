@@ -5,7 +5,6 @@ from src.domain import CompleteMessage, ConversationId
 from .deserialize import TagType
 from .shared import SCHEMA_VERSION
 
-
 NUMBER_OF_DIGITS = 4
 
 

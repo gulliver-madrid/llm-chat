@@ -1,7 +1,7 @@
-from dotenv import load_dotenv
-
 import os
 from typing import Sequence
+
+from dotenv import load_dotenv
 
 from src.command_handler import ExitException
 from src.controllers.select_model import SelectModelController
@@ -10,7 +10,6 @@ from src.infrastructure.llm_connection import ClientWrapper
 from src.models_data import get_models
 from src.setup_engine import setup_engine
 from src.view import Raw, SimpleView, display_neutral_msg
-
 
 PROGRAM_PROMPT = Raw(
     (

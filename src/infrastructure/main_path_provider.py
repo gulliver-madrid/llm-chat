@@ -1,6 +1,5 @@
 from pathlib import PurePath
 
-
 _MAIN_DIRECTORY = PurePath(__file__).parents[2]
 
 

@@ -2,8 +2,7 @@ from typing import Final, Sequence
 
 from rich import print
 
-
-from src.domain import ModelName, Model
+from src.domain import Model, ModelName
 from src.models.model_choice import ModelChoiceParser
 from src.view import (
     BLUE_VIOLET_COLOR,

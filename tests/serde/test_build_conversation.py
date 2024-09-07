@@ -1,11 +1,7 @@
 import unittest
 
 from src.domain import ConversationId
-from src.serde import (
-    convert_digits_to_conversation_id,
-    serialize_conversation,
-)
-
+from src.serde import convert_digits_to_conversation_id, serialize_conversation
 from tests.objects import COMPLETE_MESSAGES_1, TEXT_1
 
 

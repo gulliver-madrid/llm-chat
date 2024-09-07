@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
-from typing import TypeGuard, TypedDict
+from typing import TypedDict, TypeGuard
+
+from src.infrastructure.exceptions import LLMChatException
 
 from examples.shop.types import is_object_mapping
-from src.infrastructure.exceptions import LLMChatException
 
 
 class WrongFunctionName(LLMChatException):

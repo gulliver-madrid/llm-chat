@@ -1,20 +1,10 @@
 from typing import Final, Sequence
 
-from src.controllers.command_interpreter import (
-    Action,
-    ActionType,
-)
+from src.controllers.command_interpreter import Action, ActionType
 from src.controllers.select_model import SelectModelController
-from src.domain import (
-    CompleteMessage,
-    ConversationId,
-    ConversationText,
-)
+from src.domain import CompleteMessage, ConversationId, ConversationText
 from src.infrastructure.chat_repository.protocol import ChatRepositoryProtocol
-from src.infrastructure.llm_connection import (
-    ClientWrapper,
-    QueryResult,
-)
+from src.infrastructure.llm_connection import ClientWrapper, QueryResult
 from src.infrastructure.now import TimeManager
 from src.model_manager import ModelManager
 from src.models.placeholders import (
@@ -24,22 +14,18 @@ from src.models.placeholders import (
     build_queries,
     find_unique_placeholders,
 )
-from src.models.shared import (
-    extract_chat_messages,
-)
+from src.models.shared import extract_chat_messages
 from src.serde import (
     convert_digits_to_conversation_id,
     deserialize_conversation_text_into_messages,
 )
 from src.settings import QUERY_NUMBER_LIMIT_WARNING
-from src.strategies import ActionStrategy, EstablishSystemPromptAction, ShowModelAction
-from src.view import (
-    Raw,
-    View,
-    ensure_escaped,
-    show_error_msg,
+from src.strategies import (
+    ActionStrategy,
+    EstablishSystemPromptAction,
+    ShowModelAction,
 )
-
+from src.view import Raw, View, ensure_escaped, show_error_msg
 
 PRESS_ENTER_TO_CONTINUE = Raw("Pulsa Enter para continuar")
 DELIBERATE_INPUT_TIME = 0.02
