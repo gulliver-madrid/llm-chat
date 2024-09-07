@@ -6,8 +6,8 @@ from rich.console import Console
 from rich.markdown import Markdown
 
 from src.domain import ChatMessage, ConversationId, ConversationText, ModelName
-from src.infrastructure.now import TimeManager
 from src.models.placeholders import Placeholder
+from src.protocols import TimeManagerProtocol
 
 from .generic_view import EscapedStr, Raw
 from .io_helpers import SimpleView, display_neutral_msg, show_error_msg
@@ -44,7 +44,11 @@ class View:
         return self._simple_view
 
     def print_interaction(
-        self, time_manager: TimeManager, model_name: ModelName, query: Raw, content: Raw
+        self,
+        time_manager: TimeManagerProtocol,
+        model_name: ModelName,
+        query: Raw,
+        content: Raw,
     ) -> None:
         """Prints an interaction between user and model"""
         print(get_interaction_styled_view(time_manager, model_name, query, content))

@@ -1,4 +1,7 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
+
+from src.protocols import TimeManagerProtocol
 
 
 class TimeManager:
@@ -20,3 +23,8 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+if TYPE_CHECKING:
+    time_manager: TimeManager
+    protocol: TimeManagerProtocol = time_manager  # pyright: ignore
