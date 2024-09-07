@@ -1,9 +1,7 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-
 from src.domain import CompleteMessage, ConversationId, SchemaVersionId
-
 
 SCHEMA_VERSION = SchemaVersionId("0.2")
 

@@ -1,7 +1,6 @@
 from pathlib import PurePath
-from .file_manager_protocol import (
-    FileManagerProtocol,
-)
+
+from .file_manager_protocol import FileManagerProtocol
 
 
 class SafeFileRemover:

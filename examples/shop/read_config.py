@@ -1,6 +1,6 @@
+from pathlib import Path
 from types import NoneType
 from typing import Any, cast
-from pathlib import Path
 
 import tomlkit
 

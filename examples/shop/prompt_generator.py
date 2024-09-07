@@ -1,7 +1,7 @@
 from examples.shop.prompts import (
     add_margin,
-    system_prompt_template,
     interaction_examples,
+    system_prompt_template,
 )
 from examples.shop.repository import ProductsData
 

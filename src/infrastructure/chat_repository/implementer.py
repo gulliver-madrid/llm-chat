@@ -1,5 +1,6 @@
 from pathlib import PurePath
 from typing import Final
+
 from src.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )

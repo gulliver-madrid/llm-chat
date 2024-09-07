@@ -1,6 +1,6 @@
+import re
 from dataclasses import dataclass
 from enum import Enum
-import re
 from typing import Final, Mapping
 
 from src.domain import (

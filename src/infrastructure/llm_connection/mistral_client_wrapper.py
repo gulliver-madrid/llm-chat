@@ -1,14 +1,10 @@
 from typing import Any, Sequence, cast
 
 from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
 from mistralai.exceptions import MistralConnectionException
+from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
 
-from src.domain import (
-    ChatMessage,
-    Model,
-    Platform,
-)
+from src.domain import ChatMessage, Model, Platform
 from src.infrastructure.exceptions import APIConnectionError
 from src.setup_logging import configure_logger, format_var
 

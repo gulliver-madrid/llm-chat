@@ -16,7 +16,6 @@ from .io_helpers import (
 )
 from .view import View
 
-
 __all__ = [
     "BLUE_VIOLET_COLOR",
     "BOLD_STYLE",
