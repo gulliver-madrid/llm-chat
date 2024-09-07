@@ -14,7 +14,6 @@ from .io_helpers import (
     show_error_msg,
     to_styled,
 )
-from .view import View
 
 __all__ = [
     "BLUE_VIOLET_COLOR",
@@ -23,7 +22,6 @@ __all__ = [
     "NEUTRAL_MSG",
     "Raw",
     "SimpleView",
-    "View",
     "apply_style_tag",
     "display_neutral_msg",
     "ensure_escaped",

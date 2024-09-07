@@ -7,7 +7,8 @@ from src.controllers.command_interpreter import (
 )
 from src.controllers.select_model import SelectModelController
 from src.domain import Model
-from src.view import Raw, View
+from src.protocols import ViewProtocol
+from src.view import Raw
 
 
 class MainEngine:
@@ -18,7 +19,7 @@ class MainEngine:
         command_interpreter: CommandInterpreter,
         command_handler: CommandHandler,
         select_model_controler: SelectModelController,
-        view: View,
+        view: ViewProtocol,
     ) -> None:
         self._models = models
         select_model_controler = select_model_controler
