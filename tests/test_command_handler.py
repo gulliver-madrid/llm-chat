@@ -12,8 +12,9 @@ from src.domain import (
     ConversationText,
     Model,
     ModelName,
+    QueryResult,
 )
-from src.infrastructure.llm_connection import ClientWrapper, QueryResult
+from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.now import TimeManager
 from src.protocols import ChatRepositoryProtocol
 from src.serde.shared import SCHEMA_VERSION

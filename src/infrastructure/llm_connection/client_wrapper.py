@@ -1,8 +1,13 @@
 import time
-from dataclasses import dataclass
 from typing import Any, Sequence
 
-from src.domain import ChatMessage, CompleteMessage, Model, Platform
+from src.domain import (
+    ChatMessage,
+    CompleteMessage,
+    Model,
+    Platform,
+    QueryResult,
+)
 from src.infrastructure.exceptions import (
     ClientNotDefined,
     LLMChatException,
@@ -15,16 +20,7 @@ from src.setup_logging import configure_logger
 from .mistral_client_wrapper import MistralClientWrapper
 from .openai_client_wrapper import OpenAIClientWrapper
 
-__all__ = ["QueryResult", "ClientWrapper"]
-
-
 logger = configure_logger(__name__)
-
-
-@dataclass(frozen=True)
-class QueryResult:
-    content: str
-    messages: list[CompleteMessage]
 
 
 prev_times: list[float] = []

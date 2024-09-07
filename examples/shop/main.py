@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 
-from src.domain import ChatMessage, CompleteMessage, Model
+from src.domain import ChatMessage, CompleteMessage, Model, QueryResult
 from src.infrastructure.chat_repository.repository import ChatRepository
-from src.infrastructure.llm_connection import ClientWrapper, QueryResult
+from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.now import TimeManager
 from src.models.shared import define_system_prompt
 from src.models_data import get_models
