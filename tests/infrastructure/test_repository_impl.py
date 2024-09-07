@@ -1,6 +1,5 @@
 from unittest.mock import Mock
 
-
 from src.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )

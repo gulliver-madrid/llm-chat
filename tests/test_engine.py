@@ -3,7 +3,10 @@ from unittest.mock import Mock
 import pytest
 
 from src.command_handler import CommandHandler
-from src.controllers.command_interpreter import CommandInterpreter, CommandNoValid
+from src.controllers.command_interpreter import (
+    CommandInterpreter,
+    CommandNoValid,
+)
 from src.controllers.select_model import SelectModelController
 from src.engine import MainEngine
 from src.view import Raw, View

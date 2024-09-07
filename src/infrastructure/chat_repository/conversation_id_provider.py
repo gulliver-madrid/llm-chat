@@ -2,18 +2,15 @@ from collections.abc import Sequence
 from pathlib import PurePath
 from typing import Iterable
 
-
 from src.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )
 
-
 from src.domain import ConversationId
-from src.infrastructure.chat_repository.chat_file_detecter import ChatFileDetecter
-from src.serde import (
-    NUMBER_OF_DIGITS,
-    convert_digits_to_conversation_id,
+from src.infrastructure.chat_repository.chat_file_detecter import (
+    ChatFileDetecter,
 )
+from src.serde import NUMBER_OF_DIGITS, convert_digits_to_conversation_id
 from src.setup_logging import configure_logger
 
 logger = configure_logger(__name__)

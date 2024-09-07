@@ -1,8 +1,8 @@
 from src.domain import ModelName
 from src.infrastructure.now import TimeManager
 
-from .io_helpers import escape_for_rich, highlight_role
 from .generic_view import Raw
+from .io_helpers import escape_for_rich, highlight_role
 
 
 def get_interaction_styled_view(

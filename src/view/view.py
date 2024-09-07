@@ -1,9 +1,9 @@
 import time
+from typing import Mapping, Sequence
+
 from rich import print
 from rich.console import Console
 from rich.markdown import Markdown
-
-from typing import Mapping, Sequence
 
 from src.domain import ChatMessage, ConversationId, ConversationText, ModelName
 from src.infrastructure.now import TimeManager

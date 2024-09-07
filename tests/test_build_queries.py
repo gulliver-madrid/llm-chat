@@ -1,7 +1,11 @@
-from typing import TypeGuard
 import unittest
+from typing import TypeGuard
 
-from src.models.placeholders import Placeholder, QueryBuildException, build_queries
+from src.models.placeholders import (
+    Placeholder,
+    QueryBuildException,
+    build_queries,
+)
 
 
 def as_substitutions(d: dict[str, str]) -> dict[Placeholder, str]:

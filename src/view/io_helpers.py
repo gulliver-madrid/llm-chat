@@ -5,7 +5,6 @@ import rich
 
 from .generic_view import EscapedStr, Raw, StyledStr
 
-
 StyleTag = NewType("StyleTag", str)
 
 ERROR = StyleTag("[bright_red]")

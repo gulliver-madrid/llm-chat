@@ -1,17 +1,10 @@
 from typing import Final
 
-from src.domain import (
-    CompleteMessage,
-)
-from src.infrastructure.llm_connection import (
-    ClientWrapper,
-    QueryResult,
-)
+from src.domain import CompleteMessage
+from src.infrastructure.llm_connection import ClientWrapper, QueryResult
 from src.models.messages_ops import add_user_query_in_place
 from src.models.model_wrapper import ModelWrapper
-from src.models.placeholders import (
-    QueryText,
-)
+from src.models.placeholders import QueryText
 
 
 class ModelManager:
