@@ -1,6 +1,6 @@
+import re
 from dataclasses import dataclass
 from enum import Enum
-import re
 from typing import Final, Mapping
 
 from src.domain import (
@@ -11,7 +11,6 @@ from src.domain import (
     Model,
     ModelName,
 )
-
 from src.models_data import get_models
 
 from .shared import SCHEMA_VERSION, Conversation

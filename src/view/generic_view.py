@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import NewType
 
-
 # EscapedStr: text correctly escaped to prevent the disappearance of brackets, and without style
 # Should only be generated using escape_for_rich()
 EscapedStr = NewType("EscapedStr", str)

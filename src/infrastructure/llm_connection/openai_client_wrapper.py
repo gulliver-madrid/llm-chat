@@ -4,10 +4,7 @@ from typing import Any, Iterable, Sequence, cast
 
 from openai import OpenAI
 
-from src.domain import (
-    ChatMessage,
-    Model,
-)
+from src.domain import ChatMessage, Model
 from src.setup_logging import configure_logger, format_var
 
 logger = configure_logger(__name__)

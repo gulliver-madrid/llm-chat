@@ -1,5 +1,5 @@
-from collections.abc import Sequence
 import json
+from collections.abc import Sequence
 from typing import Final
 
 from examples.shop.repository import ShopRepository

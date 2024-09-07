@@ -1,6 +1,5 @@
 from src.domain import ChatMessage, CompleteMessage, Model, ModelName
 
-
 TEXT_1 = """\
 [META id=0001]
 

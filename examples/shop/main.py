@@ -1,13 +1,12 @@
 import json
 import os
-from pathlib import PurePath
 import re
+from pathlib import PurePath
 from typing import Any, Final, cast
 
 from dotenv import load_dotenv
 
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
-
 
 from src.domain import ChatMessage, CompleteMessage, Model
 from src.infrastructure.chat_repository.protocol import ChatRepositoryProtocol
@@ -29,8 +28,11 @@ from examples.shop.prompt_generator import SystemPromptGenerator
 from examples.shop.read_config import ConfigReader
 from examples.shop.repository import ShopRepository
 from examples.shop.tools import ToolsManager, tools
-from examples.shop.types import is_object_mapping, is_object_sequence, is_str_sequence
-
+from examples.shop.types import (
+    is_object_mapping,
+    is_object_sequence,
+    is_str_sequence,
+)
 
 logger = configure_logger(__name__)
 
