@@ -18,21 +18,17 @@ from src.protocols import ChatRepositoryProtocol, ClientWrapperProtocol
 from src.setup_logging import configure_logger, format_var
 from src.view import Raw, SimpleView, display_neutral_msg, escape_for_rich
 
-from examples.shop.function_calling import (
+from .function_calling import (
     FunctionCall,
     ToolCall,
     WrongFunctionName,
     is_function_call_mapping,
 )
-from examples.shop.prompt_generator import SystemPromptGenerator
-from examples.shop.read_config import ConfigReader
-from examples.shop.repository import ShopRepository
-from examples.shop.tools import ToolsManager, tools
-from examples.shop.types import (
-    is_object_mapping,
-    is_object_sequence,
-    is_str_sequence,
-)
+from .prompt_generator import SystemPromptGenerator
+from .read_config import ConfigReader
+from .repository import ShopRepository
+from .tools import ToolsManager, tools
+from .types import is_object_mapping, is_object_sequence, is_str_sequence
 
 logger = configure_logger(__name__)
 

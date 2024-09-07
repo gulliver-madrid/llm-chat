@@ -15,7 +15,6 @@ from src.infrastructure.exceptions import (
 )
 from src.models.messages_ops import add_user_query_in_place
 from src.models.shared import extract_chat_messages
-from src.protocols import ClientWrapperProtocol
 from src.setup_logging import configure_logger
 
 from .mistral_client_wrapper import MistralClientWrapper
@@ -123,5 +122,7 @@ class ClientWrapper:
 
 
 if TYPE_CHECKING:
+    from src.protocols import ClientWrapperProtocol
+
     client_wrapper: ClientWrapper
     protocol: ClientWrapperProtocol = client_wrapper  # pyright: ignore

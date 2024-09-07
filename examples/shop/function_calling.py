@@ -3,7 +3,7 @@ from typing import TypedDict, TypeGuard
 
 from src.infrastructure.exceptions import LLMChatException
 
-from examples.shop.types import is_object_mapping
+from .types import is_object_mapping
 
 
 class WrongFunctionName(LLMChatException):
