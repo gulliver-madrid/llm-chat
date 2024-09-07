@@ -7,7 +7,7 @@ from src.python_modules.FileSystemWrapper.file_manager_protocol import (
 )
 
 from src.domain import CompleteMessage, ConversationId, ConversationText
-from src.protocols import ChatRepositoryProtocol, TimeManagerProtocol
+from src.protocols import TimeManagerProtocol
 from src.serde import serialize_conversation
 from src.serde.deserialize import deserialize_conversation_text_into_messages
 from src.serde.shared import SCHEMA_VERSION
@@ -68,5 +68,7 @@ class ChatRepository:
 
 
 if TYPE_CHECKING:
+    from src.protocols import ChatRepositoryProtocol
+
     repository: ChatRepository
     protocol: ChatRepositoryProtocol = repository  # pyright: ignore
