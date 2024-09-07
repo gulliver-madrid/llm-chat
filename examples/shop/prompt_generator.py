@@ -1,9 +1,5 @@
-from examples.shop.prompts import (
-    add_margin,
-    interaction_examples,
-    system_prompt_template,
-)
-from examples.shop.repository import ProductsData
+from .prompts import add_margin, interaction_examples, system_prompt_template
+from .repository import ProductsData
 
 
 class SystemPromptGenerator:

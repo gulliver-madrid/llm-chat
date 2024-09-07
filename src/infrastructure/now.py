@@ -1,8 +1,6 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from src.protocols import TimeManagerProtocol
-
 
 class TimeManager:
     def get_current_time(self) -> str:
@@ -26,5 +24,7 @@ if __name__ == "__main__":
 
 
 if TYPE_CHECKING:
+    from src.protocols import TimeManagerProtocol
+
     time_manager: TimeManager
     protocol: TimeManagerProtocol = time_manager  # pyright: ignore

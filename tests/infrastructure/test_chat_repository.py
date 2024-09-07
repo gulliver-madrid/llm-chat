@@ -6,9 +6,6 @@ from src.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )
 
-from src.infrastructure.chat_repository.implementer import (
-    ChatRepositoryImplementer,
-)
 from src.infrastructure.chat_repository.repository import ChatRepository
 from src.infrastructure.now import TimeManager
 
