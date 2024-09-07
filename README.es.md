@@ -10,16 +10,13 @@
 - [Licencia](#licencia)
 - [Agradecimientos](#agradecimientos)
 
-Este proyecto proporciona una interfaz de texto para interactuar con los modelos de [Mistral AI](https://mistral.ai/) y [OpenAI](https://www.openai.com/). La aplicación permite a los usuarios seleccionar un modelo, ingresar una pregunta y recibir la respuesta del modelo.
-,
-## Nota
-Hasta ahora este proyecto solo permitía acceder a los modelos de Mistral. Ahora es posible acceder también a varios modelos de OpenAI. Estamos actualizando la documentación en consecuencia, pero el proceso de actualización aún no está completado.
+Este proyecto proporciona una interfaz de texto para interactuar con los modelos de chat de varias empresas (actualmente hay soporte para [Mistral AI](https://mistral.ai/) y [OpenAI](https://www.openai.com/)). La aplicación permite a los usuarios seleccionar un modelo, ingresar una pregunta y recibir la respuesta del modelo.
 
 ## Descargo de Responsabilidad
 Este proyecto no está afiliado, asociado, autorizado, o de cualquier manera oficialmente conectado con las empresas Mistral AI u OpenAI, o cualquiera de sus filiales o afiliados. Los nombres "Mistral AI" y "OpenAI" así como nombres relacionados, marcas, emblemas e imágenes son marcas registradas de sus respectivos propietarios. El sitio web oficial de Mistral AI se puede encontrar en [https://mistral.ai/] y el de OpenAI en [https://www.openai.com/].
 
 ## Prerrequisitos
-Para usar este proyecto con éxito, se requiere una clave API de Mistral AI o de OpenAI (o de ambas). Obtener estas clave API puede incurrir en costos financiero y deben adquirirse directamente de Mistral AI u OpenAI respectivamente. Por favor, visite los sitios web oficiales de Mistral AI y OpenAI para más información sobre cómo obtener sus claves API.
+Para usar este proyecto con éxito, se requiere una clave API de al menos una de las empresas mencionadas. Obtener estas clave API puede incurrir en costos financiero y deben adquirirse directamente en la plataforma de la empresa en cuestión. Por favor, visite los sitios web oficiales de Mistral AI y OpenAI para más información sobre cómo obtener sus claves API.
 
 ## Instalación
 
@@ -38,7 +35,7 @@ poetry install
 En el archivo `pyproject.toml`, dentro de la sección `[tool.poetry.dependencies]` se enumeran las dependencias. Puede instalarlos usando pip, ya sea globalmente o dentro de un entorno virtual:
 
 ```
-pip install mistralai openai rich [...resto de las dependencias]
+pip install mistralai openai rich python-dotenv tomlkit
 ```
 
 ## Ejecución
@@ -75,7 +72,7 @@ python src/main.py
 
 ## Uso
 
-Esta aplicación le permite interactuar con los modelos LLM de Mistral y OpenAI de manera conversacional. Después de lanzar la aplicación, le pedirá que elija entre los modelos disponibles o que proceda con el modelo predeterminado. Una vez seleccionado un modelo, puede comenzar a escribir su consulta. Si esta abarca múltiples líneas, simplemente continúe escribiendo hasta que haya terminado de formular su pregunta. Para indicar que ha terminado de ingresar su pregunta, escriba `end` en una nueva línea. El modelo procesará entonces su entrada y proporcionará una respuesta. Después de recibir una respuesta, es libre de iniciar una nueva consulta siguiendo el mismo proceso.
+Esta aplicación le permite interactuar con varios modelos LLM comerciales de manera conversacional. Después de lanzar la aplicación, esta le pedirá que elija entre los modelos disponibles o que proceda con el modelo predeterminado. Una vez seleccionado un modelo, puede comenzar a escribir su consulta. Si esta abarca múltiples líneas, simplemente continúe escribiendo hasta que haya terminado de formular su pregunta. Para indicar que ha terminado de ingresar su pregunta, escriba `end` en una nueva línea. El modelo procesará entonces su entrada y proporcionará una respuesta. Después de recibir una respuesta, es libre de iniciar una nueva consulta siguiendo el mismo proceso.
 
 Las conversaciones se grabarán de manera automática en el directorio `data/chats`. Puede cargar una conversación grabada para continuarla usando el comando `/load` seguido con el id numérico de la conversación. Si desea editar el texto de una conversación antes de cargarla, simplemente edite el archivo, cuidando de respetar el formato general del mismo. También puede copiar el contenido en un nuevo archivo, en cuyo caso necesitará asignarle como nombre el siguiente número de id disponible. No es necesario cambiar el id contenido dentro del archivo, ni ningún otro metadato.
 
