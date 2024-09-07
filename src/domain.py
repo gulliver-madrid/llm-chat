@@ -37,3 +37,9 @@ class CompleteMessage:
 class ConversationText:
     text: str
     schema_version: SchemaVersionId
+
+
+@dataclass(frozen=True)
+class QueryResult:
+    content: str
+    messages: list[CompleteMessage]
