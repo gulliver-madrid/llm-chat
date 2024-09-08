@@ -15,7 +15,6 @@ from .protocols import (
     ViewProtocol,
 )
 from .serde import convert_digits_to_conversation_id
-from .settings import QUERY_NUMBER_LIMIT_WARNING
 from .strategies import (
     ActionStrategy,
     EstablishSystemPromptAction,
@@ -94,7 +93,7 @@ class CommandHandler:
             # TODO: maybe use ActionType.NEW_CONVERSATION when there is no previous messages
             pass
         elif action.type == ActionType.CHECK_DATA:
-            self._check_data()
+            self._controllers.data_checker.check_data()
         elif action.type == ActionType.SHOW_MODEL:
             action_strategy = ShowModelAction(
                 self._view, self._model_manager.model_wrapper
@@ -124,26 +123,11 @@ class CommandHandler:
             return
 
         number_of_queries = len(queries)
-        if self._should_cancel_for_being_too_many_queries(number_of_queries):
+        if self._controllers.queries_checker.should_cancel_for_being_too_many_queries(
+            number_of_queries
+        ):
             return
 
         if new_conversation:
             self._prev_messages.clear()
         self._controllers.query_answerer.answer_queries(queries, debug)
-
-    def _check_data(self) -> None:
-        ids = self._repository.get_conversation_ids()
-        print(f"{len(ids)=}")
-        for id_ in ids:
-            try:
-                self._repository.load_conversation(id_)
-            except Exception as err:
-                print(type(err))
-                print(err)
-                raise
-
-    def _should_cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
-        return (
-            number_of_queries > QUERY_NUMBER_LIMIT_WARNING
-            and not self._view.confirm_launching_many_queries(number_of_queries)
-        )
