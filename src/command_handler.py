@@ -1,9 +1,13 @@
-from typing import Final, Sequence
+from __future__ import annotations
+
+from typing import Final
+
+from src.controllers.query_answerer import QueryAnswerer
 
 from .controllers.command_interpreter import Action, ActionType
 from .controllers.conversation_loader import ConversationLoader
 from .controllers.select_model import SelectModelController
-from .domain import CompleteMessage, QueryResult
+from .domain import CompleteMessage
 from .model_manager import ModelManager
 from .models.placeholders import (
     Placeholder,
@@ -40,6 +44,7 @@ class CommandHandler:
         "_model_manager",
         "_repository",
         "_conversation_loader",
+        "_query_answerer",
         "_prev_messages",
     )
     _view: Final[ViewProtocol]
@@ -47,6 +52,7 @@ class CommandHandler:
     _model_manager: Final[ModelManager]
     _repository: Final[ChatRepositoryProtocol]
     _conversation_loader: Final[ConversationLoader]
+    _query_answerer: Final[QueryAnswerer]
     _prev_messages: Final[list[CompleteMessage]]
 
     def __init__(
@@ -66,6 +72,12 @@ class CommandHandler:
         self._conversation_loader = ConversationLoader(
             view=self._view,
             repository=self._repository,
+            prev_messages=self._prev_messages,
+        )
+        self._query_answerer = QueryAnswerer(
+            view=self._view,
+            repository=self._repository,
+            model_manager=self._model_manager,
             prev_messages=self._prev_messages,
         )
 
@@ -143,7 +155,7 @@ class CommandHandler:
 
         if new_conversation:
             self._prev_messages.clear()
-        self._answer_queries(queries, debug)
+        self._query_answerer.answer_queries(queries, debug)
 
     def _get_extra_lines(self, remaining_input: str) -> str:
         while True:
@@ -174,39 +186,4 @@ class CommandHandler:
         return (
             number_of_queries > QUERY_NUMBER_LIMIT_WARNING
             and not self._view.confirm_launching_many_queries(number_of_queries)
-        )
-
-    def _answer_queries(
-        self, queries: Sequence[QueryText], debug: bool = False
-    ) -> None:
-        """If there are multiple queries, the conversation ends after executing them."""
-        assert queries
-        messages = None
-        for i, query in enumerate(queries):
-            messages = self._answer_query(debug, i + 1, len(queries), query)
-        self._prev_messages[:] = messages or []
-
-    def _answer_query(
-        self, debug: bool, current: int, total: int, query: QueryText
-    ) -> list[CompleteMessage] | None:
-        self._view.display_processing_query_text(current=current, total=total)
-        query_result = self._get_simple_response_from_model(query, debug)
-        self._print_interaction(query, query_result)
-        self._repository.save_messages(query_result.messages)
-        return query_result.messages if current == 1 else None
-
-    def _get_simple_response_from_model(
-        self, query: QueryText, debug: bool = False
-    ) -> QueryResult:
-        return self._model_manager.get_simple_response(
-            query, self._prev_messages, debug=debug
-        )
-
-    def _print_interaction(self, query: QueryText, query_result: QueryResult) -> None:
-        model = self._model_manager.model_wrapper.model
-        assert model
-        self._view.print_interaction(
-            model.model_name,
-            Raw(query),
-            Raw(query_result.content),
         )
