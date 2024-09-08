@@ -14,8 +14,8 @@ models_data: Final[Mapping[Platform, Sequence[str]]] = {
 
 
 def get_models() -> Sequence[Model]:
-    models: list[Model] = []
-    for platform, model_name_strings in models_data.items():
-        for model_name_str in model_name_strings:
-            models.append(Model(platform, ModelName(model_name_str)))
-    return models
+    return [
+        Model(platform, ModelName(model_name_str))
+        for platform, model_name_strings in models_data.items()
+        for model_name_str in model_name_strings
+    ]
