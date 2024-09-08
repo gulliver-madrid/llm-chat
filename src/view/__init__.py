@@ -1,6 +1,5 @@
 """View related classes and functions"""
 
-from .generic_view import Raw
 from .io_helpers import (
     BLUE_VIOLET_COLOR,
     BOLD_STYLE,
@@ -14,6 +13,7 @@ from .io_helpers import (
     show_error_msg,
     to_styled,
 )
+from .string_types import Raw
 
 __all__ = [
     "BLUE_VIOLET_COLOR",

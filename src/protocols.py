@@ -11,8 +11,8 @@ from src.domain import (
     QueryResult,
 )
 from src.models.placeholders import Placeholder
-from src.view.generic_view import EscapedStr, Raw
 from src.view.io_helpers import SimpleView
+from src.view.string_types import EscapedStr, Raw
 
 
 class ClientWrapperProtocol(Protocol):
