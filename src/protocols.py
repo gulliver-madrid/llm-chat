@@ -52,7 +52,6 @@ class ViewProtocol(Protocol):
     def simple_view(self) -> SimpleView: ...
     def print_interaction(
         self,
-        time_manager: TimeManagerProtocol,
         model_name: ModelName,
         query: Raw,
         content: Raw,

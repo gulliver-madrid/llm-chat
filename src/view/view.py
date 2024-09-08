@@ -1,5 +1,5 @@
 import time
-from typing import TYPE_CHECKING, Mapping, Sequence
+from typing import TYPE_CHECKING, Final, Mapping, Sequence
 
 from rich import print
 from rich.console import Console
@@ -35,9 +35,15 @@ Si empiezas el contenido de un placeholder con `/for` y pones las variantes sepa
 
 
 class View:
+    __slots__ = (
+        "_simple_view",
+        "_time_manager",
+    )
+    _time_manager: Final[TimeManagerProtocol]
 
-    def __init__(self) -> None:
-        self._simple_view = SimpleView()
+    def __init__(self, time_manager: TimeManagerProtocol) -> None:
+        self._simple_view: Final = SimpleView()
+        self._time_manager = time_manager
 
     @property
     def simple_view(self) -> SimpleView:
@@ -45,13 +51,14 @@ class View:
 
     def print_interaction(
         self,
-        time_manager: TimeManagerProtocol,
         model_name: ModelName,
         query: Raw,
         content: Raw,
     ) -> None:
         """Prints an interaction between user and model"""
-        print(get_interaction_styled_view(time_manager, model_name, query, content))
+        print(
+            get_interaction_styled_view(self._time_manager, model_name, query, content)
+        )
 
     def input_extra_line(self) -> tuple[str, float]:
         prev_time = time.time()
