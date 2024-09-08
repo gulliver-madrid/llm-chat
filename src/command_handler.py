@@ -5,18 +5,12 @@ from .controllers import (
     ActionType,
     Controllers,
     ConversationLoader,
+    FinalQueryExtractor,
     QueryAnswerer,
     SelectModelController,
 )
 from .domain import CompleteMessage
 from .model_manager import ModelManager
-from .models.placeholders import (
-    Placeholder,
-    QueryBuildException,
-    QueryText,
-    build_queries,
-    find_unique_placeholders,
-)
 from .protocols import (
     ChatRepositoryProtocol,
     ClientWrapperProtocol,
@@ -29,10 +23,9 @@ from .strategies import (
     EstablishSystemPromptAction,
     ShowModelAction,
 )
-from .view import Raw, ensure_escaped, show_error_msg
+from .view import Raw
 
 PRESS_ENTER_TO_CONTINUE = Raw("Pulsa Enter para continuar")
-DELIBERATE_INPUT_TIME = 0.02
 
 
 class ExitException(Exception): ...
@@ -41,16 +34,18 @@ class ExitException(Exception): ...
 class CommandHandler:
     __slots__ = (
         "_view",
-        "_controllers",
         "_model_manager",
         "_repository",
+        "_controllers",
+        "_final_query_extractor",
         "_prev_messages",
     )
     _view: Final[ViewProtocol]
-    _controllers: Final[Controllers]
     _model_manager: Final[ModelManager]
     _repository: Final[ChatRepositoryProtocol]
     _prev_messages: Final[list[CompleteMessage]]
+    _controllers: Final[Controllers]
+    _final_query_extractor: Final[FinalQueryExtractor]
 
     def __init__(
         self,
@@ -62,26 +57,11 @@ class CommandHandler:
         prev_messages: list[CompleteMessage] | None = None,
     ):
         self._view = view
-        select_model_controler = select_model_controler
         self._model_manager = ModelManager(client_wrapper)
         self._repository = repository
         self._prev_messages = prev_messages if prev_messages is not None else []
-        conversation_loader = ConversationLoader(
-            view=self._view,
-            repository=self._repository,
-            prev_messages=self._prev_messages,
-        )
-        query_answerer = QueryAnswerer(
-            view=self._view,
-            repository=self._repository,
-            model_manager=self._model_manager,
-            prev_messages=self._prev_messages,
-        )
-        self._controllers = Controllers(
-            select_model_controler=select_model_controler,
-            conversation_loader=conversation_loader,
-            query_answerer=query_answerer,
-        )
+        self._controllers = self._get_controllers(select_model_controler)
+        self._final_query_extractor = FinalQueryExtractor(view=self._view)
 
     def prompt_to_select_model(self) -> None:
         model = self._controllers.select_model_controler.select_model()
@@ -136,7 +116,7 @@ class CommandHandler:
         if not remaining_input:
             return
 
-        queries = self._get_final_queries(remaining_input)
+        queries = self._final_query_extractor.get_final_queries(remaining_input)
         if queries is None:
             return
 
@@ -148,6 +128,26 @@ class CommandHandler:
             self._prev_messages.clear()
         self._controllers.query_answerer.answer_queries(queries, debug)
 
+    def _get_controllers(
+        self, select_model_controler: SelectModelController
+    ) -> Controllers:
+        conversation_loader = ConversationLoader(
+            view=self._view,
+            repository=self._repository,
+            prev_messages=self._prev_messages,
+        )
+        query_answerer = QueryAnswerer(
+            view=self._view,
+            repository=self._repository,
+            model_manager=self._model_manager,
+            prev_messages=self._prev_messages,
+        )
+        return Controllers(
+            select_model_controler=select_model_controler,
+            conversation_loader=conversation_loader,
+            query_answerer=query_answerer,
+        )
+
     def _check_data(self) -> None:
         ids = self._repository.get_conversation_ids()
         print(f"{len(ids)=}")
@@ -158,36 +158,6 @@ class CommandHandler:
                 print(type(err))
                 print(err)
                 raise
-
-    def _get_final_queries(self, remaining_input: str) -> list[QueryText] | None:
-        remaining_input = self._get_extra_lines(remaining_input)
-        placeholders = find_unique_placeholders(remaining_input)
-        return self._define_final_queries(remaining_input, placeholders)
-
-    def _get_extra_lines(self, remaining_input: str) -> str:
-        while True:
-            more, elapsed = self._view.input_extra_line()
-            should_end = (elapsed >= DELIBERATE_INPUT_TIME) and (more == "end")
-            if should_end:
-                break
-            remaining_input += "\n" + more
-        return remaining_input
-
-    def _define_final_queries(
-        self, remaining_input: str, placeholders: list[Placeholder]
-    ) -> list[QueryText] | None:
-        if not placeholders:
-            return [QueryText(remaining_input)]
-
-        user_substitutions = self._view.get_raw_substitutions_from_user(placeholders)
-        try:
-            queries = build_queries(remaining_input, user_substitutions)
-        except QueryBuildException as err:
-            show_error_msg(ensure_escaped(Raw(str(err))))
-            return None
-
-        self._view.write_object("Placeholders sustituidos exitosamente")
-        return queries
 
     def _should_cancel_for_being_too_many_queries(self, number_of_queries: int) -> bool:
         return (
