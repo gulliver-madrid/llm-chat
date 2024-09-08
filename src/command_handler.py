@@ -1,10 +1,13 @@
 from typing import Final
 
-from .controllers.command_interpreter import Action, ActionType
-from .controllers.controllers import Controllers
-from .controllers.conversation_loader import ConversationLoader
-from .controllers.query_answerer import QueryAnswerer
-from .controllers.select_model import SelectModelController
+from .controllers import (
+    Action,
+    ActionType,
+    Controllers,
+    ConversationLoader,
+    QueryAnswerer,
+    SelectModelController,
+)
 from .domain import CompleteMessage
 from .model_manager import ModelManager
 from .models.placeholders import (
