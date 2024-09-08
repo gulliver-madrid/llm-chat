@@ -1,3 +1,4 @@
+from .build_controllers import build_controllers
 from .command_interpreter import Action, ActionType
 from .controllers import Controllers
 from .conversation_loader import ConversationLoader
@@ -13,4 +14,5 @@ __all__ = [
     "FinalQueryExtractor",
     "QueryAnswerer",
     "SelectModelController",
+    "build_controllers",
 ]

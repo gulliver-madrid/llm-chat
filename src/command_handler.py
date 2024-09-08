@@ -4,10 +4,9 @@ from .controllers import (
     Action,
     ActionType,
     Controllers,
-    ConversationLoader,
     FinalQueryExtractor,
-    QueryAnswerer,
     SelectModelController,
+    build_controllers,
 )
 from .domain import CompleteMessage
 from .model_manager import ModelManager
@@ -60,7 +59,13 @@ class CommandHandler:
         self._model_manager = ModelManager(client_wrapper)
         self._repository = repository
         self._prev_messages = prev_messages if prev_messages is not None else []
-        self._controllers = self._get_controllers(select_model_controler)
+        self._controllers = build_controllers(
+            select_model_controler,
+            self._view,
+            self._repository,
+            self._model_manager,
+            self._prev_messages,
+        )
         self._final_query_extractor = FinalQueryExtractor(view=self._view)
 
     def prompt_to_select_model(self) -> None:
@@ -127,26 +132,6 @@ class CommandHandler:
         if new_conversation:
             self._prev_messages.clear()
         self._controllers.query_answerer.answer_queries(queries, debug)
-
-    def _get_controllers(
-        self, select_model_controler: SelectModelController
-    ) -> Controllers:
-        conversation_loader = ConversationLoader(
-            view=self._view,
-            repository=self._repository,
-            prev_messages=self._prev_messages,
-        )
-        query_answerer = QueryAnswerer(
-            view=self._view,
-            repository=self._repository,
-            model_manager=self._model_manager,
-            prev_messages=self._prev_messages,
-        )
-        return Controllers(
-            select_model_controler=select_model_controler,
-            conversation_loader=conversation_loader,
-            query_answerer=query_answerer,
-        )
 
     def _check_data(self) -> None:
         ids = self._repository.get_conversation_ids()
