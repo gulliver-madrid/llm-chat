@@ -113,15 +113,7 @@ class CommandHandler:
             # TODO: maybe use ActionType.NEW_CONVERSATION when there is no previous messages
             pass
         elif action.type == ActionType.CHECK_DATA:
-            ids = self._repository.get_conversation_ids()
-            print(f"{len(ids)=}")
-            for id_ in ids:
-                try:
-                    self._repository.load_conversation(id_)
-                except Exception as err:
-                    print(type(err))
-                    print(err)
-                    raise
+            self._check_data()
         elif action.type == ActionType.SHOW_MODEL:
             action_strategy = ShowModelAction(
                 self._view, self._model_manager.model_wrapper
@@ -155,6 +147,17 @@ class CommandHandler:
         if new_conversation:
             self._prev_messages.clear()
         self._controllers.query_answerer.answer_queries(queries, debug)
+
+    def _check_data(self) -> None:
+        ids = self._repository.get_conversation_ids()
+        print(f"{len(ids)=}")
+        for id_ in ids:
+            try:
+                self._repository.load_conversation(id_)
+            except Exception as err:
+                print(type(err))
+                print(err)
+                raise
 
     def _get_final_queries(self, remaining_input: str) -> list[QueryText] | None:
         remaining_input = self._get_extra_lines(remaining_input)
