@@ -9,8 +9,8 @@ from src.domain import ChatMessage, ConversationId, ConversationText, ModelName
 from src.models.placeholders import Placeholder
 from src.protocols import TimeManagerProtocol
 
-from .generic_view import EscapedStr, Raw
 from .io_helpers import SimpleView, display_neutral_msg, show_error_msg
+from .string_types import EscapedStr, Raw
 from .views import get_interaction_styled_view
 
 HELP_TEXT = """

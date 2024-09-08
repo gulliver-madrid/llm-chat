@@ -1,8 +1,8 @@
 from src.domain import ModelName
 from src.protocols import TimeManagerProtocol
 
-from .generic_view import Raw
 from .io_helpers import escape_for_rich, highlight_role
+from .string_types import Raw
 
 
 def get_interaction_styled_view(
