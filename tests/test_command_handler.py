@@ -3,8 +3,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.command_handler import DELIBERATE_INPUT_TIME, CommandHandler
+from src.command_handler import CommandHandler
 from src.controllers.command_interpreter import Action, ActionType
+from src.controllers.final_query_extractor import DELIBERATE_INPUT_TIME
 from src.controllers.select_model import SelectModelController
 from src.domain import (
     CompleteMessage,
