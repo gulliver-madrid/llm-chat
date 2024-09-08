@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 from typing import Final
 
-from src.controllers.query_answerer import QueryAnswerer
-
 from .controllers.command_interpreter import Action, ActionType
+from .controllers.controllers import Controllers
 from .controllers.conversation_loader import ConversationLoader
+from .controllers.query_answerer import QueryAnswerer
 from .controllers.select_model import SelectModelController
 from .domain import CompleteMessage
 from .model_manager import ModelManager
@@ -40,19 +38,15 @@ class ExitException(Exception): ...
 class CommandHandler:
     __slots__ = (
         "_view",
-        "_select_model_controler",
+        "_controllers",
         "_model_manager",
         "_repository",
-        "_conversation_loader",
-        "_query_answerer",
         "_prev_messages",
     )
     _view: Final[ViewProtocol]
-    _select_model_controler: Final[SelectModelController]
+    _controllers: Final[Controllers]
     _model_manager: Final[ModelManager]
     _repository: Final[ChatRepositoryProtocol]
-    _conversation_loader: Final[ConversationLoader]
-    _query_answerer: Final[QueryAnswerer]
     _prev_messages: Final[list[CompleteMessage]]
 
     def __init__(
@@ -65,26 +59,30 @@ class CommandHandler:
         prev_messages: list[CompleteMessage] | None = None,
     ):
         self._view = view
-        self._select_model_controler = select_model_controler
+        select_model_controler = select_model_controler
         self._model_manager = ModelManager(client_wrapper)
         self._repository = repository
         self._prev_messages = prev_messages if prev_messages is not None else []
-        self._conversation_loader = ConversationLoader(
+        conversation_loader = ConversationLoader(
             view=self._view,
             repository=self._repository,
             prev_messages=self._prev_messages,
         )
-        self._query_answerer = QueryAnswerer(
+        query_answerer = QueryAnswerer(
             view=self._view,
             repository=self._repository,
             model_manager=self._model_manager,
             prev_messages=self._prev_messages,
         )
+        self._controllers = Controllers(
+            select_model_controler=select_model_controler,
+            conversation_loader=conversation_loader,
+            query_answerer=query_answerer,
+        )
 
     def prompt_to_select_model(self) -> None:
-        self._model_manager.model_wrapper.change(
-            self._select_model_controler.select_model()
-        )
+        model = self._controllers.select_model_controler.select_model()
+        self._model_manager.model_wrapper.change(model)
 
     def process_action(self, action: Action, remaining_input: str) -> None:
         debug = False
@@ -135,7 +133,9 @@ class CommandHandler:
             return
 
         if conversation_to_load:
-            self._conversation_loader.load_conversation(action, conversation_to_load)
+            self._controllers.conversation_loader.load_conversation(
+                action, conversation_to_load
+            )
             return
 
         if not remaining_input:
@@ -155,7 +155,7 @@ class CommandHandler:
 
         if new_conversation:
             self._prev_messages.clear()
-        self._query_answerer.answer_queries(queries, debug)
+        self._controllers.query_answerer.answer_queries(queries, debug)
 
     def _get_extra_lines(self, remaining_input: str) -> str:
         while True:
