@@ -144,11 +144,7 @@ class CommandHandler:
         if not remaining_input:
             return
 
-        remaining_input = self._get_extra_lines(remaining_input)
-
-        placeholders = find_unique_placeholders(remaining_input)
-
-        queries = self._define_final_queries(remaining_input, placeholders)
+        queries = self._get_final_queries(remaining_input)
         if queries is None:
             return
 
@@ -159,6 +155,11 @@ class CommandHandler:
         if new_conversation:
             self._prev_messages.clear()
         self._controllers.query_answerer.answer_queries(queries, debug)
+
+    def _get_final_queries(self, remaining_input: str) -> list[QueryText] | None:
+        remaining_input = self._get_extra_lines(remaining_input)
+        placeholders = find_unique_placeholders(remaining_input)
+        return self._define_final_queries(remaining_input, placeholders)
 
     def _get_extra_lines(self, remaining_input: str) -> str:
         while True:
