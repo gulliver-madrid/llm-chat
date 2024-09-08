@@ -8,6 +8,11 @@ from src.protocols import ClientWrapperProtocol
 
 
 class ModelManager:
+    """
+    Abstracts the communication with the LLM with the possibility of
+    change the model.
+    """
+
     def __init__(self, client_wrapper: ClientWrapperProtocol):
         self.model_wrapper: Final = ModelWrapper()
         self.client_wrapper: Final = client_wrapper
