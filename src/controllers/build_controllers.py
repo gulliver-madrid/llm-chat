@@ -4,6 +4,7 @@ from src.protocols import ChatRepositoryProtocol, ViewProtocol
 
 from .controllers import Controllers
 from .conversation_loader import ConversationLoader
+from .final_query_extractor import FinalQueryExtractor
 from .query_answerer import QueryAnswerer
 from .select_model import SelectModelController
 
@@ -26,8 +27,10 @@ def build_controllers(
         model_manager=model_manager,
         prev_messages=prev_messages,
     )
+    final_query_extractor = FinalQueryExtractor(view=view)
     return Controllers(
         select_model_controler=select_model_controler,
         conversation_loader=conversation_loader,
         query_answerer=query_answerer,
+        final_query_extractor=final_query_extractor,
     )

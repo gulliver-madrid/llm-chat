@@ -4,7 +4,6 @@ from .controllers import (
     Action,
     ActionType,
     Controllers,
-    FinalQueryExtractor,
     SelectModelController,
     build_controllers,
 )
@@ -36,7 +35,6 @@ class CommandHandler:
         "_model_manager",
         "_repository",
         "_controllers",
-        "_final_query_extractor",
         "_prev_messages",
     )
     _view: Final[ViewProtocol]
@@ -44,7 +42,6 @@ class CommandHandler:
     _repository: Final[ChatRepositoryProtocol]
     _prev_messages: Final[list[CompleteMessage]]
     _controllers: Final[Controllers]
-    _final_query_extractor: Final[FinalQueryExtractor]
 
     def __init__(
         self,
@@ -66,7 +63,6 @@ class CommandHandler:
             self._model_manager,
             self._prev_messages,
         )
-        self._final_query_extractor = FinalQueryExtractor(view=self._view)
 
     def prompt_to_select_model(self) -> None:
         model = self._controllers.select_model_controler.select_model()
@@ -121,7 +117,9 @@ class CommandHandler:
         if not remaining_input:
             return
 
-        queries = self._final_query_extractor.get_final_queries(remaining_input)
+        queries = self._controllers.final_query_extractor.get_final_queries(
+            remaining_input
+        )
         if queries is None:
             return
 
