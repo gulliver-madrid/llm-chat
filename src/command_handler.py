@@ -1,38 +1,30 @@
 from typing import Final, Sequence
 
-from src.controllers.command_interpreter import Action, ActionType
-from src.controllers.select_model import SelectModelController
-from src.domain import (
-    CompleteMessage,
-    ConversationId,
-    ConversationText,
-    QueryResult,
-)
-from src.model_manager import ModelManager
-from src.models.placeholders import (
+from .controllers.command_interpreter import Action, ActionType
+from .controllers.conversation_loader import ConversationLoader
+from .controllers.select_model import SelectModelController
+from .domain import CompleteMessage, QueryResult
+from .model_manager import ModelManager
+from .models.placeholders import (
     Placeholder,
     QueryBuildException,
     QueryText,
     build_queries,
     find_unique_placeholders,
 )
-from src.models.shared import extract_chat_messages
-from src.protocols import (
+from .protocols import (
     ChatRepositoryProtocol,
     ClientWrapperProtocol,
     ViewProtocol,
 )
-from src.serde import (
-    convert_digits_to_conversation_id,
-    deserialize_conversation_text_into_messages,
-)
-from src.settings import QUERY_NUMBER_LIMIT_WARNING
-from src.strategies import (
+from .serde import convert_digits_to_conversation_id
+from .settings import QUERY_NUMBER_LIMIT_WARNING
+from .strategies import (
     ActionStrategy,
     EstablishSystemPromptAction,
     ShowModelAction,
 )
-from src.view import Raw, ensure_escaped, show_error_msg
+from .view import Raw, ensure_escaped, show_error_msg
 
 PRESS_ENTER_TO_CONTINUE = Raw("Pulsa Enter para continuar")
 DELIBERATE_INPUT_TIME = 0.02
@@ -47,12 +39,14 @@ class CommandHandler:
         "_select_model_controler",
         "_model_manager",
         "_repository",
+        "_conversation_loader",
         "_prev_messages",
     )
     _view: Final[ViewProtocol]
     _select_model_controler: Final[SelectModelController]
     _model_manager: Final[ModelManager]
     _repository: Final[ChatRepositoryProtocol]
+    _conversation_loader: Final[ConversationLoader]
     _prev_messages: Final[list[CompleteMessage]]
 
     def __init__(
@@ -69,6 +63,11 @@ class CommandHandler:
         self._model_manager = ModelManager(client_wrapper)
         self._repository = repository
         self._prev_messages = prev_messages if prev_messages is not None else []
+        self._conversation_loader = ConversationLoader(
+            view=self._view,
+            repository=self._repository,
+            prev_messages=self._prev_messages,
+        )
 
     def prompt_to_select_model(self) -> None:
         self._model_manager.model_wrapper.change(
@@ -124,7 +123,7 @@ class CommandHandler:
             return
 
         if conversation_to_load:
-            self._load_conversation(action, conversation_to_load)
+            self._conversation_loader.load_conversation(action, conversation_to_load)
             return
 
         if not remaining_input:
@@ -145,36 +144,6 @@ class CommandHandler:
         if new_conversation:
             self._prev_messages.clear()
         self._answer_queries(queries, debug)
-
-    def _load_conversation(
-        self, action: Action, conversation_id: ConversationId
-    ) -> None:
-        """Load a conversation based in its id"""
-        conversation_text = self._repository.load_conversation_as_conversation_text(
-            conversation_id
-        )
-        self._prev_messages[:] = deserialize_conversation_text_into_messages(
-            conversation_text
-        )
-        self._display_loaded_conversation(action, conversation_id, conversation_text)
-        self._view.display_neutral_msg(Raw("La conversacion ha sido cargada"))
-
-    def _display_loaded_conversation(
-        self,
-        action: Action,
-        conversation_id: ConversationId,
-        conversation: ConversationText,
-    ) -> None:
-        assert self._prev_messages
-        if action.type == ActionType.LOAD_CONVERSATION:
-            self._view.display_conversation(conversation_id, conversation)
-        elif action.type == ActionType.LOAD_MESSAGES:
-            self._view.display_messages(
-                conversation_id,
-                extract_chat_messages(self._prev_messages),
-            )
-        else:
-            raise ValueError(action.type)
 
     def _get_extra_lines(self, remaining_input: str) -> str:
         while True:
