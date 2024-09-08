@@ -24,14 +24,13 @@ def setup_engine(
         file_manager=FileManager(),
         time_manager=TimeManager(),
     )
-    view = View()
+    view = View(TimeManager())
     command_interpreter = CommandInterpreter()
     command_handler = CommandHandler(
         view=view,
         select_model_controler=select_model_controler,
         repository=chat_repository,
         client_wrapper=client_wrapper,
-        time_manager=TimeManager(),
     )
     return MainEngine(
         models, command_interpreter, command_handler, select_model_controler, view

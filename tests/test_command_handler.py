@@ -44,7 +44,6 @@ class CommandHandlerFixture:
             view=self.mock_view,
             select_model_controler=self.mock_select_model_controler,
             repository=self.mock_repository,
-            time_manager=self.mock_time_manager,
             client_wrapper=self.mock_client_wrapper,
             prev_messages=self.prev_messages_stub,
         )
