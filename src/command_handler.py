@@ -20,7 +20,6 @@ from src.models.shared import extract_chat_messages
 from src.protocols import (
     ChatRepositoryProtocol,
     ClientWrapperProtocol,
-    TimeManagerProtocol,
     ViewProtocol,
 )
 from src.serde import (
@@ -45,14 +44,12 @@ class ExitException(Exception): ...
 class CommandHandler:
     __slots__ = (
         "_view",
-        "_time_manager",
         "_select_model_controler",
         "_model_manager",
         "_repository",
         "_prev_messages",
     )
     _view: Final[ViewProtocol]
-    _time_manager: Final[TimeManagerProtocol]
     _select_model_controler: Final[SelectModelController]
     _model_manager: Final[ModelManager]
     _repository: Final[ChatRepositoryProtocol]
@@ -65,11 +62,9 @@ class CommandHandler:
         select_model_controler: SelectModelController,
         repository: ChatRepositoryProtocol,
         client_wrapper: ClientWrapperProtocol,
-        time_manager: TimeManagerProtocol,
         prev_messages: list[CompleteMessage] | None = None,
     ):
         self._view = view
-        self._time_manager = time_manager
         self._select_model_controler = select_model_controler
         self._model_manager = ModelManager(client_wrapper)
         self._repository = repository
@@ -242,7 +237,6 @@ class CommandHandler:
         model = self._model_manager.model_wrapper.model
         assert model
         self._view.print_interaction(
-            self._time_manager,
             model.model_name,
             Raw(query),
             Raw(query_result.content),
