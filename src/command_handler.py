@@ -87,6 +87,10 @@ class CommandHandler:
             debug = True
         elif action.type in (ActionType.LOAD_CONVERSATION, ActionType.LOAD_MESSAGES):
             conversation_to_load = convert_digits_to_conversation_id(remaining_input)
+            self._controllers.conversation_loader.load_conversation(
+                action, conversation_to_load
+            )
+            return
         elif action.type == ActionType.NEW_CONVERSATION:
             new_conversation = True
         elif action.type == ActionType.CONTINUE_CONVERSATION:
@@ -105,12 +109,6 @@ class CommandHandler:
 
         if action_strategy:
             action_strategy.execute(remaining_input)
-            return
-
-        if conversation_to_load:
-            self._controllers.conversation_loader.load_conversation(
-                action, conversation_to_load
-            )
             return
 
         if not remaining_input:
