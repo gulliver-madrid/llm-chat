@@ -8,13 +8,9 @@ from .string_types import EscapedStr, Raw, StyledStr
 StyleTag = NewType("StyleTag", str)
 
 ERROR = StyleTag("[bright_red]")
-CALL_TO_ACTION = StyleTag("[bright_cyan]")
 HIGHLIGHT_ROLE = StyleTag("[light_green]")
-NEUTRAL_MSG = StyleTag("[dark_goldenrod]")
-
-BLUE_VIOLET_COLOR = StyleTag("[blue_violet]")
-
-BOLD_STYLE = StyleTag("[bold]")
+NEUTRAL_MSG = StyleTag("[bright_cyan]")
+BOLD_STYLE = StyleTag("[blue_violet]")
 
 
 def escape_for_rich(raw: Raw) -> EscapedStr:
@@ -52,7 +48,7 @@ class SimpleView:
             text = escape_for_rich(text)
         text_with_breakline_before = f"\n{text}" if text else ""
         rich.print(
-            CALL_TO_ACTION + f"{text_with_breakline_before}\n> ",
+            NEUTRAL_MSG + f"{text_with_breakline_before}\n> ",
             end="",
         )
         return input()
