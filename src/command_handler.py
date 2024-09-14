@@ -72,7 +72,10 @@ class CommandHandler:
         new_conversation = False
         conversation_to_load = None
 
-        action_strategy: ActionStrategy | None = None
+        action_strategy = self._get_strategy(action)
+        if action_strategy:
+            action_strategy.execute(remaining_input)
+            return
 
         if action.type == ActionType.EXIT:
             raise ExitException()
@@ -98,18 +101,6 @@ class CommandHandler:
             pass
         elif action.type == ActionType.CHECK_DATA:
             self._controllers.data_checker.check_data()
-        elif action.type == ActionType.SHOW_MODEL:
-            action_strategy = ShowModelAction(
-                self._view, self._model_manager.model_wrapper
-            )
-        elif action.type == ActionType.SYSTEM_PROMPT:
-            action_strategy = EstablishSystemPromptAction(
-                self._view, self._prev_messages
-            )
-
-        if action_strategy:
-            action_strategy.execute(remaining_input)
-            return
 
         if not remaining_input:
             return
@@ -129,3 +120,15 @@ class CommandHandler:
         if new_conversation:
             self._prev_messages.clear()
         self._controllers.query_answerer.answer_queries(queries, debug)
+
+    def _get_strategy(self, action: Action) -> ActionStrategy | None:
+        action_strategy: ActionStrategy | None = None
+        if action.type == ActionType.SHOW_MODEL:
+            action_strategy = ShowModelAction(
+                self._view, self._model_manager.model_wrapper
+            )
+        elif action.type == ActionType.SYSTEM_PROMPT:
+            action_strategy = EstablishSystemPromptAction(
+                self._view, self._prev_messages
+            )
+        return action_strategy
