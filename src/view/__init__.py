@@ -1,9 +1,7 @@
 """View related classes and functions"""
 
 from .io_helpers import (
-    BLUE_VIOLET_COLOR,
     BOLD_STYLE,
-    CALL_TO_ACTION,
     NEUTRAL_MSG,
     SimpleView,
     apply_style_tag,
@@ -16,9 +14,7 @@ from .io_helpers import (
 from .string_types import Raw
 
 __all__ = [
-    "BLUE_VIOLET_COLOR",
     "BOLD_STYLE",
-    "CALL_TO_ACTION",
     "NEUTRAL_MSG",
     "Raw",
     "SimpleView",
