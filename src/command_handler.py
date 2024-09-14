@@ -102,6 +102,9 @@ class CommandHandler:
         elif action.type == ActionType.CHECK_DATA:
             self._controllers.data_checker.check_data()
 
+        else:
+            raise RuntimeError(f"Unknown action type: {action.type}")
+
         if not remaining_input:
             return
 
