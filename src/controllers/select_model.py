@@ -5,9 +5,7 @@ from rich import print
 from src.domain import Model, ModelName
 from src.models.model_choice import ModelChoiceParser
 from src.view import (
-    BLUE_VIOLET_COLOR,
     BOLD_STYLE,
-    CALL_TO_ACTION,
     NEUTRAL_MSG,
     Raw,
     SimpleView,
@@ -63,7 +61,7 @@ class SelectModelController:
                 Raw(
                     "\nPor favor, elige un modelo introduciendo el número correspondiente:"
                 ),
-                CALL_TO_ACTION,
+                NEUTRAL_MSG,
             )
         )
         for i, model in enumerate(self._models, start=1):
@@ -76,7 +74,7 @@ class SelectModelController:
 
 
 def create_styled_default_model_explanation(default_model: ModelName) -> str:
-    model_name_styled = apply_style_tag(Raw(f"{default_model}"), BLUE_VIOLET_COLOR)
+    model_name_styled = apply_style_tag(Raw(f"{default_model}"), BOLD_STYLE)
     explanation = to_styled(
         "\nPresiona enter sin seleccionar un número para elegir el modelo "
         + model_name_styled
