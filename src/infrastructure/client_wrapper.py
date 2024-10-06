@@ -5,8 +5,8 @@ from mistralai.models.chat_completion import ChatMessage as MistralChatMessage
 from mistralai.exceptions import MistralConnectionException
 from openai import OpenAI
 
+from src.domain import ChatMessage
 from src.models.shared import (
-    ChatMessage,
     CompleteMessage,
     Model,
     Platform,

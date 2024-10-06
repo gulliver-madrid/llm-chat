@@ -1,10 +1,11 @@
+from src.domain import ChatMessage
 from src.models.parsed_line import ParsedLine, TagType
 from src.models.serialization import (
     convert_conversation_text_into_messages,
     convert_text_to_conversation_object,
     ConversationId,
 )
-from src.models.shared import ChatMessage, extract_chat_messages
+from src.models.shared import extract_chat_messages
 from tests.objects import COMPLETE_MESSAGES_1, COMPLETE_MESSAGES_2, TEXT_1, TEXT_2
 
 

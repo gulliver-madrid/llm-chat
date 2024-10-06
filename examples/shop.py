@@ -6,10 +6,11 @@ from rich import print
 from dotenv import load_dotenv
 
 from examples.shop_data import ProductsData, data
+from src.domain import ChatMessage
 from src.infrastructure.client_wrapper import ClientWrapper
 from src.io_helpers import display_neutral_msg, get_input
 from src.logging import configure_logger
-from src.models.shared import ChatMessage, CompleteMessage, Model, ModelName, Platform
+from src.models.shared import CompleteMessage, Model, ModelName, Platform
 
 logger = configure_logger(__name__, __file__)
 

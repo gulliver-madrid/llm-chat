@@ -4,10 +4,11 @@ from rich.markdown import Markdown
 
 from typing import Mapping, Sequence
 
+from src.domain import ChatMessage
 from src.io_helpers import display_neutral_msg, get_input
 from src.models.placeholders import Placeholder
 from src.models.serialization import ConversationId
-from src.models.shared import ChatMessage
+
 
 HELP_TEXT = """
 ## Consultas
